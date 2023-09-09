@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css';
 
 class App extends Component {
   constructor() {
@@ -30,6 +32,13 @@ class App extends Component {
         <h3>.shp .geojson or .kml</h3>
         <input type="file" accept=".shp, .geojson, .kml" onChange={this.handleFileChange} />
         <button onClick={this.handleUpload}>Upload</button>
+
+        <MapContainer center={[0, 0]} zoom={2} scrollWheelZoom={true}>
+  <TileLayer
+    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  />
+</MapContainer>
       </div>
     );
   }
