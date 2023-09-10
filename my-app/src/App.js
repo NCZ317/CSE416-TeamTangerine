@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet'
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 class App extends Component {
@@ -7,21 +8,37 @@ class App extends Component {
     super();
     this.state = {
       selectedFile: null,
+      mapData: null,
     };
   }
 
   handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     this.setState({ selectedFile });
+    if (selectedFile) {
+      alert(`File selected: ${selectedFile.name}`);
+    }
   };
 
   handleUpload = () => {
     const { selectedFile } = this.state;
 
     if (selectedFile) {
-      alert(`File selected: ${selectedFile.name}`);
-    } else {
-      alert('Please select a file.');
+      if(selectedFile.name.endsWith('.shp')) {
+        //Handle shp parsing
+      }
+      else if (selectedFile.name.endsWith('.geojson')) {
+        //handle GeoJSON parsing
+      }
+      else if (selectedFile.name.endsWith('.kml')) {
+        //handle kml parsing
+      }
+      else {
+        alert("Please upload the specified filetype");
+      }
+    } 
+    else {
+      alert('Please select a file');
     }
   };
 
@@ -34,11 +51,11 @@ class App extends Component {
         <button onClick={this.handleUpload}>Upload</button>
 
         <MapContainer center={[0, 0]} zoom={2} scrollWheelZoom={true}>
-  <TileLayer
-    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-  />
-</MapContainer>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+        </MapContainer>
       </div>
     );
   }
