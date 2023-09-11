@@ -1,32 +1,37 @@
-import React, { Component } from 'react';
+import React, { useState,useEffect } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+function App(){
+  const [selectedFile, setFile] = useState(null);
+  const [position, setPosition] = useState([0,0]);
+  const [zoomValue, setZoom] = useState(2);
 
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      selectedFile: null,
-      mapData: null,
-    };
-  }
-
-  handleFileChange = (event) => {
+  const handleFileChange = (event) => {
     var reader = new FileReader();
     const selectedFile = event.target.files[0];
     reader.readAsText(selectedFile);
-    reader.onload = this.handleUpload;
-    this.setState({ selectedFile });
+    setFile({ selectedFile: selectedFile});
+    console.log(selectedFile);
     if (selectedFile) {
       alert(`File selected: ${selectedFile.name}`);
-      console.log(selectedFile);
     }
-  };
-
-  handleUpload = (event) => {
-    const { selectedFile } = this.state;
-    alert(selectedFile);
+    if(selectedFile.name.endsWith('.json')){
+      reader.onload = handleUpload;
+    }
+  } 
+  function handleUpload(event){
+    //handle GeoJSON parsing
+    console.log(event.target.result);
+    var parsed = JSON.parse(event.target.result);
+    console.log(parsed.features[0]);
+    //highlight features
+    //geoJSon has label-x and label-y
+    setPosition([parsed.features[0].properties.label_y,parsed.features[0].properties.label_x]);
+    setZoom(5);
+  }
+  /* function handleUpload(event){
+    console.log(selectedFile);
     if (selectedFile) {
       if(selectedFile.name.endsWith('.shp')) {
         //Handle shp parsing
@@ -35,8 +40,11 @@ class App extends Component {
         //handle GeoJSON parsing
         console.log(event.target.result);
         var parsed = JSON.parse(event.target.result);
-        alert(parsed);
+        console.log(parsed.features[0]);
+        //highlight features
         //geoJSon has label-x and label-y
+        setPosition([parsed.features[0].properties.label_y,parsed.features[0].properties.label_x]);
+        setZoom()
       }
       else if (selectedFile.name.endsWith('.kml')) {
         //handle kml parsing
@@ -49,28 +57,27 @@ class App extends Component {
     else {
       alert('Please select a file');
     }
-  };
+  }; */
+  
 
   //.json for geoJson
-  render() {
-    let labelx = 138.44217;
-    let labely = 36.142538;
-    return (
-      <div>
-        <h1>Please Upload a Map file</h1>
-        <h3>.shp, .json, .geojson, or .kml</h3>
-        <input type="file" accept=".shp, .json, .geojson, .kml" onChange={this.handleFileChange} />
-        {/* <button onClick={this.handleUpload}>Upload</button> */}
-
-        <MapContainer center={[labely, labelx]} zoom={5} scrollWheelZoom={true}>
+  return (
+    <div>
+      <p>center(lat,long): {position[0]},{position[1]}</p>
+      <h1>Please Upload a Map file</h1>
+      <h3>Shapefile(.shp), GeoJSON(.json), or KeyHole(.kml)</h3>
+      <input type="file" accept=".shp, .json, .kml" onChange={handleFileChange} />
+      {/* <button onClick={this.handleUpload}>Upload</button> */}
+      <div id="map">
+        <MapContainer center={position} zoom={zoomValue} scrollWheelZoom={true}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
         </MapContainer>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default App;
