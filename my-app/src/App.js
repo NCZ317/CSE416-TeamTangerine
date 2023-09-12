@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import shp from 'shpjs'
 
 class App extends Component {
   constructor() {
@@ -83,7 +84,14 @@ renderMap = () => {
       this.geoJsonLayer.addTo(map);
 
       // Fit the map to the bounds of the GeoJSON layer
-      map.fitBounds(this.geoJsonLayer.getBounds());
+      if (this.geoJsonLayer.getBounds().isValid()) {
+        // Fit the map to the bounds of the GeoJSON layer
+        map.fitBounds(this.geoJsonLayer.getBounds());
+      } else {
+        // Handle the case when bounds are not valid (e.g., empty GeoJSON data)
+        // You can choose to display an error message or do something else here
+        console.error('Bounds are not valid');
+      }
     }
   }
 };
