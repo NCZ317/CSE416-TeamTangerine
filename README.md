@@ -24,6 +24,6 @@ If the application gives the message "sh: react-script not found", install the R
 
     npm install leaflet
     npm install react-leaflet
-###Shapefile
+### Shapefile
 
     npm install shapefile
