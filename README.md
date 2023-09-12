@@ -1,5 +1,5 @@
-# CSE416-TeamTangerine
 
+# CSE416-TeamTangerine
 ## To install/start:
 First, you will want to clone the GitHub Repo onto your system. To do this, click on the **Code** button on the top of the page and copy the SSH Link. In your terminal enter:
 
@@ -19,3 +19,11 @@ If the application gives the message "sh: react-script not found", install the R
     cd my-app
     npm install
     npm start
+## Imported Libraries
+### Leaflet
+
+    npm install leaflet
+    npm install react-leaflet
+###Shapefile
+
+    npm install shapefile
