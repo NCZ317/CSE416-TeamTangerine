@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import * as shapefile from 'shapefile';
 
 class App extends Component {
   constructor() {
@@ -30,10 +31,25 @@ class App extends Component {
       if (selectedFile.name.endsWith('.shp')) {
         // Handle shp parsing
         alert('Parsing Shapefile');
-        // Update this.state.mapData with the parsed data
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const shpBuffer = e.target.result;
+
+          try {
+            const geojson = await shapefile.read(shpBuffer);
+            console.log(geojson);
+            this.setState({ mapData: geojson }, () => {
+              this.renderMap();
+            });
+          } catch (error) {
+            console.error('Error parsing SHP file:', error);
+          }
+        };
+
+        reader.readAsArrayBuffer(selectedFile);
       } else if (selectedFile.name.endsWith('.json') || selectedFile.name.endsWith('.geojson')) {
         // Handle GeoJSON parsing
-        alert('Parsing GeoJSON');
+        //alert('Parsing GeoJSON');
         const parsedData = JSON.parse(event.target.result); // Parse the JSON data
         console.log(parsedData);
         this.setState({ mapData: parsedData }, () => {
