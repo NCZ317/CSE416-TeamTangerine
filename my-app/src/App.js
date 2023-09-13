@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import * as shapefile from 'shapefile';
+import toGeoJSON from 'togeojson';
 
 class App extends Component {
   constructor() {
@@ -60,7 +61,18 @@ class App extends Component {
       } else if (selectedFile.name.endsWith('.kml')) {
         // Handle KML parsing
         alert('Parsing KML');
-        // Update this.state.mapData with the parsed data
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const kmlData = e.target.result;
+          const kmlParser = new DOMParser();
+          const kmlDoc = kmlParser.parseFromString(kmlData, 'application/xml');
+          const geojson = toGeoJSON.kml(kmlDoc);
+
+          this.setState({ mapData: geojson }, () => {
+            this.renderMap();
+          });
+        };
+        reader.readAsText(selectedFile);
       } else {
         alert('Please upload the specified filetype');
       }
