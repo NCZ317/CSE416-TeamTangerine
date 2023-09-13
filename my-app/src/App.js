@@ -16,11 +16,14 @@ class App extends Component {
   }
 
   handleFileChange = (event) => {
-    var reader = new FileReader();
     const selectedFile = event.target.files[0];
-    reader.readAsText(selectedFile);
-    reader.onload = this.handleUpload;
-    this.setState({ selectedFile });
+    this.setState({ selectedFile: selectedFile }, () => {
+
+      var reader = new FileReader();
+      reader.readAsText(selectedFile);
+      reader.onload = this.handleUpload;
+
+    });
     if (selectedFile) {
       alert(`File selected: ${selectedFile.name}`);
     }
