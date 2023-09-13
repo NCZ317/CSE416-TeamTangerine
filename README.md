@@ -27,3 +27,7 @@ If the application gives the message "sh: react-script not found", install the R
 ### Shapefile
 
     npm install shapefile
+
+### ToGeoJSON
+
+    npm install togeojson
