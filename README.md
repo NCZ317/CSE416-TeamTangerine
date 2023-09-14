@@ -31,3 +31,8 @@ If the application gives the message "sh: react-script not found", install the R
 ### ToGeoJSON
 
     npm install togeojson
+    
+### JSZip
+
+    npm install jszip
+
