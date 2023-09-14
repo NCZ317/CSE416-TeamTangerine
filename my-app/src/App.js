@@ -6,6 +6,13 @@ import * as shapefile from 'shapefile';
 import toGeoJSON from 'togeojson';
 import JSZip from 'jszip';
 
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png")
+});
+
 class App extends Component {
   constructor() {
     super();
@@ -121,6 +128,7 @@ class App extends Component {
 renderMap = () => {
   // Get the map instance
   const map = this.mapRef.current;
+  console.log(L.Icon.Default.prototype._getIconUrl());
   if (map) {
     // Remove the previous GeoJSON layer if it exists
     if (this.geoJsonLayer) {
