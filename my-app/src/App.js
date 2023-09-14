@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import * as shapefile from 'shapefile';
 import toGeoJSON from 'togeojson';
+import JSZip from 'jszip';
 
 class App extends Component {
   constructor() {
@@ -32,7 +33,37 @@ class App extends Component {
   handleUpload = (event) => {
     const { selectedFile } = this.state;
     if (selectedFile) {
-      if (selectedFile.name.endsWith('.shp')) {
+      if (selectedFile.name.endsWith('.zip')) {
+        // Handle .zip file containing shapefiles
+        alert('Parsing Shapefile ZIP');
+  
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const zipData = e.target.result;
+  
+          // Read the contents of the zip file using JSZip
+          const zip = new JSZip();
+          const zipContents = await zip.loadAsync(zipData);
+  
+          // Extract the .shp and .dbf files as ArrayBuffer
+          const shpBuffer = await zipContents.file(/\.shp$/)[0].async('arraybuffer');
+          const dbfBuffer = await zipContents.file(/\.dbf$/)[0].async('arraybuffer');
+  
+          // Parse the .shp file
+          const geojson = await shapefile.read(
+            shpBuffer,
+            dbfBuffer,
+            { type: 'buffer' } // Specify the type of data source
+          );
+  
+          this.setState({ mapData: geojson }, () => {
+            this.renderMap();
+          });
+        };
+  
+        reader.readAsArrayBuffer(selectedFile);
+      } 
+      else if (selectedFile.name.endsWith('.shp')) {
         // Handle shp parsing
         alert('Parsing Shapefile');
         const reader = new FileReader();
@@ -134,7 +165,7 @@ renderMap = () => {
       <div>
         <h1>Please Upload a Map file</h1>
         <h3>.shp, .json, .geojson, or .kml</h3>
-        <input type="file" accept=".shp, .json, .geojson, .kml" onChange={this.handleFileChange} />
+        <input type="file" accept=".shp, .json, .geojson, .kml, .zip" onChange={this.handleFileChange} />
 
         <MapContainer ref={this.mapRef} center={[0, 0]} zoom={2} scrollWheelZoom={true}>
           <TileLayer
