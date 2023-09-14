@@ -25,15 +25,38 @@ class App extends Component {
 
   handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
-    this.setState({ selectedFile: selectedFile }, () => {
-
-      var reader = new FileReader();
-      reader.readAsText(selectedFile);
-      reader.onload = this.handleUpload;
-
-    });
+    
     if (selectedFile) {
-      alert(`File selected: ${selectedFile.name}`);
+      this.setState({ selectedFile: selectedFile }, () => {
+        alert(`File selected: ${selectedFile.name}`);
+  
+        var reader = new FileReader();
+        reader.readAsText(selectedFile);
+        reader.onload = this.handleUpload;
+  
+      });
+    }
+    else {
+      const map = this.mapRef.current;
+      if (map) {
+        
+        // Remove the previous GeoJSON layer if it exists
+        if (this.geoJsonLayer) {
+          map.removeLayer(this.geoJsonLayer);
+        }
+    
+        // Render the map data
+        const { mapData } = this.state;
+        if (mapData) {
+           // Add the base TileLayer
+           const tileLayer = L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }
+          ).addTo(map);
+        }
+      }
     }
   };
 
@@ -91,7 +114,7 @@ class App extends Component {
         reader.readAsArrayBuffer(selectedFile);
       } else if (selectedFile.name.endsWith('.json') || selectedFile.name.endsWith('.geojson')) {
         // Handle GeoJSON parsing
-        //alert('Parsing GeoJSON');
+        alert('Parsing GeoJSON');
         const parsedData = JSON.parse(event.target.result); // Parse the JSON data
         console.log(parsedData);
         this.setState({ mapData: parsedData }, () => {
