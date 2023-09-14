@@ -120,7 +120,6 @@ class App extends Component {
         this.setState({ mapData: parsedData }, () => {
           this.renderMap();
         });
-        this.renderMap();
         // Update this.state.mapData with the parsed data
       } else if (selectedFile.name.endsWith('.kml')) {
         // Handle KML parsing
@@ -140,8 +139,6 @@ class App extends Component {
       } else {
         alert('Please upload the specified filetype');
       }
-      // Rerender the map with data if needed
-      this.renderMap();
     } else {
       alert('Please select a file');
     }
