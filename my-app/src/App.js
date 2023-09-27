@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import * as shapefile from 'shapefile';
 import toGeoJSON from 'togeojson';
 import JSZip from 'jszip';
+import Header from './Header';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -191,6 +192,7 @@ renderMap = () => {
   render() {
     return (
       <div>
+        <Header/>
         <h1>Please Upload a Map file</h1>
         <h3>.shp, .json, .geojson, or .kml</h3>
         <input type="file" accept=".shp, .json, .geojson, .kml, .zip" onChange={this.handleFileChange} />
