@@ -8,21 +8,19 @@ import Toolbar from '@mui/material/Toolbar';
 const theme = createTheme({
   palette: {
     leaves: {
-      main: '#63CD32',
-      light: '#79c200',
-      dark: '#71b427',
-      contrastText: 'whitesmoke',
+      main: '#a85921',
     },
     header: {
-        main: '#F28500'
+        main: '#f18500'
     }
   },
 });
 
 const logoStyle = {
-  fontSize: '24px',
+  fontSize: '36px',
   fontWeight: 'bold',
-  color: 'whitesmoke', // Replace with your desired text color
+  color: '#7ac100',
+  textShadow: "3px  3px  15px  black"
 };
 
 const buttonContainerStyle = {
@@ -32,6 +30,7 @@ const buttonContainerStyle = {
 
 const buttonStyle = {
   marginLeft: '30px', // Adjust margin as needed between buttons
+  fontWeight: 'bold',
 };
 
 const Header = () => {
@@ -42,10 +41,10 @@ const Header = () => {
           <Toolbar>
             <div style={logoStyle}>TerraTrove</div>
             <div style={buttonContainerStyle}>
-              <Button color='leaves' variant='contained' style={buttonStyle} id="create-map-button">
+              <Button color='leaves' variant='text' style={buttonStyle} id="create-map-button">
                 Create Map
               </Button>
-              <Button color='leaves' variant='contained' style={buttonStyle} id="login-button">
+              <Button color='leaves' variant='text' style={buttonStyle} id="login-button">
                 Login
               </Button>
             </div>
