@@ -11,12 +11,12 @@ Then, you will want to go into the repo folder and install the React libraries b
     npm install
 Finally, move into the folder with the React application and start it:
 
-    cd my-app
+    cd client
     npm start
 
 If the application gives the message "sh: react-script not found", install the React libraries in the my-app folder with:
 
-    cd my-app
+    cd client
     npm install
     npm start
 ## Imported Libraries
