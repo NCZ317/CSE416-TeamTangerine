@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-
+import logo from './logo.png'
 const theme = createTheme({
   palette: {
     leaves: {
@@ -39,7 +39,7 @@ const AppBanner = () => {
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position='static' color='header'>
           <Toolbar>
-            <div style={logoStyle}>TerraTrove</div>
+            <img src={logo} height='50px' style={{marginBottom: '10px', marginTop: '10px'}}/>
             <div style={buttonContainerStyle}>
               <Button color='leaves' variant='text' style={buttonStyle} id="create-map-button">
                 Create Map

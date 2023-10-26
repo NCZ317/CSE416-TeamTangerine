@@ -6,8 +6,7 @@ export default function HomeWrapper() {
     return (
             <div>
                 <AppBanner />
-                <MapCard />
-                <MapWrapper/>
+
             </div>
         );
 }
