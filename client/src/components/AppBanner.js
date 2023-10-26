@@ -33,7 +33,7 @@ const buttonStyle = {
   fontWeight: 'bold',
 };
 
-const Header = () => {
+const AppBanner = () => {
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1 }}>
@@ -55,4 +55,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default AppBanner;
