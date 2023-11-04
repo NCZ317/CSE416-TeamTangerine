@@ -3,71 +3,81 @@ import mapImage from './map.jpg';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { Card, CardContent, CardMedia, Typography, Chip, Box } from '@mui/material';
 
 const MapCard = () => {
     const cardStyle = {
-        borderRadius: '25px',
         display: 'flex',
-        margin: '20px',
-        padding: '10px',
+        margin: '8px',
         backgroundColor: '#f18500',
-        height: '250px',
+        borderRadius: '16px',
     };
 
     const imageStyle = {
-        marginRight: '35px',
-        borderRadius: '25px',
+        width: 200,
         height: '100%',
-        objectFit: 'cover', 
+        objectFit: 'cover',
+        margin: '10px',
+        borderRadius: '30px'
     };
 
     const counterStyle = {
         display: 'flex',
         justifyContent: 'space-between',
-        marginTop: '10px',
-        color: '#a85920',
-        textShadow: "0px  0px  1px  black"
+        alignItems: 'center',
+        color: '#A85821',
+        marginBottom: '8px',
+        marginLeft: '8px',
+        paddingLeft: '16px',
+        paddingRight: '16px',
+        fontSize: '20pt'
     };
 
-    const detailsStyle = {
-        flex: '2',
-    };
-
-    const tagsStyle = {
-        marginBottom: '10px',
-        marginTop: '10px'
-    };
     const tags = ["HeatMap", "Asia"];
+
     return (
-        <div style={cardStyle}>
-            <div style={imageStyle}>
-                <img src={mapImage} alt="Map Graphic" style={{
-                    flex: '1',
-                    marginRight: '20px',
-                    marginLeft: '20px',
-                    borderRadius: '25px',
-                    height: '85%',
-                    objectFit: 'cover', 
-                }} />
+        <Card style={cardStyle}>
+            <Box display="flex" flexDirection="column">
+                <CardMedia component="img" src={mapImage} alt="Map Graphic" style={imageStyle} />
                 <div style={counterStyle}>
-                    <span><FavoriteIcon/> 0</span>
-                    <span><ChatBubbleOutlinedIcon/> 0</span>
-                    <span><VisibilityOutlinedIcon/> 0</span>
+                    <Box display="flex" alignItems="center">
+                        <FavoriteIcon fontSize="20pt" />
+                        <Typography variant="body2">70</Typography>
+                    </Box>
+                    <Box display="flex" alignItems="center">
+                        <ChatBubbleOutlinedIcon fontSize="20pt" />
+                        <Typography variant="body2">12</Typography>
+                    </Box>
+                    <Box display="flex" alignItems="center">
+                        <VisibilityOutlinedIcon fontSize="20pt" />
+                        <Typography variant="body2">123</Typography>
+                    </Box>
                 </div>
-            </div>
-            <div style={detailsStyle}>
-                <div style={tagsStyle}>
+            </Box>
+            <CardContent style={{ textAlign: 'left', marginLeft: '8px' }}>
+                <div>
                     {tags.map((tag, index) => (
-                        <span key={index} style={{ backgroundColor: 'lightblue', padding: '5px', marginRight: '5px' }}>
-                            {tag}
-                        </span>
+                        <Chip
+                            key={index}
+                            label={tag}
+                            color="primary"
+                            size="small"
+                            style={{ marginRight: '5px', marginBottom: '5px', backgroundColor: '#79C200' }}
+                        />
                     ))}
                 </div>
-                <div style={{ fontWeight: 'bold', marginBottom: '10px', fontSize: '60px', color: '#ad591b' }}>Title</div>
-                <div style={{ fontWeight: 'bold', marginBottom: '10px',fontSize: '20px',  marginLeft: '10px', color: '#ad591b' }}>Author: User1</div>
-                <div style={{ marginBottom: '10px',fontSize: '16px',  marginLeft: '10px', color: '#ad591b' }}> Map of Asia </div>
-            </div>
-        </div>
+                <Typography variant="h3" style={{ fontWeight: 'bold', color: '#542C11', marginBottom: '10px' }}>
+                    Title
+                </Typography>
+                <Typography variant="h6" style={{ fontWeight: 'bold', color: '#542C11', marginBottom: '10px' }}>
+                    Author: User1
+                </Typography>
+                <Typography variant="body1" style={{ color: '#542C11', marginBottom: '10px' }}>
+                    Map of Asia
+                </Typography>
+            </CardContent>
+        </Card>
     );
 };
-export default MapCard
+
+export default MapCard;
