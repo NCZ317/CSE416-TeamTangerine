@@ -1,0 +1,11 @@
+{
+  "name": "cse416-teamtangerine",
+  "version": "1.0.0",
+  "description": "First, you will want to clone the GitHub Repo onto your system. To do this, click on the **Code** button on the top of the page and copy the SSH Link. In your terminal enter:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
