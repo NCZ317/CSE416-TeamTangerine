@@ -4,8 +4,27 @@
   "description": "First, you will want to clone the GitHub Repo onto your system. To do this, click on the **Code** button on the top of the page and copy the SSH Link. In your terminal enter:",
   "main": "index.js",
   "scripts": {
+    "start": "node server/index.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cookieparser": "^0.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NCZ317/CSE416-TeamTangerine.git"
+  },
+  "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NCZ317/CSE416-TeamTangerine/issues"
+  },
+  "homepage": "https://github.com/NCZ317/CSE416-TeamTangerine#readme"
 }
