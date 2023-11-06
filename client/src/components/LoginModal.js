@@ -7,6 +7,7 @@ import {
     Paper,
     Typography,
 } from '@mui/material';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 const customTextFieldStyle = {
     width: 600,

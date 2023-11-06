@@ -5,6 +5,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import logo from './logo.png'
+import LoginModal from './LoginModal';
 const theme = createTheme({
   palette: {
     leaves: {
@@ -34,6 +35,14 @@ const buttonStyle = {
 };
 
 const AppBanner = () => {
+  const handleCreateMap = () => {
+    alert("Make Map");
+    //change state
+  };
+  const handleLogin = () => {
+    alert("Logging In");
+    //change state
+  };
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1 }}>
@@ -41,10 +50,10 @@ const AppBanner = () => {
           <Toolbar>
             <img src={logo} height='50px' style={{marginBottom: '10px', marginTop: '10px'}}/>
             <div style={buttonContainerStyle}>
-              <Button color='leaves' variant='text' style={buttonStyle} id="create-map-button">
+              <Button color='leaves' variant='text' style={buttonStyle} id="create-map-button" onClick={handleCreateMap}>
                 Create Map
               </Button>
-              <Button color='leaves' variant='text' style={buttonStyle} id="login-button">
+              <Button color='leaves' variant='text' style={buttonStyle} id="login-button" onClick={handleLogin}>
                 Login
               </Button>
             </div>

@@ -6,12 +6,13 @@ import LoginModal from './components/LoginModal';
 import CreateAccountModal from './components/CreateAccountModal';
 import ForgotPasswordModal from './components/ForgotPasswordModal';
 import MapCard from './components/MapCard';
+import MapWrapper from './components/MapWrapper';
 
 const App = () => {
   return (
     <div className="App">
-      <HomeWrapper/>
-      {/* <CreateAccountModal/> */}
+      {<MapWrapper/>}
+      {/* {<LoginModal/>} */}
     </div>
   );
 }

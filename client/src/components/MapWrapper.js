@@ -191,7 +191,7 @@ class MapWrapper extends Component {
     render() {
         return (
             <div>
-                <h1>Please Upload a Map file</h1>
+                <h1>Please Upload a Map file(May Overwrite current data)</h1>
                 <h3>.shp, .json, .geojson, or .kml</h3>
                 <input type="file" accept=".shp, .json, .geojson, .kml, .zip" onChange={this.handleFileChange} />
 
