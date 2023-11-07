@@ -3,6 +3,7 @@ import { Box, Button, Grid, Menu, MenuItem, Checkbox, FormControlLabel, Typograp
 import AppBanner from './AppBanner';
 import MapCard from './MapCard';
 import SortIcon from '@mui/icons-material/Sort';
+import LoginModal from './LoginModal';
 
 const searchbarStyle = {
     backgroundColor: '#F6A440',

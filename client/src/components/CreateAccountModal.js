@@ -53,8 +53,7 @@ const customButtonStyle = {
     textTransform: 'none',
 };
 
-export default function CreateAccountModal() {
-
+export default function CreateAccountModal({ open, onClose }) {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -65,12 +64,12 @@ export default function CreateAccountModal() {
     });
 
     const handleCreateAccount = () => {
-        // alert("Creating an account");
         api.registerUser(formData.firstName, formData.lastName, formData.email, formData.username, formData.password, formData.confirmPassword);
+        onClose(); 
     };
 
     return (
-        <Modal open={true}>
+        <Modal open={open} onClose={onClose} id='create-account-modal'>
             <Paper
                 sx={{
                     position: 'absolute',
@@ -126,7 +125,7 @@ export default function CreateAccountModal() {
                             placeholder="Email"
                             style={customTextFieldStyle}
                             onChange={e => {setFormData({...formData, email: e.target.value});}}
-                            autocomplete="off"
+                            autoComplete="off"
                         />
                     </div>
                     <div style={{ marginTop: '12px' }}>
@@ -137,7 +136,7 @@ export default function CreateAccountModal() {
                             placeholder="Username"
                             style={customTextFieldStyle}
                             onChange={e => {setFormData({...formData, username: e.target.value});}}
-                            autocomplete="off"
+                            autoComplete="off"
                         />
                     </div>
                     <div style={{ marginTop: '12px' }}>

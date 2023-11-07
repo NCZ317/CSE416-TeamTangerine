@@ -8,15 +8,18 @@ import ForgotPasswordModal from './components/ForgotPasswordModal';
 import MapCard from './components/MapCard';
 import MapDiscovery from './components/MapDiscovery';
 import PostWrapper from './components/PostWrapper';
+import ProfileWrapper from './components/ProfileWrapper';
 
 const App = () => {
   return (
     <div className="App">
-      {/* <LoginModal/> */}
+      
       <HomeWrapper />
+      {/* <LoginModal/> */}
       {/* <CreateAccountModal/> */}
-      <ForgotPasswordModal/>
+      {/* <ForgotPasswordModal/> */}
       {/* <PostWrapper /> */}
+      {/* <ProfileWrapper /> */}
     </div>
   );
 }

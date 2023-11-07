@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import {
     Button,
     Modal,
@@ -7,7 +7,7 @@ import {
     Paper,
     Typography,
 } from '@mui/material';
-import ForgotPasswordModal from './ForgotPasswordModal';
+import CreateAccountModal from './CreateAccountModal';
 
 const customTextFieldStyle = {
     width: 600,
@@ -36,93 +36,98 @@ const customButtonStyle = {
     textTransform: 'none',
 };
 
-export default function LoginModal() {
+export default function LoginModal({ open, onClose }) {
+    const [showCreateAccountModal, setShowCreateAccountModal] = useState(false);
+
     const handleLogin = () => {
-        alert("Logging In");
+        alert('Logging In');
     };
 
     const handleForgotPassword = () => {
-        alert("Forgot Password clicked");
+        alert('Forgot Password clicked');
+    };
+
+    const handleSignUp = () => {
+        setShowCreateAccountModal(true);
+        onClose(); // Close the LoginModal
     };
 
     return (
-        <Modal open={true}>
-            <Paper
-                sx={{
-                    position: 'absolute',
-                    width: 700,
-                    height: 350,
-                    bgcolor: 'background.paper',
-                    border: '2px solid #000',
-                    boxShadow: 24,
-                    p: 4,
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    borderRadius: '16px',
-                }}
-            >
-                <Typography variant="h3" gutterBottom style={{ textAlign: 'center' }}>
-                    Login
-                </Typography>
-                <Box
+        <>
+            <Modal open={open} onClose={onClose} id="login-modal">
+                <Paper
                     sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
+                        position: 'absolute',
+                        width: 700,
+                        height: 350,
+                        bgcolor: 'background.paper',
+                        border: '2px solid #000',
+                        boxShadow: 24,
+                        p: 4,
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        borderRadius: '16px',
                     }}
                 >
-                    <div>
-                        <label htmlFor="email" style={{ paddingLeft: '36px' }}>Email:</label>
-                        <input
-                            type="text"
-                            id="email"
-                            placeholder="Email"
-                            style={customTextFieldStyle}
-                        />
-                    </div>
-                    <div style={{ marginTop: '12px' }}>
-                        <label htmlFor="password" style={{ paddingLeft: '36px' }}>Password:</label>
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder="Password"
-                            style={customTextFieldStyle}
-                        />
-                    </div>
-                </Box>
-                <Box mt={2} sx={{ display: 'flex', justifyContent: 'center', paddingLeft: '36px' }}>
-                    <span
-                        style={{
-                            fontSize: 12,
-                            marginLeft: '36px',
-                            color: '#f28500',
-                            cursor: 'pointer',
-                        }}
-                        onClick={handleForgotPassword}
-                    >
-                        Forgot Password?
-                    </span>
-                    <Box sx={{ marginLeft: 'auto' }} />
-                </Box>
-                <Box mt={2} sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        style={customButtonStyle}
-                    >
-                        Sign Up
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleLogin}
-                        style={customButtonStyle}
-                    >
+                    <Typography variant="h3" gutterBottom style={{ textAlign: 'center' }}>
                         Login
-                    </Button>
-                </Box>
-            </Paper>
-        </Modal>
+                    </Typography>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <div>
+                            <label htmlFor="email" style={{ paddingLeft: '36px' }}>
+                                Email:
+                            </label>
+                            <input
+                                type="text"
+                                id="email"
+                                placeholder="Email"
+                                style={customTextFieldStyle}
+                            />
+                        </div>
+                        <div style={{ marginTop: '12px' }}>
+                            <label htmlFor="password" style={{ paddingLeft: '36px' }}>
+                                Password:
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Password"
+                                style={customTextFieldStyle}
+                            />
+                        </div>
+                    </Box>
+                    <Box mt={2} sx={{ display: 'flex', justifyContent: 'center', paddingLeft: '36px' }}>
+                        <span
+                            style={{
+                                fontSize: 12,
+                                marginLeft: '36px',
+                                color: '#f28500',
+                                cursor: 'pointer',
+                            }}
+                            onClick={handleForgotPassword}
+                        >
+                            Forgot Password?
+                        </span>
+                        <Box sx={{ marginLeft: 'auto' }} />
+                    </Box>
+                    <Box mt={2} sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
+                        <Button variant="contained" color="primary" style={customButtonStyle} onClick={handleSignUp} id='sign-up-button'>
+                            Sign Up
+                        </Button>
+                        <Button variant="contained" color="primary" onClick={handleLogin} style={customButtonStyle}>
+                            Login
+                        </Button>
+                    </Box>
+                </Paper>
+            </Modal>
+            {showCreateAccountModal && <CreateAccountModal open={showCreateAccountModal} onClose={() => setShowCreateAccountModal(false)} />}
+        </>
     );
 }
