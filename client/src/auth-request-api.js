@@ -3,7 +3,7 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true;
 const api = axios.create({
-    baseURL: 'http://localhost:5000/auth'
+    baseURL: 'https://terratrove-df08dd7fc1f7.herokuapp.com/auth'
 })
 
 
