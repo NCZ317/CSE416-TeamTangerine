@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useState } from 'react';
+import api from '../auth-request-api';
 import {
     Button,
     Modal,
@@ -52,8 +54,19 @@ const customButtonStyle = {
 };
 
 export default function CreateAccountModal() {
+
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        username: '',
+        password: '',
+        confirmPassword: '',
+    });
+
     const handleCreateAccount = () => {
-        alert("Creating an account");
+        // alert("Creating an account");
+        api.registerUser(formData.firstName, formData.lastName, formData.email, formData.username, formData.password, formData.confirmPassword);
     };
 
     return (
@@ -91,6 +104,7 @@ export default function CreateAccountModal() {
                                 id="firstName"
                                 placeholder="First Name"
                                 style={customTextFieldStyle2}
+                                onChange={e => {setFormData({...formData, firstName: e.target.value});}}
                             />
                         </div>
                         <div style={{ marginLeft: '12px' }}>
@@ -100,6 +114,7 @@ export default function CreateAccountModal() {
                                 id="lastName"
                                 placeholder="Last Name"
                                 style={customTextFieldStyle2}
+                                onChange={e => {setFormData({...formData, lastName: e.target.value});}}
                             />
                         </div>
                     </div>
@@ -110,6 +125,7 @@ export default function CreateAccountModal() {
                             id="email"
                             placeholder="Email"
                             style={customTextFieldStyle}
+                            onChange={e => {setFormData({...formData, email: e.target.value});}}
                             autocomplete="off"
                         />
                     </div>
@@ -120,6 +136,7 @@ export default function CreateAccountModal() {
                             id="username"
                             placeholder="Username"
                             style={customTextFieldStyle}
+                            onChange={e => {setFormData({...formData, username: e.target.value});}}
                             autocomplete="off"
                         />
                     </div>
@@ -130,6 +147,7 @@ export default function CreateAccountModal() {
                             id="password"
                             placeholder="Password"
                             style={customTextFieldStyle}
+                            onChange={e => {setFormData({...formData, password: e.target.value});}}
                         />
                     </div>
                     <div style={{ marginTop: '12px' }}>
@@ -139,6 +157,7 @@ export default function CreateAccountModal() {
                             id="confirmPassword"
                             placeholder="Confirm Password"
                             style={customTextFieldStyle}
+                            onChange={e => {setFormData({...formData, confirmPassword: e.target.value});}}
                         />
                     </div>
                 </Box>

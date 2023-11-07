@@ -12,7 +12,9 @@ import PostWrapper from './components/PostWrapper';
 const App = () => {
   return (
     <div className="App">
-      <PostWrapper />
+      {/* <LoginModal/> */}
+      <CreateAccountModal/>
+      {/* <PostWrapper /> */}
     </div>
   );
 }

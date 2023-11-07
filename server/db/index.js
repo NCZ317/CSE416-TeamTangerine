@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 dotenv.config();
 
 mongoose
-    .connect(process.env.DB_CONNECT, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
+    .connect(process.env.DB_CONNECT, { useNewUrlParser: true, useUnifiedTopology: true})
     .then(() => console.log("Database Connected Successfully"))
     .catch(e => {
         console.error('Connection error', e.message)

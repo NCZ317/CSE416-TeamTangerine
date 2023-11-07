@@ -12,12 +12,16 @@ const app = express()
 
 // SETUP THE MIDDLEWARE
 app.use(express.urlencoded({ extended: true }))
-app.use(cors())
+app.use(cors({
+    origin: ["https://terratrove-df08dd7fc1f7.herokuapp.com"],
+    credentials: true
+}))
+
 app.use(express.json())
 
 // SETUP OUR OWN ROUTERS AS MIDDLEWARE
-// const authRouter = require('./routes/auth-router')
-// app.use('/auth', authRouter)
+const authRouter = require('./routes/auth-router')
+app.use('/auth', authRouter)
 // const mapRouter = require('./routes/map-router')
 // app.use('/api', mapRouter)
 
