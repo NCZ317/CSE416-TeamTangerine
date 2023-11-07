@@ -13,8 +13,9 @@ const App = () => {
   return (
     <div className="App">
       {/* <LoginModal/> */}
-      {/* <CreateAccountModal/> */}
-      <PostWrapper />
+      <HomeWrapper />
+      <CreateAccountModal/>
+      {/* <PostWrapper /> */}
     </div>
   );
 }
