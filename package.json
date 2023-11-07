@@ -26,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/NCZ317/CSE416-TeamTangerine/issues"
   },
-  "homepage": "https://github.com/NCZ317/CSE416-TeamTangerine#readme"
+  "homepage": "https://github.com/NCZ317/CSE416-TeamTangerine#readme",
+  "devDependencies": {
+    "cypress": "^13.4.0"
+  }
 }
