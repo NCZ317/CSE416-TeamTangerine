@@ -14,7 +14,8 @@ const App = () => {
     <div className="App">
       {/* <LoginModal/> */}
       <HomeWrapper />
-      <CreateAccountModal/>
+      {/* <CreateAccountModal/> */}
+      <ForgotPasswordModal/>
       {/* <PostWrapper /> */}
     </div>
   );

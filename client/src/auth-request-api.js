@@ -3,7 +3,7 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true;
 const api = axios.create({
-    baseURL: 'https://terratrove-df08dd7fc1f7.herokuapp.com/auth'
+    baseURL: 'http://localhost:5000/auth'
 })
 
 
@@ -21,9 +21,12 @@ export const registerUser = (firstName, lastName, email, username, password, pas
     })
 }
 
+export const getRegisteredUser = (email) => api.get(`/user/${email}`);
+
 
 const apis = {
     registerUser,
+    getRegisteredUser
 }
 
 export default apis
