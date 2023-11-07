@@ -48,6 +48,7 @@ export default function HomeWrapper() {
                     color="primary"
                     onClick={handleSortClick}
                     style={buttonStyle}
+                    id='sort-filter-button'
                 >
                     <SortIcon style={{ height: '100%', width: '56px' }}/>
                 </Button>
@@ -55,6 +56,7 @@ export default function HomeWrapper() {
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={handleSortClose}
+                    id='sort-filter-menu'
                 >
                     <Typography variant="h6" style={{marginLeft: '8px'}}>Sort By</Typography>
                     <MenuItem onClick={() => handleSortOptionClick('Most Popular')}>Most Popular</MenuItem>
