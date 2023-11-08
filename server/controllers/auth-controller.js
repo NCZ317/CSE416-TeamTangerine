@@ -42,7 +42,7 @@ registerUser = async (req, res) => {
         const savedUser = await newUser.save();
         console.log("new user saved: " + savedUser._id);
 
-        return res.status(200).json({success: true});
+        return res.status(300).json({success: true});
 
     } catch (err) {
         console.error(err);
