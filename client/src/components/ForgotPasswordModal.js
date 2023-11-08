@@ -37,11 +37,13 @@ const customButtonStyle = {
     textTransform: 'none',
 };
 
-export default function ForgotPasswordModal() {
+export default function ForgotPasswordModal({open, onClose}) {
 
     const [email, setEmail] = useState('');
 
     const handleForgotPassword = async () => {
+
+        onClose();
 
         try {
             let response = await api.getRegisteredUser(email);
@@ -59,7 +61,7 @@ export default function ForgotPasswordModal() {
     };
 
     return (
-        <Modal open={true}>
+        <Modal open={open} onClose={onClose}>
             <Paper
                 sx={{
                     position: 'absolute',

@@ -8,6 +8,7 @@ import {
     Typography,
 } from '@mui/material';
 import CreateAccountModal from './CreateAccountModal';
+import ForgotPasswordModal from './ForgotPasswordModal'
 
 const customTextFieldStyle = {
     width: 600,
@@ -38,13 +39,16 @@ const customButtonStyle = {
 
 export default function LoginModal({ open, onClose }) {
     const [showCreateAccountModal, setShowCreateAccountModal] = useState(false);
+    const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
 
     const handleLogin = () => {
         alert('Logging In');
     };
 
     const handleForgotPassword = () => {
-        alert('Forgot Password clicked');
+        // alert('Forgot Password clicked');
+        setShowForgotPasswordModal(true);
+        onClose();
     };
 
     const handleSignUp = () => {
@@ -128,6 +132,7 @@ export default function LoginModal({ open, onClose }) {
                 </Paper>
             </Modal>
             {showCreateAccountModal && <CreateAccountModal open={showCreateAccountModal} onClose={() => setShowCreateAccountModal(false)} />}
+            {showForgotPasswordModal && <ForgotPasswordModal open={showForgotPasswordModal} onClose={() => setShowForgotPasswordModal(false)} />}
         </>
     );
 }
