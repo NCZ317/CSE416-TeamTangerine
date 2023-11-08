@@ -1,0 +1,35 @@
+name: CodeBuild CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16 # Adjust to your Node.js version
+
+      - name: Install dependencies
+        run: |
+          npm install
+          cd client
+          npm install
+          cd ..
+          cd server
+          npm install
+          cd ..
+
+      - name: Run front and backend tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          
