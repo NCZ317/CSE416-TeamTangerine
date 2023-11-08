@@ -28,8 +28,5 @@ jobs:
           npm install
           cd ..
 
-      - name: Run Jest tests
-        run: npm run jest --forceExit
-
-      - name: Run Cypress tests
-        run: npm run cypress
+      - name: Run front and backend tests
+        run: npm test
