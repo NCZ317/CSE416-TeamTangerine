@@ -39,7 +39,7 @@ const AppBanner = () => {
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
 
   const handleCreateMap = () => {
-    alert('Make Map');
+    alert('CREATE MAP clicked');
     // Change state
   };
 
