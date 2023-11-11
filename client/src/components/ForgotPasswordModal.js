@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useState } from 'react';
-import api from '../auth-request-api';
 import {
     Button,
     Modal,
@@ -44,19 +43,6 @@ export default function ForgotPasswordModal({open, onClose}) {
     const handleForgotPassword = async () => {
 
         onClose();
-
-        try {
-            let response = await api.getRegisteredUser(email);
-        
-            if (response.data.success) {
-              alert("User with email " + email + " found in the database");
-            } else {
-              alert("User with email " + email + " NOT found in the database");
-            }
-          } catch (error) {
-            // Handle any other errors or the 404 status code here
-            alert("GET request failed. User with email " + email + " NOT found in database");
-          }
 
     };
 

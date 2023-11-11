@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
-import api from '../auth-request-api';
+import { useContext } from 'react';
+import AuthContext from '../auth'
 import {
     Button,
     Modal,
@@ -54,6 +55,9 @@ const customButtonStyle = {
 };
 
 export default function CreateAccountModal({ open, onClose }) {
+
+    const { auth } = useContext(AuthContext);
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -64,7 +68,7 @@ export default function CreateAccountModal({ open, onClose }) {
     });
 
     const handleCreateAccount = () => {
-        api.registerUser(formData.firstName, formData.lastName, formData.email, formData.username, formData.password, formData.confirmPassword);
+        auth.registerUser(formData.firstName, formData.lastName, formData.email, formData.username, formData.password, formData.confirmPassword);
         onClose(); 
     };
 

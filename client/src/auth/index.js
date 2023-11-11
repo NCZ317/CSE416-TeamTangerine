@@ -1,5 +1,4 @@
 import React, { createContext, useEffect, useState } from "react";
-import { useHistory } from 'react-router-dom'
 import api from './auth-request-api'
 
 const AuthContext = createContext();
@@ -21,7 +20,7 @@ function AuthContextProvider(props) {
         errorMessage: "",
     });
 
-    const history = useHistory();
+    // const history = useHistory();
 
     useEffect(() => {
         auth.getLoggedIn();
@@ -93,7 +92,7 @@ function AuthContextProvider(props) {
                         user: response.data.user
                     }
                 })
-                history.push("/");
+                // history.push("/");
             }
         } catch (error) {
             console.log(error.response.data.errorMessage);
@@ -113,11 +112,11 @@ function AuthContextProvider(props) {
                 type: AuthActionType.LOGOUT_USER,
                 payload: null
             })
-            history.push("/");
+            // history.push("/");
         }
     }
 
-    auth.registerUser = async function(username, firstName, lastName, email, password, passwordVerify) {
+    auth.registerUser = async function(firstName, lastName, email, username, password, passwordVerify) {
         try {
             const response = await api.registerUser(username, firstName, lastName, email, password, passwordVerify);      
             if (response.status === 200) {
@@ -128,7 +127,7 @@ function AuthContextProvider(props) {
                     }
                 })
                 auth.loginUser(email,password);
-                history.push('/login');
+                // history.push('/login');
             }
         } catch (error) {
             console.log(error.response.data.errorMessage);

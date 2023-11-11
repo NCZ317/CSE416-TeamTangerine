@@ -13,23 +13,17 @@ import PostWrapper from './components/PostWrapper';
 import ProfileWrapper from './components/ProfileWrapper';
 import MapWrapper from './components/MapWrapper';
 
+
+import {AuthContextProvider} from './auth';
+
+
 const App = () => {
   return (
-    <div className="App">
-      
-      <HomeWrapper />
-      {/* <LoginModal/> */}
-      {/* <CreateAccountModal/> */}
-      {/* <ForgotPasswordModal/> */}
-      {/* <EditDetailsModal/> */}
-      {/* <DeleteMapModal/> */}
-      {/* <PostWrapper /> */}
-      {/* <ProfileWrapper /> */}
-      {/* <MapWrapper/> */}
-      {/* <MapDiscovery/> */}
-      {/* <PostWrapper/> */}
-      {/* <ProfileWrapper/> */}
-    </div>
+
+    <AuthContextProvider>
+      <HomeWrapper/>
+    </AuthContextProvider>
+
   );
 }
 
