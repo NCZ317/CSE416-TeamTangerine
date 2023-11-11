@@ -100,6 +100,27 @@ const PostWrapper = () => {
             <Grid container spacing={2} style={{ height: '100%' }}>
                 <Grid item xs={12} sm={9} style={{ height: '100%' }}>
                     <Card style={cardStyle}>
+                        <Box
+                            style={{display: 'flex', justifyContent: 'space-between', padding: '15px'}}
+                        
+                        >
+                            <Box>
+                                <Button style={{backgroundColor: '#79C200'} } onClick={handleExportMenuOpen} variant='contained'>Export Map</Button>
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleExportMenuClose}
+                                >
+                                    <MenuItem>JPEG</MenuItem>
+                                    <MenuItem>PNG</MenuItem>
+                                    <MenuItem>JSON</MenuItem>
+                                </Menu>
+                            </Box>
+                            <Box>
+                                <Button style={{backgroundColor: '#79C200'}} variant = 'contained'>Fork</Button>
+                            </Box>
+                        </Box>
+                    
                         <MapWrapper />
                         <CardContent style={cardContentStyle}>
                             <Box display="flex" flexDirection="row" justifyContent="space-between">
@@ -124,31 +145,6 @@ const PostWrapper = () => {
                                 </Box>
                             </Box>
                         </CardContent>
-                        <Box
-                            position="absolute"
-                            top={125}
-                            left={55}
-                            zIndex={999}
-                        >
-                            <Button style={{backgroundColor: '#79C200'} } onClick={handleExportMenuOpen} variant='contained'>Export Map</Button>
-                            <Menu
-                                anchorEl={anchorEl}
-                                open={Boolean(anchorEl)}
-                                onClose={handleExportMenuClose}
-                            >
-                                <MenuItem>JPEG</MenuItem>
-                                <MenuItem>PNG</MenuItem>
-                                <MenuItem>JSON</MenuItem>
-                            </Menu>
-                        </Box>
-                        <Box
-                            position="absolute"
-                            top={125}
-                            right={450}
-                            zIndex={999}
-                        >
-                            <Button style={{backgroundColor: '#79C200'}} variant = 'contained'>Fork</Button>
-                        </Box>
                     </Card>
                 </Grid>
 
