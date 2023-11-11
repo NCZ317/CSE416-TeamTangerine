@@ -3,7 +3,8 @@ const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const path = require('path')
-require('./db')
+const db = require('./db')
+const cookieParser = require('cookie-parser')
 
 // CREATE OUR SERVER
 dotenv.config()
@@ -21,6 +22,7 @@ app.use(cors({
 // http://localhost:3000
 
 app.use(express.json())
+app.use(cookieParser())
 
 // SETUP OUR OWN ROUTERS AS MIDDLEWARE
 const authRouter = require('./routes/auth-router')
@@ -47,6 +49,9 @@ if (process.env.NODE_ENV === "production") {
 }
 
 module.exports = app;
+
+// Connect to MongoDB for error logging
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // PUT THE SERVER IN LISTENING MODE
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
