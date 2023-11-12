@@ -5,6 +5,7 @@ import HomeWrapper from './components/HomeWrapper';
 import LoginModal from './components/LoginModal';
 import CreateAccountModal from './components/CreateAccountModal';
 import ForgotPasswordModal from './components/ForgotPasswordModal';
+import CreateMapModal from './components/CreateMapModal';
 import EditDetailsModal from './components/EditDetailsModal';
 import DeleteMapModal from './components/DeleteMapModal';
 import MapCard from './components/MapCard';
