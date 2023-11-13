@@ -8,6 +8,8 @@ const api = axios.create({
   baseURL,
 });
 
+console.log(baseURL);
+
 // 'https://terratrove-df08dd7fc1f7.herokuapp.com/auth'
 // 'http://localhost:4000/auth'
 
