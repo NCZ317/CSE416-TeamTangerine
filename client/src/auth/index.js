@@ -118,7 +118,8 @@ function AuthContextProvider(props) {
 
     auth.registerUser = async function(firstName, lastName, email, username, password, passwordVerify) {
         try {
-            const response = await api.registerUser(firstName, lastName, email, username, password, passwordVerify);      
+            const response = await api.registerUser(firstName, lastName, email, username, password, passwordVerify);
+            console.log(response);      
             if (response.status === 200) {
                 authReducer({
                     type: AuthActionType.REGISTER_USER,

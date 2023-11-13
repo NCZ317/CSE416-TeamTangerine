@@ -1,11 +1,12 @@
-
-
 import axios from 'axios'
 axios.defaults.withCredentials = true;
+const baseURL = process.env.NODE_ENV === 'production'
+  ? 'https://terratrove-df08dd7fc1f7.herokuapp.com/auth'
+  : 'http://localhost:4000/auth';
+
 const api = axios.create({
-    baseURL: 'https://terratrove-df08dd7fc1f7.herokuapp.com/auth'
-    // baseURL: 'http://localhost:4000/auth'
-})
+  baseURL,
+});
 
 // 'https://terratrove-df08dd7fc1f7.herokuapp.com/auth'
 // 'http://localhost:4000/auth'

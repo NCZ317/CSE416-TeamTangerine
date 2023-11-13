@@ -14,8 +14,7 @@ const app = express()
 // SETUP THE MIDDLEWARE
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: ["https://terratrove-df08dd7fc1f7.herokuapp.com"],
-    // origin: ['http://localhost:3000'],
+    origin: process.env.NODE_ENV === 'production' ? 'https://terratrove-df08dd7fc1f7.herokuapp.com' : 'http://localhost:3000',
     credentials: true
 }))
 

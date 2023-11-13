@@ -27,7 +27,7 @@ const App = () => {
     <AuthContextProvider>
       <GlobalStoreContextProvider>
         <AppBanner/>
-        <ScreenWrapper/>
+        <HomeWrapper/>
       </GlobalStoreContextProvider>
     </AuthContextProvider>
 
