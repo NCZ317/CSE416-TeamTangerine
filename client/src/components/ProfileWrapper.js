@@ -20,7 +20,7 @@ const ProfileWrapper = () => {
 
     return (
         <div>
-            <AppBanner />
+            {/* <AppBanner /> */}
             <Grid container spacing={2} style={{ height: '100%', padding: '16px 12px 16px 12px' }}>
                 <Grid item xs={12} sm={4} style={{ height: '100%' }}>
                     <Card style={cardStyle}>

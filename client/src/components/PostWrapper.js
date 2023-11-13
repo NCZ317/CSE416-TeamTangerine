@@ -96,7 +96,7 @@ const PostWrapper = () => {
 
     return (
         <div style={{ height: '100%' }}>
-            <AppBanner />
+            {/* <AppBanner /> */}
             <Grid container spacing={2} style={{ height: '100%' }}>
                 <Grid item xs={12} sm={9} style={{ height: '100%' }}>
                     <Card style={cardStyle}>

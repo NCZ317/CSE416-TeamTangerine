@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import AuthContext from '../auth'
 import {
     Button,
     Modal,
@@ -38,11 +39,18 @@ const customButtonStyle = {
 };
 
 export default function LoginModal({ open, onClose }) {
+
+    const { auth } = useContext(AuthContext);
     const [showCreateAccountModal, setShowCreateAccountModal] = useState(false);
     const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
 
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
     const handleLogin = () => {
-        alert('Logging In');
+
+        auth.loginUser(email, password);
+        onClose();
     };
 
     const handleForgotPassword = () => {
@@ -93,6 +101,7 @@ export default function LoginModal({ open, onClose }) {
                                 id="email"
                                 placeholder="Email"
                                 style={customTextFieldStyle}
+                                onChange={e => {setEmail(e.target.value)}}
                             />
                         </div>
                         <div style={{ marginTop: '12px' }}>
@@ -104,6 +113,7 @@ export default function LoginModal({ open, onClose }) {
                                 id="password"
                                 placeholder="Password"
                                 style={customTextFieldStyle}
+                                onChange={e => {setPassword(e.target.value)}}
                             />
                         </div>
                     </Box>

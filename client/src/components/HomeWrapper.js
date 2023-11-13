@@ -39,7 +39,7 @@ export default function HomeWrapper() {
 
     return (
         <div>
-            <AppBanner />
+            {/* <AppBanner /> */}
             
             <div style={{ display: 'flex'}}>
                 <input type="text" placeholder="Search" style={searchbarStyle} className="searchbar" />
