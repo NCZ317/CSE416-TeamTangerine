@@ -32,8 +32,7 @@ if (isTestEnvironment) {
   const mongoServer = new MongoMemoryServer();
 
   mongoServer.start().then(() => {
-    const mongoUri = process.env.DB_CONNECT; //FIXED NOT SAVING TO LOCAL MONGO COMPASS
-    console.log(mongoUri);
+    const mongoUri = mongoServer.getUri();
 
     mongoose
       .connect(mongoUri, {
