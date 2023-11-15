@@ -52,6 +52,9 @@ export default function EditDetailsModal() {
         setTags((prevTags) => prevTags.filter((tag) => tag !== tagToDelete));
     };
 
+    const handleSaveEdits = () =>{
+        alert("Saved Changes");
+    };
 
     return (
         <>
@@ -130,7 +133,7 @@ export default function EditDetailsModal() {
                     </Box>
 
                     <Box mt={2} sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
-                        <Button variant="contained" color="primary" style={customButtonStyle}>
+                        <Button variant="contained" color="primary" style={customButtonStyle} onClick={handleSaveEdits}>
                             Save
                         </Button>
                     </Box>
