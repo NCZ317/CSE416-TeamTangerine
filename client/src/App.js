@@ -15,6 +15,7 @@ import PostWrapper from './components/PostWrapper';
 import ProfileWrapper from './components/ProfileWrapper';
 import MapWrapper from './components/MapWrapper';
 import ScreenWrapper from './components/ScreenWrapper';
+import MapEditorWrapper from './components/MapEditorWrapper';
 
 
 import {AuthContextProvider} from './auth';
