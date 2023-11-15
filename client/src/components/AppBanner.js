@@ -90,6 +90,7 @@ const AppBanner = () => {
   const handleUserProfile = () => {
     //SHOULD ROUTE TO THE USER'S PROFILE
     store.currentScreen = "USER";
+    store.setScreen("USER");
     console.log("currentScreen : "+ store.currentScreen);
     alert("To Profile");
     console.log("To Profile");

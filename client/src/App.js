@@ -16,21 +16,29 @@ import ProfileWrapper from './components/ProfileWrapper';
 import MapWrapper from './components/MapWrapper';
 import ScreenWrapper from './components/ScreenWrapper';
 import MapEditorWrapper from './components/MapEditorWrapper';
-
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
 
 import {AuthContextProvider} from './auth';
 import { GlobalStoreContextProvider } from './store';
-
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element:<AuthContextProvider>
+              <GlobalStoreContextProvider>
+                <AppBanner/>
+                <HomeWrapper/>
+              </GlobalStoreContextProvider>
+            </AuthContextProvider>,
+  },
+]);
 
 const App = () => {
   return (
 
-    <AuthContextProvider>
-      <GlobalStoreContextProvider>
-        <AppBanner/>
-        <ScreenWrapper/>
-      </GlobalStoreContextProvider>
-    </AuthContextProvider>
+    <RouterProvider router={router} />
 
   );
 }
