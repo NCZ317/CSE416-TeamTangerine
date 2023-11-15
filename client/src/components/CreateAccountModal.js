@@ -167,6 +167,7 @@ export default function CreateAccountModal({ open, onClose }) {
                 <Box mt={2} sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
                     <Button
                         variant="contained"
+                        id="create-account-button"
                         color="primary"
                         style={customButtonStyle}
                         onClick={handleCreateAccount}

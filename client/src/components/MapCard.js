@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import mapImage from './map.jpg';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
@@ -6,7 +6,10 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { Card, CardContent, CardMedia, Typography, Chip, Box, IconButton, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
+import { GlobalStoreContext } from '../store';
+
 const MapCard = ({ myMap }) => {
+  const { store } = useContext(GlobalStoreContext);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -16,6 +19,19 @@ const MapCard = ({ myMap }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+
+  //NEED TO MODIFY LATER ON --> OPEN MAP_POST IF MAP IS ONLY PUBLISHED
+  const handleCardClick = () => {
+    if (store.currentScreen === "HOME") {
+      store.setScreen("MAP_POST");
+    }
+  }
+
+  const handleEditGraphics = () => {
+    store.setScreen("MAP_EDITOR");
+    handleClose();
+  }
 
   const cardStyle = {
     display: 'flex',
@@ -48,7 +64,7 @@ const MapCard = ({ myMap }) => {
   const tags = ['HeatMap', 'Asia'];
 
   return (
-    <Card style={cardStyle}>
+    <Card style={cardStyle} onClick={handleCardClick}>
       {myMap && (
         <>
           <IconButton
@@ -67,7 +83,7 @@ const MapCard = ({ myMap }) => {
           >
             <MenuItem onClick={handleClose}>Publish</MenuItem>
             <MenuItem onClick={handleClose}>Edit Details</MenuItem>
-            <MenuItem onClick={handleClose}>Edit Graphics</MenuItem>
+            <MenuItem onClick={handleEditGraphics}>Edit Graphics</MenuItem>
             <MenuItem onClick={handleClose}>Delete</MenuItem>
           </Menu>
         </>

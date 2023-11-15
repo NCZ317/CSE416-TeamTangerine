@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import { React } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppBanner from './components/AppBanner';
 import HomeWrapper from './components/HomeWrapper';
 import LoginModal from './components/LoginModal';
@@ -16,29 +17,26 @@ import ProfileWrapper from './components/ProfileWrapper';
 import MapWrapper from './components/MapWrapper';
 import ScreenWrapper from './components/ScreenWrapper';
 import MapEditorWrapper from './components/MapEditorWrapper';
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
 
 import {AuthContextProvider} from './auth';
 import { GlobalStoreContextProvider } from './store';
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element:<AuthContextProvider>
-              <GlobalStoreContextProvider>
-                <AppBanner/>
-                <HomeWrapper/>
-              </GlobalStoreContextProvider>
-            </AuthContextProvider>,
-  },
-]);
 
 const App = () => {
   return (
-
-    <RouterProvider router={router} />
+    <Router>
+      <AuthContextProvider>
+        <GlobalStoreContextProvider>
+          <AppBanner/>
+          <Routes>
+            <Route path="/" element={<HomeWrapper />} />
+            <Route path="/user" element={<ProfileWrapper />} />
+            <Route path="/post" element={<PostWrapper />} />
+            <Route path="/edit" element={<MapEditorWrapper />} />
+          </Routes>
+          {/* <ScreenWrapper/> */}
+        </GlobalStoreContextProvider>
+      </AuthContextProvider>
+    </Router>
 
   );
 }

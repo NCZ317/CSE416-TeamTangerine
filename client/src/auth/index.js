@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
+import {useNavigate} from 'react-router-dom'
 import api from './auth-request-api'
 
 const AuthContext = createContext();
@@ -20,7 +21,7 @@ function AuthContextProvider(props) {
         errorMessage: "",
     });
 
-    // const history = useHistory();
+    const navigate = useNavigate();
 
     useEffect(() => {
         auth.getLoggedIn();
@@ -92,6 +93,7 @@ function AuthContextProvider(props) {
                         user: response.data.user
                     }
                 })
+                navigate("/");
                 // history.push("/");
             }
         } catch (error) {
@@ -112,6 +114,7 @@ function AuthContextProvider(props) {
                 type: AuthActionType.LOGOUT_USER,
                 payload: null
             })
+            navigate("/");
             // history.push("/");
         }
     }
@@ -128,6 +131,7 @@ function AuthContextProvider(props) {
                     }
                 })
                 auth.loginUser(email,password);
+                navigate("/")
                 // history.push('/login');
             }
         } catch (error) {

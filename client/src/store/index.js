@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from 'react'
 // import { useHistory} from 'react-router-dom'
 import api from './store-request-api'
 import AuthContext from '../auth'
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -90,6 +91,8 @@ function GlobalStoreContextProvider(props) {
         currentSortMethod: "",
     });
 
+    const navigate = useNavigate();
+
     console.log("inside useGlobalStore");
 
     // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
@@ -103,21 +106,15 @@ function GlobalStoreContextProvider(props) {
         switch (type) {
             case GlobalStoreActionType.SET_CURRENT_SCREEN: {
                 return setStore({
-                    // currentScreen: payload.screen,
-                    // currentModal : CurrentModal.NONE,
-                    // idNamePairs: store.idNamePairs,
-                    // currentPlaylists: payload.playlists,
-                    // currentList: null,
-                    // currentPlayingPlaylist: null,
-                    // currentPlayingSong: null,
-                    // currentSongIndex: -1,
-                    // currentSong: null,
-                    // newListCounter: store.newListCounter,
-                    // listNameActive: false,
-                    // listIdMarkedForDeletion: null,
-                    // listMarkedForDeletion: null,
-                    // sort: SortMethod.NAME,
-                    // searchResult: ""
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : payload.screen,
+                    idNamePairs: [],
+                    currentMaps: [],
+                    currentMap: null,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
                 });
             }
 
@@ -140,15 +137,17 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.HOME
                 }
             });
+            navigate("/");
             
         }
-        if (screenType === CurrentScreen.ALL_LISTS) {
+        if (screenType === CurrentScreen.USER) {
             storeReducer({
                 type: GlobalStoreActionType.SET_CURRENT_SCREEN,
                 payload: {
                     screen: CurrentScreen.USER
                 }
             });
+            navigate("/user");
         }
         if (screenType === CurrentScreen.MAP_POST) {
             storeReducer({
@@ -157,6 +156,7 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.MAP_POST
                 }
             });
+            navigate("/post");
         }
         if (screenType === CurrentScreen.MAP_EDITOR) {
             storeReducer({
@@ -165,6 +165,7 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.MAP_EDITOR
                 }
             });
+            navigate("/edit");
         }
 
     }

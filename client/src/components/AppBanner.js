@@ -89,11 +89,11 @@ const AppBanner = () => {
 
   const handleUserProfile = () => {
     //SHOULD ROUTE TO THE USER'S PROFILE
-    store.currentScreen = "USER";
+    // store.currentScreen = "USER";
     store.setScreen("USER");
-    console.log("currentScreen : "+ store.currentScreen);
-    alert("To Profile");
-    console.log("To Profile");
+    // console.log("currentScreen : "+ store.currentScreen);
+    // alert("To Profile");
+    // console.log("To Profile");
     handleAccountMenuClose();
   }
 
@@ -130,7 +130,7 @@ const AppBanner = () => {
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" color="header">
           <Toolbar>
-            <img src={logo} height="50px" style={{ marginBottom: '10px', marginTop: '10px' }} />
+            <a href='/'><img src={logo} height="50px" style={{ marginBottom: '10px', marginTop: '10px' }} /></a>
             <div style={buttonContainerStyle}>
               {auth.loggedIn ? (
                 <>

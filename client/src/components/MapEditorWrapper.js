@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react';
+import React, { useState, Component, useContext } from 'react';
 import { Box, Card, CardContent, Grid, Typography, Button, Drawer, IconButton } from '@mui/material';
 import AppBanner from './AppBanner';
 import { styled } from '@mui/material/styles';
@@ -10,9 +10,14 @@ import toGeoJSON from 'togeojson';
 import JSZip from 'jszip';
 import MapWrapper from './MapWrapper';
 
+import { GlobalStoreContext } from '../store';
+
 const drawerWidth = 240;
 
 const MapEditorWrapper = () => {
+
+    const { store } = useContext(GlobalStoreContext);
+
     const [open, setOpen] = React.useState(false);
     const handleDrawerOpen = (event) => {
         setOpen(true);
@@ -21,9 +26,12 @@ const MapEditorWrapper = () => {
       const handleDrawerClose = () => {
         setOpen(false);
       };
+
       const handleSave = () =>{
-        alert("save");
+        store.setScreen("USER");
       }
+
+
     const sidebar = {
         height: '20%',
         width: '5%',
