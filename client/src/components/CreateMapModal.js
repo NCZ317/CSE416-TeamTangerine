@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
 import { useContext } from 'react';
-import AuthContext from '../auth'
+import AuthContext from '../auth';
+import { GlobalStoreContext } from '../store';
 import {
     Button,
     Modal,
@@ -55,7 +56,8 @@ const customButtonStyle = {
 };
 
 export default function CreateMapModal({open,onClose}) {
-
+    const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
     const [template, setTemplate] = useState("");
     const [page, setPage] = useState("");
     const fileInputRef = useRef(null);
@@ -73,8 +75,7 @@ export default function CreateMapModal({open,onClose}) {
 
     const handleCreateMap = () => {
         alert("Make Map");
-        <MapDiscovery/>
-        setPage("Map");
+        store.setScreen("MAP_EDITOR");
     }
 
     return (
