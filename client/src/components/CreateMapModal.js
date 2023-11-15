@@ -75,6 +75,7 @@ export default function CreateMapModal({open,onClose}) {
 
     const handleCreateMap = () => {
         console.log("Make Map");
+        onClose();
         store.setScreen("MAP_EDITOR");
     }
 
