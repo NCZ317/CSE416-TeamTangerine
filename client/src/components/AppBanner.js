@@ -91,6 +91,7 @@ const AppBanner = () => {
     //SHOULD ROUTE TO THE USER'S PROFILE
     store.currentScreen = "USER";
     alert("To Profile");
+    console.log("To Profile");
     handleAccountMenuClose();
   }
 
