@@ -51,9 +51,10 @@ const AppBanner = () => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleCreateMap = () => {
-    alert('CREATE MAP clicked');
+    //alert('CREATE MAP clicked');
     // Change state
     setCreateMapModalOpen(true);
+    console.log(isCreateMapModalOpen);
   };
 
   const handleLogin = () => {
