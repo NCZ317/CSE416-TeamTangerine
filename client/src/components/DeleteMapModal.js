@@ -21,10 +21,10 @@ const customButtonStyle = {
 };
 
 
-export default function DeleteMapModal() {
+export default function DeleteMapModal({ open, onClose }) {
 
     return (
-        <Modal open={true} id="delete-map-modal">
+        <Modal open={open} onClose={onClose} id="delete-map-modal">
             <Paper
                 sx={{
                     position: 'absolute',

@@ -5,12 +5,16 @@ import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { Card, CardContent, CardMedia, Typography, Chip, Box, IconButton, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import EditDetailsModal from './EditDetailsModal';
+import DeleteMapModal from './DeleteMapModal'
 
 import { GlobalStoreContext } from '../store';
 
 const MapCard = ({ myMap }) => {
   const { store } = useContext(GlobalStoreContext);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isEditDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
+  const [isDeleteMapModalOpen, setDeleteMapModalOpen] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -20,17 +24,35 @@ const MapCard = ({ myMap }) => {
     setAnchorEl(null);
   };
 
+  const handleEditDetails = () => {
+    setEditDetailsModalOpen(true);
+    handleClose();
+  };
+
+  const handleDeleteMap = () => {
+    setDeleteMapModalOpen(true);
+    handleClose();
+  };
+
+  const handleEditGraphics = () => {
+    store.setScreen("MAP_EDITOR");
+    handleClose();
+  };
+
+  const handleEditDetailsModalClose = () => {
+    setEditDetailsModalOpen(false);
+  };
+
+  const handleDeleteMapModalClose = () => {
+    setDeleteMapModalOpen(false);
+  };
+
 
   //NEED TO MODIFY LATER ON --> OPEN MAP_POST IF MAP IS ONLY PUBLISHED
   const handleCardClick = () => {
     if (store.currentScreen === "HOME") {
       store.setScreen("MAP_POST");
     }
-  }
-
-  const handleEditGraphics = () => {
-    store.setScreen("MAP_EDITOR");
-    handleClose();
   }
 
   const cardStyle = {
@@ -83,9 +105,9 @@ const MapCard = ({ myMap }) => {
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <MenuItem onClick={handleClose}>Publish</MenuItem>
-            <MenuItem onClick={handleClose}>Edit Details</MenuItem>
+            <MenuItem onClick={handleEditDetails}>Edit Details</MenuItem>
             <MenuItem onClick={handleEditGraphics}>Edit Graphics</MenuItem>
-            <MenuItem onClick={handleClose}>Delete</MenuItem>
+            <MenuItem onClick={handleDeleteMap}>Delete</MenuItem>
           </Menu>
         </>
       )}
@@ -128,6 +150,8 @@ const MapCard = ({ myMap }) => {
           Map of Asia
         </Typography>
       </CardContent>
+      <EditDetailsModal open={isEditDetailsModalOpen} onClose={handleEditDetailsModalClose} />
+      <DeleteMapModal open={isDeleteMapModalOpen} onClose={handleDeleteMapModalClose} />
     </Card>
   );
 };
