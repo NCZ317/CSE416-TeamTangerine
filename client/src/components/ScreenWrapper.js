@@ -11,7 +11,7 @@ import HomeWrapper from './HomeWrapper';
 export default function ScreenWrapper() {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
-    
+    console.log("store.currentScreen: "+store.currentScreen);
     if (store.currentScreen === "USER") {
         return <ProfileWrapper/>
     } else if (store.currentScreen === "MAP_POST") {
