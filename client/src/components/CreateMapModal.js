@@ -81,20 +81,7 @@ export default function CreateMapModal({open,onClose}) {
 
     return (
         <Modal open={open} onClose={onClose} id='create-map-modal'>
-            <Paper
-                sx={{
-                    position: 'absolute',
-                    width: '50vw',
-                    height: '83vh',
-                    bgcolor: 'background.paper',
-                    border: '2px solid #000',
-                    boxShadow: 24,
-                    p: 4,
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    borderRadius: '16px',
-                }}
+            <Paper id={"create-map"}
             >
                 <Typography variant="h3" gutterBottom style={{ textAlign: 'center' }}>
                     Select Template
