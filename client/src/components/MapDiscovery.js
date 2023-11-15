@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import * as shapefile from 'shapefile';
 import toGeoJSON from 'togeojson';
 import JSZip from 'jszip';
+import MapWrapper from './MapWrapper';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -195,12 +196,7 @@ class MapDiscovery extends Component {
                 <h3>.shp, .json, .geojson, or .kml</h3>
                 <input type="file" accept=".shp, .json, .geojson, .kml, .zip" onChange={this.handleFileChange} />
 
-                <MapContainer ref={this.mapRef} center={[0, 0]} zoom={2} scrollWheelZoom={true}>
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                </MapContainer>
+                <MapWrapper/>
             </div>
         );
     }
