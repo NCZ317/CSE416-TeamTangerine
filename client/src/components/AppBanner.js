@@ -1,14 +1,18 @@
 import React, { useState, useContext } from 'react';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import logo from './logo.png';
 import LoginModal from './LoginModal';
 
 import AuthContext from '../auth';
-import { GlobalStoreContext } from '../store'
+import { GlobalStoreContext } from '../store';
 
 const theme = createTheme({
   palette: {
@@ -42,6 +46,7 @@ const AppBanner = () => {
   const { auth } = useContext(AuthContext);
   const { store } = useContext(GlobalStoreContext);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleCreateMap = () => {
     alert('CREATE MAP clicked');
@@ -58,12 +63,54 @@ const AppBanner = () => {
     setLoginModalOpen(false);
   };
 
-  function getAccountMenu(loggedIn) {
-    let userInitials = auth.getUserInitials();
-    console.log("userInitials: " + userInitials);
-    if (loggedIn)  
-        return <div>{userInitials}</div>;
+  const handleAccountMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleAccountMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    // Call your logout function from the AuthContext
+    auth.logoutUser();
+    // Close the menu
+    handleAccountMenuClose();
+  };
+
+  const handleUserProfile = () => {
+    //SHOULD ROUTE TO THE USER'S PROFILE
+
+    handleAccountMenuClose();
   }
+
+  const getAccountMenu = (loggedIn) => {
+    if (loggedIn) {
+      return (
+        <>
+          <IconButton
+            size="medium"
+            edge="end"
+            aria-label="account of current user"
+            aria-haspopup="true"
+            style={{ margin: '0px 0px 0px 24px', backgroundColor: '#D9D9D9', color: '#000' }}
+            onClick={handleAccountMenuClick}
+          >
+            <div>{auth.getUserInitials()}</div>
+          </IconButton>
+          <Menu
+            id="account-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleAccountMenuClose}
+          >
+            <MenuItem onClick={handleUserProfile}>User Profile</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
+        </>
+      );
+    }
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -72,24 +119,26 @@ const AppBanner = () => {
           <Toolbar>
             <img src={logo} height="50px" style={{ marginBottom: '10px', marginTop: '10px' }} />
             <div style={buttonContainerStyle}>
-              {/* <Button color="leaves" variant="text" style={buttonStyle} id="create-map-button" onClick={handleCreateMap}>
-                Create Map
-              </Button> */}
               {auth.loggedIn ? (
-                <Button color="leaves" variant="text" style={buttonStyle} id="create-map-button" onClick={handleCreateMap}>
-                  Create Map
-                </Button>) : null}
-
-              {/* <Button color="leaves" variant="text" style={buttonStyle} id="login-button" onClick={handleLogin}>
-                Login
-              </Button> */}
-
-              {/* NEED TO ADD A ICON BUTTON HERE WHEN RENDERING USER INITIALS */}
-              {auth.loggedIn ? (getAccountMenu(auth.loggedIn)) : 
-              <Button color="leaves" variant="text" style={buttonStyle} id="login-button" onClick={handleLogin}>
-                Login
-              </Button>}
-
+                <>
+                  <Button
+                    color="leaves"
+                    variant="text"
+                    style={buttonStyle}
+                    id="create-map-button"
+                    onClick={handleCreateMap}
+                  >
+                    Create Map
+                  </Button>
+                  {getAccountMenu(auth.loggedIn)}
+                </>
+              ) : (
+                <>
+                  <Button color="leaves" variant="text" style={buttonStyle} id="login-button" onClick={handleLogin}>
+                    Login
+                  </Button>
+                </>
+              )}
             </div>
           </Toolbar>
         </AppBar>
