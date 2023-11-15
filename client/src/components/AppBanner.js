@@ -53,8 +53,8 @@ const AppBanner = () => {
   const handleCreateMap = () => {
     //alert('CREATE MAP clicked');
     // Change state
+    store.setScreen("MAP_EDITOR")
     setCreateMapModalOpen(true);
-    console.log(isCreateMapModalOpen);
   };
 
   const handleLogin = () => {

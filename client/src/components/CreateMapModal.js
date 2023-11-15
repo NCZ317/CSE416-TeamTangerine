@@ -85,7 +85,7 @@ export default function CreateMapModal({open,onClose}) {
                 sx={{
                     position: 'absolute',
                     width: '50vw',
-                    height: '70vh',
+                    height: '83vh',
                     bgcolor: 'background.paper',
                     border: '2px solid #000',
                     boxShadow: 24,

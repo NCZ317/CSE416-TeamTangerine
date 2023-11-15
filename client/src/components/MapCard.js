@@ -6,6 +6,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { Card, CardContent, CardMedia, Typography, Chip, Box, IconButton, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditDetailsModal from './EditDetailsModal';
+import DeleteMapModal from './DeleteMapModal'
 
 import { GlobalStoreContext } from '../store';
 
@@ -13,12 +14,37 @@ const MapCard = ({ myMap }) => {
   const { store } = useContext(GlobalStoreContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isEditDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
+  const [isDeleteMapModalOpen, setDeleteMapModalOpen] = useState(false);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleEditDetails = () => {
+    setEditDetailsModalOpen(true);
+    handleClose();
+  };
+
+  const handleDeleteMap = () => {
+    setDeleteMapModalOpen(true);
+    handleClose();
+  };
+
+  const handleEditGraphics = () => {
+    store.setScreen("MAP_EDITOR");
+    handleClose();
+  };
+
+  const handleEditDetailsModalClose = () => {
+    setEditDetailsModalOpen(false);
+  };
+
+  const handleDeleteMapModalClose = () => {
+    setDeleteMapModalOpen(false);
   };
 
 
@@ -29,19 +55,8 @@ const MapCard = ({ myMap }) => {
     } */
   }
 
-  const handleEditGraphics = () => {
-    store.setScreen("MAP_EDITOR");
-    handleClose();
-  }
-  const handleEditDetails = () => {
-    // Change state
-    setEditDetailsModalOpen(true);
-  };
-  const handleCloseEditDetailsModal = () => {
-    setEditDetailsModalOpen(false);
-  };
-
   const cardStyle = {
+    cursor: 'pointer',
     display: 'flex',
     margin: '8px',
     backgroundColor: '#f18500',
@@ -92,7 +107,7 @@ const MapCard = ({ myMap }) => {
             <MenuItem onClick={handleClose}>Publish</MenuItem>
             <MenuItem onClick={handleEditDetails}>Edit Details</MenuItem>
             <MenuItem onClick={handleEditGraphics}>Edit Graphics</MenuItem>
-            <MenuItem onClick={handleClose}>Delete</MenuItem>
+            <MenuItem onClick={handleDeleteMap}>Delete</MenuItem>
           </Menu>
         </>
       )}
@@ -135,7 +150,8 @@ const MapCard = ({ myMap }) => {
           Map of Asia
         </Typography>
       </CardContent>
-      <EditDetailsModal open={isEditDetailsModalOpen} onClose={handleCloseEditDetailsModal} />
+      <EditDetailsModal open={isEditDetailsModalOpen} onClose={handleEditDetailsModalClose} />
+      <DeleteMapModal open={isDeleteMapModalOpen} onClose={handleDeleteMapModalClose} />
     </Card>
   );
 };

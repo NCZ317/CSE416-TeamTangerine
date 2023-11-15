@@ -36,7 +36,7 @@ const customButtonStyle = {
     textTransform: 'none',
 };
 
-export default function EditDetailsModal({open,onClose}) {
+export default function EditDetailsModal({ open, onClose }) {
 
     const [tags, setTags] = useState([]);
     const [inputValue, setInputValue] = useState('');
