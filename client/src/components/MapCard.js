@@ -34,6 +34,7 @@ const MapCard = ({ myMap }) => {
   }
 
   const cardStyle = {
+    cursor: 'pointer',
     display: 'flex',
     margin: '8px',
     backgroundColor: '#f18500',

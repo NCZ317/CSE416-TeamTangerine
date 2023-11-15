@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { MapContainer, TileLayer, useMap } from 'react-leaflet';
-import L from 'leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 class MapWrapper extends Component {
@@ -12,10 +11,20 @@ class MapWrapper extends Component {
         };
         this.mapRef = React.createRef();
     }
+
     render() {
+        const { style } = this.props;
+
         return (
             <div>
-                <MapContainer ref={this.mapRef} center={[0, 0]} zoom={2} zoomControl={false} scrollWheelZoom={true} style={{height: '86vh'}}>
+                <MapContainer
+                    ref={this.mapRef}
+                    center={[0, 0]}
+                    zoom={2}
+                    zoomControl={false}
+                    scrollWheelZoom={true}
+                    style={style ? style : { height: '83vh' }}
+                >
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -26,4 +35,4 @@ class MapWrapper extends Component {
     }
 }
 
-export default MapWrapper
+export default MapWrapper;

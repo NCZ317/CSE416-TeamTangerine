@@ -94,19 +94,30 @@ const PostWrapper = () => {
         setAnchorEl(null);
     };
 
+    const mapWrapperStyle = {
+        position: 'relative',
+        width: '96%',
+        height: '63vh',
+        margin: '20px 20px 0px 20px',
+        borderRadius: '25px',
+    };
+
+    const overlayButtonsStyle = {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+    };
+
     return (
         <div style={{ height: '100%' }}>
             {/* <AppBanner /> */}
             <Grid container spacing={2} style={{ height: '100%' }}>
                 <Grid item xs={12} sm={9} style={{ height: '100%' }}>
                     <Card style={cardStyle}>
-                        <Box
-                            style={{display: 'flex', justifyContent: 'space-between', padding: '15px'}}
-                        
-                        >
-                            <Box>
-                                <Button style={{backgroundColor: '#79C200'} } onClick={handleExportMenuOpen} variant='contained'>Export Map</Button>
-                                <Menu
+                        <Box >
+                            <Button style={{backgroundColor: '#79C200', position: 'absolute', zIndex:'999', top:'125px', left:'55px'} } onClick={handleExportMenuOpen} variant='contained'>Export Map</Button>
+                            <Menu
                                     anchorEl={anchorEl}
                                     open={Boolean(anchorEl)}
                                     onClose={handleExportMenuClose}
@@ -115,13 +126,9 @@ const PostWrapper = () => {
                                     <MenuItem>PNG</MenuItem>
                                     <MenuItem>JSON</MenuItem>
                                 </Menu>
-                            </Box>
-                            <Box>
-                                <Button style={{backgroundColor: '#79C200'}} variant = 'contained'>Fork</Button>
-                            </Box>
-                        </Box>
-                    
-                        <MapWrapper />
+                            <Button style={{backgroundColor: '#79C200', position: 'absolute', zIndex:'999', top: '125px', left: '1015px' }} variant='contained'>Fork</Button>
+                        </Box>   
+                        <MapWrapper style={mapWrapperStyle}/>
                         <CardContent style={cardContentStyle}>
                             <Box display="flex" flexDirection="row" justifyContent="space-between">
                                 <Box display="flex" flexDirection="column">
@@ -145,6 +152,7 @@ const PostWrapper = () => {
                                 </Box>
                             </Box>
                         </CardContent>
+                        
                     </Card>
                 </Grid>
 
