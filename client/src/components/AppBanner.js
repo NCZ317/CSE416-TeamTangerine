@@ -89,7 +89,7 @@ const AppBanner = () => {
 
   const handleUserProfile = () => {
     //SHOULD ROUTE TO THE USER'S PROFILE
-
+    store.currentScreen = "USER";
     handleAccountMenuClose();
   }
 
