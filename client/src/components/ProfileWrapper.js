@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, Box, Grid, IconButton, Popover, List, ListItem, ListItemText } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MapCard from './MapCard';
 
 const ProfileWrapper = () => {
@@ -15,12 +16,14 @@ const ProfileWrapper = () => {
 
   const followersBox = {
     backgroundColor: '#F6A440',
+    color: '#542C11',
     borderRadius: '15px',
     padding: '10px 2px 10px 2px',
   };
 
   const joinedBox = {
     backgroundColor: '#F6A440',
+    color: '#542C11',
     borderRadius: '15px',
     padding: '10px 2px 10px 2px',
     height: '50%',
@@ -44,7 +47,13 @@ const ProfileWrapper = () => {
     backgroundColor: 'transparent',
   };
 
+  const downButtonStyle = {
+    backgroundColor: 'transparent',
+    color: '#79C200'
+  };
+
   const [anchorEl, setAnchorEl] = useState(null);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
   const handleSettingsClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -54,13 +63,24 @@ const ProfileWrapper = () => {
     setAnchorEl(null);
   };
 
+  const handleMenuClick = (event) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
+
   const openSettings = Boolean(anchorEl);
+  const openMenu = Boolean(menuAnchorEl);
+
   const settingsId = openSettings ? 'settings-popover' : undefined;
+  const menuId = openMenu ? 'menu-popover' : undefined;
 
   return (
     <div>
       <Grid container spacing={2} style={{ height: '690px', padding: '16px 12px 16px 12px' }}>
-        <Grid item xs={12} sm={3.5} style={{ height: '100%' }}>
+        <Grid item xs={12} sm={3.5} style={{ height: '100%'}}>
           <Card style={cardStyle}>
             <IconButton
               style={settingsButtonStyle}
@@ -69,8 +89,6 @@ const ProfileWrapper = () => {
             >
               <SettingsIcon fontSize="large" />
             </IconButton>
-
-            {/* Settings dropdown */}
             <Popover
               id={settingsId}
               open={openSettings}
@@ -103,11 +121,11 @@ const ProfileWrapper = () => {
                   </Typography>
                 </Box>
               </Box>
-              <Typography variant="h5" align="center">
+              <Typography variant="h5" align="center" color={'#542C11'}>
                 John Doe
               </Typography>
 
-              <Typography variant="h6" align="center" style={{ margin: '0px 0px 8px 0px' }}>
+              <Typography variant="h6" align="center" color={'#542C11'} style={{ margin: '0px 0px 8px 0px' }}>
                 @jdoe21
               </Typography>
 
@@ -137,18 +155,52 @@ const ProfileWrapper = () => {
           </Card>
         </Grid>
 
-        {/* Right-hand side container for Private Maps */}
         <Grid item xs={12} sm={8.5} style={{ height: '100%', overflowY: 'auto' }}>
           <Box>
-            {/* Typography header for Private Maps */}
-            <Typography variant="h4" style={{ marginBottom: '8px' }}>
-              Private Maps
-            </Typography>
+            <Box display="flex" alignItems="center" justifyContent="center" style={{ width: '100%'}}>
+              <Typography variant="h3" style={{ marginBottom: '8px', color:'#F28500', fontWeight: 'bold' }}>
+                Private Maps
+              </Typography>
+              <IconButton
+                style={downButtonStyle}
+                color="primary"
+                aria-label="menu"
+                onClick={handleMenuClick}
+              >
+                <ArrowDropDownIcon fontSize='large' />
+              </IconButton>
+              <Popover
+                id={menuId}
+                open={openMenu}
+                anchorEl={menuAnchorEl}
+                onClose={handleMenuClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+              >
+                <List>
+                  <ListItem button onClick={handleMenuClose}>
+                    <ListItemText primary="Private Maps" />
+                  </ListItem>
+                  <ListItem button onClick={handleMenuClose}>
+                    <ListItemText primary="Public Maps" />
+                  </ListItem>
+                  <ListItem button onClick={handleMenuClose}>
+                    <ListItemText primary="Liked Maps" />
+                  </ListItem>
+                </List>
+              </Popover>
+            </Box>
 
-            {/* Container for MapCards */}
-            {/* You can replace the following div with your MapCards component */}
             <div style={{ height: 'calc(100% - 32px)', overflowY: 'auto' }}>
-              {/* MapCards go here */}
+              <MapCard myMap={true} />
+              <MapCard myMap={true}/>
+              <MapCard myMap={true}/>
             </div>
           </Box>
         </Grid>
