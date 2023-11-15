@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import MapDiscovery from './MapDiscovery';
 
 const cardStyle = {
     minHeight: 200,
@@ -53,9 +54,10 @@ const customButtonStyle = {
     textTransform: 'none',
 };
 
-export default function CreateMapModal() {
+export default function CreateMapModal({open,onClose}) {
 
     const [template, setTemplate] = useState("");
+    const [page, setPage] = useState("");
     const fileInputRef = useRef(null);
 
 
@@ -69,10 +71,14 @@ export default function CreateMapModal() {
         console.log('Selected File:', selectedFile);
     };
 
-
+    const handleCreateMap = () => {
+        alert("Make Map");
+        <MapDiscovery/>
+        setPage("Map");
+    }
 
     return (
-        <Modal open={true} id='create-map-modal'>
+        <Modal open={open} onClose={onClose} id='create-map-modal'>
             <Paper
                 sx={{
                     position: 'absolute',
@@ -214,7 +220,7 @@ export default function CreateMapModal() {
                         variant="contained"
                         color="primary"
                         style={customButtonStyle}
-                        // onClick={handleCreateMap}
+                        onClick={handleCreateMap}
                     >
                         Create
                     </Button>

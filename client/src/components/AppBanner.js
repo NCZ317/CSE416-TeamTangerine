@@ -10,6 +10,7 @@ import Toolbar from '@mui/material/Toolbar';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import logo from './logo.png';
 import LoginModal from './LoginModal';
+import CreateMapModal from './CreateMapModal';
 
 import AuthContext from '../auth';
 import { GlobalStoreContext } from '../store';
@@ -46,11 +47,13 @@ const AppBanner = () => {
   const { auth } = useContext(AuthContext);
   const { store } = useContext(GlobalStoreContext);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+  const [isCreateMapModalOpen, setCreateMapModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleCreateMap = () => {
     alert('CREATE MAP clicked');
     // Change state
+    setCreateMapModalOpen(true);
   };
 
   const handleLogin = () => {
@@ -61,6 +64,11 @@ const AppBanner = () => {
   const handleCloseLoginModal = () => {
     // Close the LoginModal
     setLoginModalOpen(false);
+  };
+
+  const handleCloseCreateMapModal = () => {
+    // Close the CreateMapModal
+    setCreateMapModalOpen(false);
   };
 
   const handleAccountMenuClick = (event) => {
@@ -144,6 +152,7 @@ const AppBanner = () => {
         </AppBar>
       </Box>
       <LoginModal open={isLoginModalOpen} onClose={handleCloseLoginModal} />
+      <CreateMapModal open={isCreateMapModalOpen} onClose={handleCloseCreateMapModal} />
     </ThemeProvider>
   );
 };
