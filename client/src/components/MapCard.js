@@ -5,13 +5,14 @@ import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { Card, CardContent, CardMedia, Typography, Chip, Box, IconButton, Menu, MenuItem } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import EditDetailsModal from './EditDetailsModal';
 
 import { GlobalStoreContext } from '../store';
 
 const MapCard = ({ myMap }) => {
   const { store } = useContext(GlobalStoreContext);
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const [isEditDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -23,15 +24,22 @@ const MapCard = ({ myMap }) => {
 
   //NEED TO MODIFY LATER ON --> OPEN MAP_POST IF MAP IS ONLY PUBLISHED
   const handleCardClick = () => {
-    if (store.currentScreen === "HOME") {
+    /* if (store.currentScreen === "HOME") {
       store.setScreen("MAP_POST");
-    }
+    } */
   }
 
   const handleEditGraphics = () => {
     store.setScreen("MAP_EDITOR");
     handleClose();
   }
+  const handleEditDetails = () => {
+    // Change state
+    setEditDetailsModalOpen(true);
+  };
+  const handleCloseEditDetailsModal = () => {
+    setEditDetailsModalOpen(false);
+  };
 
   const cardStyle = {
     display: 'flex',
@@ -82,7 +90,7 @@ const MapCard = ({ myMap }) => {
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <MenuItem onClick={handleClose}>Publish</MenuItem>
-            <MenuItem onClick={handleClose}>Edit Details</MenuItem>
+            <MenuItem onClick={handleEditDetails}>Edit Details</MenuItem>
             <MenuItem onClick={handleEditGraphics}>Edit Graphics</MenuItem>
             <MenuItem onClick={handleClose}>Delete</MenuItem>
           </Menu>
@@ -127,6 +135,7 @@ const MapCard = ({ myMap }) => {
           Map of Asia
         </Typography>
       </CardContent>
+      <EditDetailsModal open={isEditDetailsModalOpen} onClose={handleCloseEditDetailsModal} />
     </Card>
   );
 };

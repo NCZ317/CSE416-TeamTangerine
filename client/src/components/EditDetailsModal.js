@@ -36,7 +36,7 @@ const customButtonStyle = {
     textTransform: 'none',
 };
 
-export default function EditDetailsModal() {
+export default function EditDetailsModal({open,onClose}) {
 
     const [tags, setTags] = useState([]);
     const [inputValue, setInputValue] = useState('');
@@ -58,7 +58,7 @@ export default function EditDetailsModal() {
 
     return (
         <>
-            <Modal open={true} id="edit-details-modal">
+            <Modal open={open} onClose={onClose} id="edit-details-modal">
                 <Paper
                     sx={{
                         position: 'absolute',
