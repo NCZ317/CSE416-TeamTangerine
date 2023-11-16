@@ -50,9 +50,9 @@ const MapCard = ({ myMap }) => {
 
   //NEED TO MODIFY LATER ON --> OPEN MAP_POST IF MAP IS ONLY PUBLISHED
   const handleCardClick = () => {
-    /* if (store.currentScreen === "HOME") {
+    if (store.currentScreen === "HOME") {
       store.setScreen("MAP_POST");
-    } */
+    }
   }
 
   const cardStyle = {
