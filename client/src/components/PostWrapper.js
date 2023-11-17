@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Card, CardContent, Grid, Typography, TextField, Button, Menu, MenuItem } from '@mui/material';
 import MapWrapper from './MapWrapper';
-import AppBanner from './AppBanner';
 import { styled } from '@mui/material/styles';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
