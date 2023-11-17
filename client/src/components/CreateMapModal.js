@@ -52,14 +52,15 @@ export default function CreateMapModal({open,onClose}) {
                 </Typography>
                 <Box id="create-map-box">
                     {/* Choropleth Template */}
-                    <Box>
-                        <Card className = "create-map-card"
+                    <Box
+                        className = "create-map-card"
                         style={{
-                            ...(template === 'choroplethMap' ? {selectedCard} : {}),
+                            ...(template === 'choroplethMap' ? selectedCard : {}),
                         }}
                         onClick={() => setTemplate('choroplethMap')}
-                        >
-                            <CardContent>
+                    >
+                        <Card className="map-template-card">
+                            <CardContent className="map-template-content">
                                 <Typography variant="h6" component="div">
                                 Choropleth Map
                                 </Typography>
@@ -68,14 +69,15 @@ export default function CreateMapModal({open,onClose}) {
                     </Box>
 
                     {/* Heat Template */}
-                    <Box>
-                        <Card className = "create-map-card"
+                    <Box
+                        className = "create-map-card"
                         style={{
                             ...(template === 'heatMap' ? selectedCard : {}),
-                          }}
+                        }}
                         onClick={() => setTemplate('heatMap')}
-                        >
-                            <CardContent>
+                    >
+                        <Card className="map-template-card">
+                            <CardContent className="map-template-content">
                                 <Typography variant="h6" component="div">
                                 Heat Map
                                 </Typography>
@@ -84,14 +86,15 @@ export default function CreateMapModal({open,onClose}) {
                     </Box>
 
                     {/* Dot Density Template */}
-                    <Box>
-                        <Card className = "create-map-card"
+                    <Box
+                        className = "create-map-card"
                         style={{
                             ...(template === 'dotDensityMap' ? selectedCard : {}),
-                          }}
+                        }}
                         onClick={() => setTemplate('dotDensityMap')}
-                        >
-                            <CardContent>
+                    >
+                        <Card className="map-template-card">
+                            <CardContent className="map-template-content">
                                 <Typography variant="h6" component="div">
                                 Dot Density Map
                                 </Typography>
@@ -100,14 +103,15 @@ export default function CreateMapModal({open,onClose}) {
                     </Box>
 
                     {/* Graduated Symbol Map */}
-                    <Box>
-                        <Card className = "create-map-card"
+                    <Box
+                        className = "create-map-card"
                         style={{
                             ...(template === 'graduatedSymbolMap' ? selectedCard : {}),
-                          }}
+                        }}
                         onClick={() => setTemplate('graduatedSymbolMap')}
-                        >
-                            <CardContent>
+                    >
+                        <Card className="map-template-card">
+                            <CardContent className="map-template-content">
                                 <Typography variant="h6" component="div">
                                 Graduated Symbol Map
                                 </Typography>
@@ -116,14 +120,15 @@ export default function CreateMapModal({open,onClose}) {
                     </Box>
 
                     {/* Flow Map */}
-                    <Box>
-                        <Card className = "create-map-card"
+                    <Box
+                        className = "create-map-card"
                         style={{
                             ...(template === 'flowMap' ? selectedCard : {}),
-                          }}
+                        }}
                         onClick={() => setTemplate('flowMap')}
-                        >
-                            <CardContent>
+                    >
+                        <Card className="map-template-card">
+                            <CardContent className="map-template-content">
                                 <Typography variant="h6" component="div">
                                 Flow Map
                                 </Typography>

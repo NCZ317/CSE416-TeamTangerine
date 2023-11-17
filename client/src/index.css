@@ -211,7 +211,8 @@ code {
 
 .create-map-card{
   min-height: 200px;
-  width: 150px;
+  /* width: 150px; */
+  flex-basis: 18%;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -221,6 +222,16 @@ code {
   background-color: #79c200 !important;
   color: white !important;
   border-radius: 24px !important;
+}
+
+.map-template-card {
+  border: none;
+  box-shadow: none !important;
+}
+
+.map-template-content {
+  background-color: #79c200;
+  color: #fff;
 }
 
 .create-map-selected-card{
@@ -237,12 +248,12 @@ code {
 
 #create-map-paper{
   position: absolute;
-  width: 50vw;
-  height: 83vh;
+  width: 80vw;
+  height: auto;
   background-color: white;
   border: 2px solid #000;
   box-shadow: 24px;
-  padding: 32px;
+  padding: 4px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -253,6 +264,7 @@ code {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
+  flex-wrap: wrap;
 }
 
 #create-map-typography{

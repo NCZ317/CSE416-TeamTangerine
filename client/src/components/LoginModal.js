@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import CreateAccountModal from './CreateAccountModal';
 import ForgotPasswordModal from './ForgotPasswordModal';
+import ErrorModal from './ErrorModal';
 
 export default function LoginModal({ open, onClose }) {
   const { auth } = useContext(AuthContext);
@@ -32,6 +33,11 @@ export default function LoginModal({ open, onClose }) {
     setShowCreateAccountModal(true);
     onClose();
   };
+
+  let modalJSX = "";
+  if (auth.errorMessage) {
+      modalJSX = <ErrorModal/>
+  }
 
   return (
     <>
@@ -102,6 +108,7 @@ export default function LoginModal({ open, onClose }) {
           onClose={() => setShowForgotPasswordModal(false)}
         />
       )}
+      {modalJSX}
     </>
   );
 }

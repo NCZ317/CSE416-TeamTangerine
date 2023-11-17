@@ -8,6 +8,8 @@ import AuthContext from '../auth';
 
 const ProfileWrapper = () => {
 
+  const { auth } = useContext(AuthContext);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
