@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Card, CardContent, Typography, Box, Grid, IconButton, Popover, List, ListItem, ListItemText } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MapCard from './MapCard';
+
+import AuthContext from '../auth';
 
 const ProfileWrapper = () => {
 
@@ -30,6 +32,8 @@ const ProfileWrapper = () => {
 
   const settingsId = openSettings ? 'settings-popover' : undefined;
   const menuId = openMenu ? 'menu-popover' : undefined;
+
+  console.log("LOGGED IN: " + auth.loggedIn);
 
   return (
     <div>
@@ -69,40 +73,41 @@ const ProfileWrapper = () => {
 
             <CardContent>
               <Box align="center">
-                <Box alignItems="center" className = 'profile-user-circle'>
-                  <Typography variant="h2" id = 'profile-color'>
-                    JD
+              <Box alignItems="center" className = 'profile-user-circle'>
+                <Typography variant="h2" id = 'profile-color'>
+                  {auth.loggedIn && auth.getUserInitials()}
                   </Typography>
                 </Box>
               </Box>
               <Typography variant="h5" className='profile-typography'>
-                John Doe
+                {auth.loggedIn && auth.user.firstName + " " + auth.user.lastName}
               </Typography>
 
               <Typography variant="h6" id='profile-typography-2'>
-                @jdoe21
+                {auth.loggedIn && auth.user.username}
               </Typography>
 
               <Box id='profile-box' className = 'profile-followers'>
                 <Box className ='profile-box-2'>
-                  <Typography variant="h5">10</Typography>
+                  <Typography variant="h5">{auth.loggedIn && auth.user.numPosts}</Typography>
                   <Typography variant="h6">Posts</Typography>
                 </Box>
                 <Box className ='profile-box-2'>
-                  <Typography variant="h5">15</Typography>
+                  <Typography variant="h5">{auth.loggedIn && auth.user.numFollowers}</Typography>
                   <Typography variant="h6">Followers</Typography>
                 </Box>
                 <Box className ='profile-box-2'>
-                  <Typography variant="h5">25</Typography>
+                  <Typography variant="h5">{auth.loggedIn && auth.user.numFollowing}</Typography>
                   <Typography variant="h6">Following</Typography>
                 </Box>
               </Box>
               <Box id = 'profile-box-3' mt={2} className = 'profile-joined'>
                 <Typography variant="h5" className='profile-margin'>
-                  Joined: January 1, 2023
+                  Joined: {auth.loggedIn && auth.user.dateJoined}
                 </Typography>
+                {/* NEED TO MODIFY LATER WHEN MAPS ARE PUBLISHED */}
                 <Typography variant="h5" className='profile-margin'>
-                  Total Likes: 165
+                  Total Likes: 
                 </Typography>
               </Box>
             </CardContent>
