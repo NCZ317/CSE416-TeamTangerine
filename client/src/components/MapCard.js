@@ -55,47 +55,18 @@ const MapCard = ({ myMap }) => {
     } */
   }
 
-  const cardStyle = {
-    cursor: 'pointer',
-    display: 'flex',
-    margin: '8px',
-    backgroundColor: '#f18500',
-    borderRadius: '16px',
-    position: 'relative', // Added for positioning the IconButton
-  };
-
-  const imageStyle = {
-    width: 200,
-    height: '100%',
-    objectFit: 'cover',
-    margin: '10px',
-    borderRadius: '30px',
-  };
-
-  const counterStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    color: '#A85821',
-    marginBottom: '8px',
-    marginLeft: '8px',
-    paddingLeft: '16px',
-    paddingRight: '16px',
-    fontSize: '20pt',
-  };
-
   const tags = ['HeatMap', 'Asia'];
 
   return (
-    <Card style={cardStyle} onClick={handleCardClick}>
+    <Card className='map-card' onClick={handleCardClick}>
       {myMap && (
         <>
           <IconButton
-            style={{ position: 'absolute', top: '12px', right: '12px', color: '#A85821' }}
+            id='map-card-icon-button'
             aria-label="more"
             onClick={handleClick}
           >
-            <MoreHorizIcon fontSize='large' />
+            <MoreHorizIcon className='create-map-cloud-icon' />
           </IconButton>
           <Menu
             anchorEl={anchorEl}
@@ -111,24 +82,24 @@ const MapCard = ({ myMap }) => {
           </Menu>
         </>
       )}
-      <Box display="flex" flexDirection="column">
-        <CardMedia component="img" src={mapImage} alt="Map Graphic" style={imageStyle} />
-        <div style={counterStyle}>
-          <Box display="flex" alignItems="center">
-            <FavoriteIcon fontSize="20pt" />
+      <Box className ='map-card-box'>
+        <CardMedia component="img" src={mapImage} alt="Map Graphic" className='map-card-image' />
+        <div className='map-card-counter'>
+          <Box className='map-card-box-2'>
+            <FavoriteIcon className='map-card-favorite-icon' />
             <Typography variant="body2">70</Typography>
           </Box>
-          <Box display="flex" alignItems="center">
-            <ChatBubbleOutlinedIcon fontSize="20pt" />
+          <Box className='map-card-box-2'>
+            <ChatBubbleOutlinedIcon className='map-card-favorite-icon' />
             <Typography variant="body2">12</Typography>
           </Box>
-          <Box display="flex" alignItems="center">
-            <VisibilityOutlinedIcon fontSize="20pt" />
+          <Box className='map-card-box-2'>
+            <VisibilityOutlinedIcon className='map-card-favorite-icon' />
             <Typography variant="body2">123</Typography>
           </Box>
         </div>
       </Box>
-      <CardContent style={{ textAlign: 'left', marginLeft: '8px' }}>
+      <CardContent id='map-card-content'>
         <div>
           {tags.map((tag, index) => (
             <Chip
@@ -136,17 +107,17 @@ const MapCard = ({ myMap }) => {
               label={tag}
               color="primary"
               size="small"
-              style={{ marginRight: '5px', marginBottom: '5px', backgroundColor: '#79C200' }}
+              id='map-card-chip'
             />
           ))}
         </div>
-        <Typography variant="h3" style={{ fontWeight: 'bold', color: '#542C11', marginBottom: '10px' }}>
+        <Typography variant="h3" className='map-card-typography'>
           Title
         </Typography>
-        <Typography variant="h6" style={{ fontWeight: 'bold', color: '#542C11', marginBottom: '10px' }}>
+        <Typography variant="h6" className='map-card-typography'>
           Author: User1
         </Typography>
-        <Typography variant="body1" style={{ color: '#542C11', marginBottom: '10px' }}>
+        <Typography variant="body1" className='map-card-typography-2'>
           Map of Asia
         </Typography>
       </CardContent>

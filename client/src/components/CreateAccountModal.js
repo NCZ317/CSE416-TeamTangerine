@@ -5,7 +5,6 @@ import {
   Button,
   Modal,
   Box,
-  TextField,
   Paper,
   Typography,
 } from '@mui/material';
@@ -40,11 +39,7 @@ export default function CreateAccountModal({ open, onClose }) {
         <Typography variant="h3" gutterBottom className="modal-title">
           Sign Up
         </Typography>
-        <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}>
+        <Box className="create-account-box">
           <div className="name-inputs">
             <div>
               <label className='create-account-label' htmlFor="firstName">First Name:</label>

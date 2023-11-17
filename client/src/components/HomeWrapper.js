@@ -3,22 +3,6 @@ import { Box, Button, Grid, Menu, MenuItem, Checkbox, FormControlLabel, Typograp
 import MapCard from './MapCard';
 import SortIcon from '@mui/icons-material/Sort';
 
-const searchbarStyle = {
-    backgroundColor: '#F6A440',
-    color: '#fff',
-    padding: '12px 16px',
-    border: 'none',
-    width: '95%',
-    height: '24px',
-};
-
-const buttonStyle = {
-    color: '#79C200',
-    border: 'none',
-    width: '5%',
-    height: '49px',
-};
-
 export default function HomeWrapper() {
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -39,16 +23,16 @@ export default function HomeWrapper() {
         <div>
             {/* <AppBanner /> */}
             
-            <div style={{ display: 'flex'}}>
-                <input type="text" placeholder="Search" style={searchbarStyle} className="searchbar" />
+            <div className='home-div'>
+                <input type="text" placeholder="Search" id = "home-search-bar" className="searchbar" />
                 <Button
                     variant="text"
                     color="primary"
                     onClick={handleSortClick}
-                    style={buttonStyle}
+                    className='home-button'
                     id='sort-filter-button'
                 >
-                    <SortIcon style={{ height: '100%', width: '56px' }}/>
+                    <SortIcon id='home-sort-icon'/>
                 </Button>
                 <Menu
                     anchorEl={anchorEl}
@@ -56,11 +40,11 @@ export default function HomeWrapper() {
                     onClose={handleSortClose}
                     id='sort-filter-menu'
                 >
-                    <Typography variant="h6" style={{marginLeft: '8px'}}>Sort By</Typography>
+                    <Typography variant="h6" className='home-typography'>Sort By</Typography>
                     <MenuItem onClick={() => handleSortOptionClick('Most Popular')}>Most Popular</MenuItem>
                     <MenuItem onClick={() => handleSortOptionClick('Newest')}>Newest</MenuItem>
                     <MenuItem onClick={() => handleSortOptionClick('Recent Activity')}>Recent Activity</MenuItem>
-                    <Typography variant="h6" style={{marginLeft: '8px'}}>Filter by</Typography>
+                    <Typography variant="h6" className='home-typography'>Filter by</Typography>
                     <FormControlLabel
                         control={<Checkbox />}
                         label="Filter 1"

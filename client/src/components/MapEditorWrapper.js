@@ -21,44 +21,15 @@ const MapEditorWrapper = () => {
     const [open, setOpen] = React.useState(false);
     const handleDrawerOpen = (event) => {
         setOpen(true);
-      };
-    
-      const handleDrawerClose = () => {
-        setOpen(false);
-      };
+    };
 
-      const handleSave = () =>{
+    const handleDrawerClose = () => {
+    setOpen(false);
+    };
+
+    const handleSave = () =>{
         store.setScreen("USER");
-      }
-
-
-    const sidebar = {
-        height: '20%',
-        width: '5%',
-        position: 'absolute',
-        zIndex: '1000',
-        right: '0',
-        top: '25%',
-        backgroundColor: '#79c200',
-        color: '#000',
-        borderRadius: "25px",
-        textOrientation: "sideways",
-        writingMode: "vertical-lr",
     }
-    const DrawerHeader = styled('div')(({ theme }) => ({
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-      }));
-      const saveButton = {
-        backgroundColor: '#79c200',
-        color: '#000',
-        borderRadius: "25px",
-        position: 'absolute',
-        zIndex: '1000',
-        bottom: '5%',
-        left: '3%'
-      }
 
     return (
         <div style={{ height: '100%' }}>
@@ -71,7 +42,7 @@ const MapEditorWrapper = () => {
                 edge="end"
                 onClick={handleDrawerOpen}
                 sx={{ ...(open && { display: 'none' }) }}
-                style = {sidebar}
+                id='map-editor-sidebar'
                 > 
                     Toolbox
                 </IconButton>
@@ -92,15 +63,15 @@ const MapEditorWrapper = () => {
                     anchor="right"
                     open={open}
                 >   
-                    <DrawerHeader>
+                    <div className='map-editor-drawer-header'>
                         <IconButton onClick={handleDrawerClose}>
                             close
                         </IconButton>
-                    </DrawerHeader>
+                    </div>
                 </Drawer>
             </>
             <>
-                <Button variant="contained" color="primary" onClick={handleSave} style={saveButton}>
+                <Button variant="contained" color="primary" onClick={handleSave} id='map-editor-save'>
                     Save & Exit
                 </Button>
             </>

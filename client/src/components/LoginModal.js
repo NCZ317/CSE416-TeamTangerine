@@ -5,7 +5,6 @@ import {
   Button,
   Modal,
   Box,
-  TextField,
   Paper,
   Typography,
 } from '@mui/material';
@@ -76,7 +75,7 @@ export default function LoginModal({ open, onClose }) {
               variant="contained"
               color="primary"
               onClick={handleSignUp}
-              id="sign-up-button"
+              className="login-button"
             >
               Sign Up
             </Button>
@@ -84,7 +83,7 @@ export default function LoginModal({ open, onClose }) {
               variant="contained"
               color="primary"
               onClick={handleLogin}
-              id='login-button'
+              className='login-button'
             >
               Login
             </Button>

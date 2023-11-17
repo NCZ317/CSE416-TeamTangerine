@@ -5,52 +5,6 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MapCard from './MapCard';
 
 const ProfileWrapper = () => {
-  const cardStyle = {
-    borderRadius: '25px',
-    backgroundColor: '#F28500',
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    position: 'relative'
-  };
-
-  const followersBox = {
-    backgroundColor: '#F6A440',
-    color: '#542C11',
-    borderRadius: '15px',
-    padding: '10px 2px 10px 2px',
-  };
-
-  const joinedBox = {
-    backgroundColor: '#F6A440',
-    color: '#542C11',
-    borderRadius: '15px',
-    padding: '10px 2px 10px 2px',
-    height: '50%',
-  };
-
-  const userCircleStyle = {
-    width: '150px',
-    height: '150px',
-    borderRadius: '50%',
-    backgroundColor: '#D9D9D9',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '8px',
-  };
-
-  const settingsButtonStyle = {
-    position: 'absolute',
-    top: '12px',
-    right: '12px',
-    backgroundColor: 'transparent',
-  };
-
-  const downButtonStyle = {
-    backgroundColor: 'transparent',
-    color: '#79C200'
-  };
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -79,11 +33,11 @@ const ProfileWrapper = () => {
 
   return (
     <div>
-      <Grid container spacing={2} style={{ height: '690px', padding: '16px 12px 16px 12px' }}>
-        <Grid item xs={12} sm={3.5} style={{ height: '100%'}}>
-          <Card style={cardStyle}>
+      <Grid container spacing={2} id='profile-grid'>
+        <Grid item xs={12} sm={3.5} id='post-height'>
+          <Card className='profile-card'>
             <IconButton
-              style={settingsButtonStyle}
+              className='profile-settings-button'
               aria-label="settings"
               onClick={handleSettingsClick}
             >
@@ -104,10 +58,10 @@ const ProfileWrapper = () => {
               }}
             >
               <List>
-                <ListItem button onClick={handleSettingsClose}>
+                <ListItem onClick={handleSettingsClose}>
                   <ListItemText primary="Edit Profile" />
                 </ListItem>
-                <ListItem button onClick={handleSettingsClose}>
+                <ListItem onClick={handleSettingsClose}>
                   <ListItemText primary="Change Password" />
                 </ListItem>
               </List>
@@ -115,39 +69,39 @@ const ProfileWrapper = () => {
 
             <CardContent>
               <Box align="center">
-                <Box alignItems="center" style={userCircleStyle}>
-                  <Typography variant="h2" style={{ color: '#000' }}>
+                <Box alignItems="center" className = 'profile-user-circle'>
+                  <Typography variant="h2" id = 'profile-color'>
                     JD
                   </Typography>
                 </Box>
               </Box>
-              <Typography variant="h5" align="center" color={'#542C11'}>
+              <Typography variant="h5" className='profile-typography'>
                 John Doe
               </Typography>
 
-              <Typography variant="h6" align="center" color={'#542C11'} style={{ margin: '0px 0px 8px 0px' }}>
+              <Typography variant="h6" id='profile-typography-2'>
                 @jdoe21
               </Typography>
 
-              <Box display="flex" justifyContent="center" sx={followersBox}>
-                <Box flex={1} textAlign="center">
+              <Box id='profile-box' className = 'profile-followers'>
+                <Box className ='profile-box-2'>
                   <Typography variant="h5">10</Typography>
                   <Typography variant="h6">Posts</Typography>
                 </Box>
-                <Box flex={1} textAlign="center">
+                <Box className ='profile-box-2'>
                   <Typography variant="h5">15</Typography>
                   <Typography variant="h6">Followers</Typography>
                 </Box>
-                <Box flex={1} textAlign="center">
+                <Box className ='profile-box-2'>
                   <Typography variant="h5">25</Typography>
                   <Typography variant="h6">Following</Typography>
                 </Box>
               </Box>
-              <Box display="flex" flexDirection="column" justifyContent="left" mt={2} sx={joinedBox}>
-                <Typography variant="h5" style={{ margin: '12px' }}>
+              <Box id = 'profile-box-3' mt={2} className = 'profile-joined'>
+                <Typography variant="h5" className='profile-margin'>
                   Joined: January 1, 2023
                 </Typography>
-                <Typography variant="h5" style={{ margin: '12px' }}>
+                <Typography variant="h5" className='profile-margin'>
                   Total Likes: 165
                 </Typography>
               </Box>
@@ -155,19 +109,19 @@ const ProfileWrapper = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={8.5} style={{ height: '100%', overflowY: 'auto' }}>
+        <Grid item xs={12} sm={8.5} id = 'profile-grid-2'>
           <Box>
-            <Box display="flex" alignItems="center" justifyContent="center" style={{ width: '100%'}}>
-              <Typography variant="h3" style={{ marginBottom: '8px', color:'#F28500', fontWeight: 'bold' }}>
+            <Box id = 'profile-box-4'>
+              <Typography variant="h3" id = 'profile-typography-3'>
                 Private Maps
               </Typography>
               <IconButton
-                style={downButtonStyle}
+                className='profile-down-button'
                 color="primary"
                 aria-label="menu"
                 onClick={handleMenuClick}
               >
-                <ArrowDropDownIcon fontSize='large' />
+                <ArrowDropDownIcon className = 'create-map-cloud-icon'/>
               </IconButton>
               <Popover
                 id={menuId}
@@ -184,20 +138,20 @@ const ProfileWrapper = () => {
                 }}
               >
                 <List>
-                  <ListItem button onClick={handleMenuClose}>
+                  <ListItem onClick={handleMenuClose}>
                     <ListItemText primary="Private Maps" />
                   </ListItem>
-                  <ListItem button onClick={handleMenuClose}>
+                  <ListItem onClick={handleMenuClose}>
                     <ListItemText primary="Public Maps" />
                   </ListItem>
-                  <ListItem button onClick={handleMenuClose}>
+                  <ListItem onClick={handleMenuClose}>
                     <ListItemText primary="Liked Maps" />
                   </ListItem>
                 </List>
               </Popover>
             </Box>
 
-            <div style={{ height: 'calc(100% - 32px)', overflowY: 'auto' }}>
+            <div id='profile-div'>
               <MapCard myMap={true} />
               <MapCard myMap={true}/>
               <MapCard myMap={true}/>

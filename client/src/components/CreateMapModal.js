@@ -7,53 +7,14 @@ import {
     Button,
     Modal,
     Box,
-    TextField,
     Paper,
     Typography,
-    Grid,
     Card,
     CardContent,
     IconButton,
 } from '@mui/material';
 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import MapDiscovery from './MapDiscovery';
-
-const cardStyle = {
-    minHeight: 200,
-    width: 150,
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    backgroundColor: '#79c200',
-    color: 'white',
-    borderRadius: 24
-};
-
-const selectedCardStyle = {
-    border: '2px solid black'
-}
-
-const buttonStyle = {
-    margin: '5px 0',
-    color: 'white',
-    backgroundColor: '#79c200',
-    padding: '50px',
-    height: 'auto'
-}
-
-const customButtonStyle = {
-    width: '24%',
-    height: 40,
-    borderRadius: 24,
-    backgroundColor: '#79c200',
-    marginTop: 12,
-    marginBottom: 12,
-    textTransform: 'none',
-};
 
 export default function CreateMapModal({open,onClose}) {
     const { auth } = useContext(AuthContext);
@@ -79,34 +40,23 @@ export default function CreateMapModal({open,onClose}) {
         store.setScreen("MAP_EDITOR");
     }
 
+    const selectedCard = {
+        border: '2px solid black'
+    }
+
     return (
         <Modal open={open} onClose={onClose} id='create-map-modal'>
-            <Paper sx={{
-                position: 'absolute',
-                width: '50vw',
-                height: '83vh',
-                bgcolor: 'background.paper',
-                border: '2px solid #000',
-                boxShadow: 24,
-                p: 4,
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                borderRadius: '16px',
-            }}
-            >
-                <Typography variant="h3" gutterBottom style={{ textAlign: 'center' }}>
+            <Paper id = "create-map-paper">
+                <Typography variant="h3" gutterBottom className="modal-title">
                     Select Template
                 </Typography>
-
-                <Box style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly'}}>
+                <Box id="create-map-box">
                     {/* Choropleth Template */}
                     <Box>
-                        <Card
+                        <Card className = "create-map-card"
                         style={{
-                            ...cardStyle,
-                            ...(template === 'choroplethMap' ? selectedCardStyle : {}),
-                          }}
+                            ...(template === 'choroplethMap' ? {selectedCard} : {}),
+                        }}
                         onClick={() => setTemplate('choroplethMap')}
                         >
                             <CardContent>
@@ -119,10 +69,9 @@ export default function CreateMapModal({open,onClose}) {
 
                     {/* Heat Template */}
                     <Box>
-                        <Card
+                        <Card className = "create-map-card"
                         style={{
-                            ...cardStyle,
-                            ...(template === 'heatMap' ? selectedCardStyle : {}),
+                            ...(template === 'heatMap' ? selectedCard : {}),
                           }}
                         onClick={() => setTemplate('heatMap')}
                         >
@@ -136,10 +85,9 @@ export default function CreateMapModal({open,onClose}) {
 
                     {/* Dot Density Template */}
                     <Box>
-                        <Card
+                        <Card className = "create-map-card"
                         style={{
-                            ...cardStyle,
-                            ...(template === 'dotDensityMap' ? selectedCardStyle : {}),
+                            ...(template === 'dotDensityMap' ? selectedCard : {}),
                           }}
                         onClick={() => setTemplate('dotDensityMap')}
                         >
@@ -153,16 +101,15 @@ export default function CreateMapModal({open,onClose}) {
 
                     {/* Graduated Symbol Map */}
                     <Box>
-                        <Card
+                        <Card className = "create-map-card"
                         style={{
-                            ...cardStyle,
-                            ...(template === 'graduatedSymbolMap' ? selectedCardStyle : {}),
+                            ...(template === 'graduatedSymbolMap' ? selectedCard : {}),
                           }}
                         onClick={() => setTemplate('graduatedSymbolMap')}
                         >
                             <CardContent>
                                 <Typography variant="h6" component="div">
-                                Graduated Sybmol Map
+                                Graduated Symbol Map
                                 </Typography>
                             </CardContent>
                         </Card>
@@ -170,10 +117,9 @@ export default function CreateMapModal({open,onClose}) {
 
                     {/* Flow Map */}
                     <Box>
-                        <Card
+                        <Card className = "create-map-card"
                         style={{
-                            ...cardStyle,
-                            ...(template === 'flowMap' ? selectedCardStyle : {}),
+                            ...(template === 'flowMap' ? selectedCard : {}),
                           }}
                         onClick={() => setTemplate('flowMap')}
                         >
@@ -187,26 +133,26 @@ export default function CreateMapModal({open,onClose}) {
 
                 </Box>
 
-                <Typography variant="h3" gutterBottom style={{ marginTop: 20, textAlign: 'center' }}>
+                <Typography variant="h3" gutterBottom id="create-map-typography">
                     Upload File
                 </Typography>
 
                  {/* Upload Button */}
-                 <Box textAlign="center">
+                 <Box className = "modal-title">
                     <input
                         ref={fileInputRef}
                         type="file"
                         accept=".geojson, .shp, .kml .zip" // Specify the accepted file types
-                        style={{ display: 'none' }} // Hide the file input
+                        id="create-map-input"// Hide the file input
                         onChange={handleFileChange}
                     />
                     <IconButton
                         variant="contained"
-                        style={buttonStyle}
+                        className="create-map-button-upload"
                         disabled={template === ''}
                         onClick={handleFileUpload}
                     >
-                        <CloudUploadIcon fontSize='large' />
+                        <CloudUploadIcon className='create-map-cloud-icon' />
                     </IconButton>
                     <Typography variant="body2" color="textSecondary" mt={1}>
                         Supported File Types:
@@ -216,11 +162,11 @@ export default function CreateMapModal({open,onClose}) {
                     </Typography>
                 </Box>
                 
-                <Box mt={2} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Box mt={2} id = "create-map-box-create">
                     <Button
                         variant="contained"
                         color="primary"
-                        style={customButtonStyle}
+                        className="login-button"
                         onClick={handleCreateMap}
                     >
                         Create

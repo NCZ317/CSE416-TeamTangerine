@@ -116,8 +116,8 @@ const AppBanner = () => {
                 </>
               ) : (
                 <>
-                  <Button color="leaves" variant="text" className="login-button" onClick={handleLogin}>
-                    Login
+                  <Button color="leaves" variant="text" id = 'app-banner-login-button' className="login-button" onClick={handleLogin}>
+                    LOGIN
                   </Button>
                 </>
               )}

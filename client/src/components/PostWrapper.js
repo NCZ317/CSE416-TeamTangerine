@@ -19,50 +19,6 @@ const comments = [
 ];
 
 const PostWrapper = () => {
-    const cardStyle = {
-        margin: '20px',
-        borderRadius: '25px',
-        backgroundColor: '#F28500',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    };
-
-    const cardContentStyle = {
-        color: '#542C11',
-        textAlign: 'left',
-        padding: '18px',
-        marginLeft: '8px',
-        flex: '1',
-        display: 'flex',
-        flexDirection: 'column',
-    };
-
-    const cardContentStyle2 = {
-        color: '#fff',
-        backgroundColor: "#A85821",
-        textAlign: 'center',
-        padding: '12px',
-        borderRadius: '25px',
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 'none',
-        height: '565px',
-        position: 'relative',
-    };
-
-    const commentSectionStyle = {
-        marginTop: '6px',
-        borderRadius: '8px',
-        padding: '12px',
-        height: '100%',
-        overflow: 'auto',
-        textAlign: 'left',
-    };
-
-    const italicizedUserName = {
-        fontStyle: 'italic', 
-    };
 
     const CssTextField = styled(TextField)({
         '& label.Mui-focused': {
@@ -94,29 +50,14 @@ const PostWrapper = () => {
         setAnchorEl(null);
     };
 
-    const mapWrapperStyle = {
-        position: 'relative',
-        width: '96%',
-        height: '63vh',
-        margin: '20px 20px 0px 20px',
-        borderRadius: '25px',
-    };
-
-    const overlayButtonsStyle = {
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-    };
-
     return (
-        <div style={{ height: '100%' }}>
+        <div className='post-height'>
             {/* <AppBanner /> */}
-            <Grid container spacing={2} style={{ height: '100%' }}>
-                <Grid item xs={12} sm={9} style={{ height: '100%' }}>
-                    <Card style={cardStyle}>
+            <Grid container spacing={2} className='post-height'>
+                <Grid item xs={12} sm={9} className='post-height'>
+                    <Card className='post-card'>
                         <Box >
-                            <Button style={{backgroundColor: '#79C200', position: 'absolute', zIndex:'999', top:'125px', left:'55px'} } onClick={handleExportMenuOpen} variant='contained'>Export Map</Button>
+                            <Button id='post-button' onClick={handleExportMenuOpen} variant='contained'>Export Map</Button>
                             <Menu
                                     anchorEl={anchorEl}
                                     open={Boolean(anchorEl)}
@@ -126,12 +67,12 @@ const PostWrapper = () => {
                                     <MenuItem>PNG</MenuItem>
                                     <MenuItem>JSON</MenuItem>
                                 </Menu>
-                            <Button style={{backgroundColor: '#79C200', position: 'absolute', zIndex:'999', top: '125px', left: '1015px' }} variant='contained'>Fork</Button>
+                            <Button id='post-button-2' variant='contained'>Fork</Button>
                         </Box>   
-                        <MapWrapper style={mapWrapperStyle}/>
-                        <CardContent style={cardContentStyle}>
-                            <Box display="flex" flexDirection="row" justifyContent="space-between">
-                                <Box display="flex" flexDirection="column">
+                        <MapWrapper className = 'leaflet-container'/>
+                        <CardContent className='post-card-content'>
+                            <Box id = 'post-box'>
+                                <Box className ='map-card-box'>
                                     <Typography variant="h4" component="div">
                                         Title
                                     </Typography>
@@ -142,7 +83,7 @@ const PostWrapper = () => {
                                         Map of Asia
                                     </Typography>
                                 </Box>
-                                <Box display="flex" flexDirection="column" alignItems="left" style={{ marginRight: '12px' }}>
+                                <Box id = 'post-box-2'>
                                     <Typography variant="h6" component="div">
                                         <VisibilityOutlinedIcon /> 100
                                     </Typography>
@@ -156,24 +97,16 @@ const PostWrapper = () => {
                     </Card>
                 </Grid>
 
-                <Grid item xs={12} sm={3} style={{ height: '100%' }}>
-                    <Card style={{
-                        margin: '20px',
-                        borderRadius: '25px',
-                        backgroundColor: '#F28500',
-                        padding: '18px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100%',
-                    }}>
-                        <CardContent style={cardContentStyle2}>
+                <Grid item xs={12} sm={3} className='post-height'>
+                    <Card className='post-card-2'>
+                        <CardContent className='post-card-content-2'>
                             <Typography variant="h5" component="div">
                                 Comments
                             </Typography>
-                            <div style={commentSectionStyle}>
+                            <div className='post-comment-section'>
                                 {comments.map((comment, index) => (
                                     <div key={index}>
-                                        <Typography variant="h6" sx={italicizedUserName}>
+                                        <Typography variant="h6" className='post-italic'>
                                             {comment.userName}:
                                         </Typography>
                                         <Typography variant="body1">
