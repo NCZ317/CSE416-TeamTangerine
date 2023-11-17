@@ -34,12 +34,12 @@ app.use('/auth', authRouter)
 //CREATE BUILD FOR HEROKU TO DEPLOY
 //COPY ALL DEPENDENCIES IN SERVER/PACKAGE.JSON TO THE PACKAGE.JSON FILE IN ROOT DIRECTORY
 if (process.env.NODE_ENV === "production") {
-    const buildPath = path.join(__dirname, "../app/client/build");
+    const buildPath = path.join(__dirname, "../client/build");
 
     app.use(express.static(buildPath));
     
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname + '/app/client/build/index.html'));
+    app.get(/^\/(?!api).*/, (req, res) => {
+        res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
     });
 
 } else {
