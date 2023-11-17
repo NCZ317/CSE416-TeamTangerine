@@ -52,7 +52,6 @@ const PostWrapper = () => {
 
     return (
         <div className='post-height'>
-            {/* <AppBanner /> */}
             <Grid container spacing={2} className='post-height'>
                 <Grid item xs={12} sm={9} className='post-height'>
                     <Card className='post-card'>
@@ -69,7 +68,7 @@ const PostWrapper = () => {
                                 </Menu>
                             <Button id='post-button-2' variant='contained'>Fork</Button>
                         </Box>   
-                        <MapWrapper className = 'leaflet-container'/>
+                        <MapWrapper style = {{height: '63vh'}}/>
                         <CardContent className='post-card-content'>
                             <Box id = 'post-box'>
                                 <Box className ='map-card-box'>
@@ -98,7 +97,7 @@ const PostWrapper = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={3} className='post-height'>
-                    <Card className='post-card-2'>
+                    <Card id='post-card-2'>
                         <CardContent className='post-card-content-2'>
                             <Typography variant="h5" component="div">
                                 Comments

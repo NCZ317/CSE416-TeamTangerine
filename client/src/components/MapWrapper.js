@@ -16,21 +16,19 @@ class MapWrapper extends Component {
         const { style } = this.props;
 
         return (
-            <div>
-                <MapContainer
-                    ref={this.mapRef}
-                    center={[0, 0]}
-                    zoom={2}
-                    zoomControl={false}
-                    scrollWheelZoom={true}
-                    style={style ? style : { height: '83vh' }}
-                >
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                </MapContainer>
-            </div>
+            <MapContainer
+                ref={this.mapRef}
+                center={[0, 0]}
+                zoom={2}
+                zoomControl={false}
+                scrollWheelZoom={true}
+                style={style ? style : { height: '83vh' }}
+            >
+                <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+            </MapContainer>
         );
     }
 }

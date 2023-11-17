@@ -34,7 +34,7 @@ const MapEditorWrapper = () => {
     return (
         <div style={{ height: '100%' }}>
             {/* <AppBanner /> */}            
-            <MapWrapper/>
+            <MapWrapper id='editor-map'/>
             <>
                 <IconButton
                 color="inherit"

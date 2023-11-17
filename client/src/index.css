@@ -500,7 +500,7 @@ code {
 }
 
 #post-card-2{
-  margin: 20px;
+  margin: 20px 5px 20px 0px;
   border-radius: 25px;
   background-color: #F28500;
   padding: 18px;
@@ -524,7 +524,7 @@ code {
   background-color: #A85821;
   text-align: center;
   padding: 12px !important;
-  /* border-radius: 25px; */
+  border-radius: 25px;
   display: flex;
   flex-direction: column;
   flex: none !important;
@@ -686,4 +686,12 @@ code {
 #profile-div{
   height: calc(100%-32px);
   overflow-y: auto;
+}
+
+#post-map {
+  height: 63vh;
+}
+
+#editor-map {
+  height: 83vh;
 }
