@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Card, CardContent, Typography, Box, Grid, IconButton, Popover, List, ListItem, ListItemText } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MapCard from './MapCard';
 
+import AuthContext from '../auth';
+
 const ProfileWrapper = () => {
+
+  const { auth } = useContext(AuthContext);
+
   const cardStyle = {
     borderRadius: '25px',
     backgroundColor: '#F28500',
@@ -77,6 +82,8 @@ const ProfileWrapper = () => {
   const settingsId = openSettings ? 'settings-popover' : undefined;
   const menuId = openMenu ? 'menu-popover' : undefined;
 
+  console.log("LOGGED IN: " + auth.loggedIn);
+
   return (
     <div>
       <Grid container spacing={2} style={{ height: '690px', padding: '16px 12px 16px 12px' }}>
@@ -117,38 +124,39 @@ const ProfileWrapper = () => {
               <Box align="center">
                 <Box alignItems="center" style={userCircleStyle}>
                   <Typography variant="h2" style={{ color: '#000' }}>
-                    JD
+                    {auth.loggedIn && auth.getUserInitials()}
                   </Typography>
                 </Box>
               </Box>
               <Typography variant="h5" align="center" color={'#542C11'}>
-                John Doe
+                {auth.loggedIn && auth.user.firstName + " " + auth.user.lastName}
               </Typography>
 
               <Typography variant="h6" align="center" color={'#542C11'} style={{ margin: '0px 0px 8px 0px' }}>
-                @jdoe21
+                {auth.loggedIn && auth.user.username}
               </Typography>
 
               <Box display="flex" justifyContent="center" sx={followersBox}>
                 <Box flex={1} textAlign="center">
-                  <Typography variant="h5">10</Typography>
+                  <Typography variant="h5">{auth.loggedIn && auth.user.numPosts}</Typography>
                   <Typography variant="h6">Posts</Typography>
                 </Box>
                 <Box flex={1} textAlign="center">
-                  <Typography variant="h5">15</Typography>
+                  <Typography variant="h5">{auth.loggedIn && auth.user.numFollowers}</Typography>
                   <Typography variant="h6">Followers</Typography>
                 </Box>
                 <Box flex={1} textAlign="center">
-                  <Typography variant="h5">25</Typography>
+                  <Typography variant="h5">{auth.loggedIn && auth.user.numFollowing}</Typography>
                   <Typography variant="h6">Following</Typography>
                 </Box>
               </Box>
               <Box display="flex" flexDirection="column" justifyContent="left" mt={2} sx={joinedBox}>
                 <Typography variant="h5" style={{ margin: '12px' }}>
-                  Joined: January 1, 2023
+                  Joined: {auth.loggedIn && auth.user.dateJoined}
                 </Typography>
+                {/* NEED TO MODIFY LATER WHEN MAPS ARE PUBLISHED */}
                 <Typography variant="h5" style={{ margin: '12px' }}>
-                  Total Likes: 165
+                  Total Likes:
                 </Typography>
               </Box>
             </CardContent>

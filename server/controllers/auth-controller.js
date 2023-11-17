@@ -16,13 +16,23 @@ getLoggedIn = async (req, res) => {
         const loggedInUser = await User.findOne({ _id: userId });
         console.log("loggedInUser: " + loggedInUser);
 
+        const dateJoined = new Date(loggedInUser.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
         return res.status(200).json({
             loggedIn: true,
             user: {
                 firstName: loggedInUser.firstName,
                 lastName: loggedInUser.lastName,
                 email: loggedInUser.email,
-                username: loggedInUser.username
+                username: loggedInUser.username,
+                numFollowers: loggedInUser.followers.length,
+                numFollowing: loggedInUser.following.length,
+                numPosts: loggedInUser.numPosts,
+                dateJoined: dateJoined
             }
         })
     } catch (err) {
@@ -67,6 +77,12 @@ loginUser = async (req, res) => {
         const token = auth.signToken(existingUser._id);
         console.log(token);
 
+        const dateJoined = new Date(existingUser.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
         res.cookie("token", token, {
             httpOnly: true,
             secure: true,
@@ -77,7 +93,11 @@ loginUser = async (req, res) => {
                 firstName: existingUser.firstName,
                 lastName: existingUser.lastName,  
                 email: existingUser.email,
-                userName: existingUser.username              
+                userName: existingUser.username,
+                numFollowers: existingUser.followers.length,
+                numFollowing: existingUser.following.length,
+                numPosts: existingUser.numPosts,
+                dateJoined: dateJoined              
             }
         })
 
@@ -147,8 +167,10 @@ registerUser = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, salt);
         console.log("passwordHash: " + passwordHash);
 
+        const numPosts = 0;
+
         const newUser = new User({
-            firstName, lastName, email, username, passwordHash
+            firstName, lastName, email, username, passwordHash, numPosts
         });
         const savedUser = await newUser.save();
         console.log("new user saved: " + savedUser._id);
