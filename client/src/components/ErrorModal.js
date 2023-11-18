@@ -9,42 +9,31 @@ import Button from '@mui/material/Button';
 import { AlertTitle, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/HighlightOff';
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '80%', 
-    maxWidth: 500, 
-    bgcolor: 'lightyellow',
-    borderRadius: 8, 
-    boxShadow: 24,
-    p: 2, 
-};
-
 export default function ErrorModal() {
     const { auth } = useContext(AuthContext);
 
     return (
         <Modal open={auth.errorMessage !== ""}>
 
-            <Box sx={style}>
+            <Box id = "error-modal">
                 <Alert
-                sx={{ fontSize: 18, fontWeight: 'bold', borderRadius: 8 }}
+                id = "error-alert"
                 variant='outlined'
                 severity='warning' 
                 action={
                     <Button
-                    sx={{padding: 4, color: 'black'}}
+                    id = "error-button"
                     onClick={() => {
                         auth.hideModal();
                     }}
                     >
-                        <CloseIcon sx={{fontSize: 24}}/>
+                        <CloseIcon className='font-size-twenty-four'/>
                     </Button>}
                 >
-                    <AlertTitle sx={{fontWeight: 'bold'}}>Sorry</AlertTitle>
-                    {auth.errorMessage}
+                    <AlertTitle className='bold-font'>Sorry</AlertTitle>
+                    <div className='font-size-eighteen'>
+                        {auth.errorMessage}
+                    </div>
                 </Alert>
             </Box>
 

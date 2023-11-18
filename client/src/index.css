@@ -695,3 +695,39 @@ code {
 #editor-map {
   height: 83vh;
 }
+
+#error-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%; 
+  max-width: 500px; 
+  background-color: lightyellow;
+  border-radius: 32px;
+  box-shadow:  rgba(0, 0, 0, 0.2) 0px 11px 15px -7px, rgba(0, 0, 0, 0.14) 0px 24px 38px 3px, rgba(0, 0, 0, 0.12) 0px 9px 46px 8px;
+  padding: 16px;
+}
+
+#error-alert{
+  font-size: 1rem ;
+  font-weight: bold !important;
+  border-radius: 32px;
+}
+
+#error-button{
+  padding: 32px;
+  color: black;
+}
+
+.font-size-twenty-four{
+  font-size: 24px;
+}
+
+.bold-font{
+  font-weight: bold !important;
+}
+
+.font-size-eighteen{
+  font-size: 18px;
+}

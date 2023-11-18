@@ -34,11 +34,19 @@ export const registerUser = (firstName, lastName, email, username, password, pas
         passwordVerify : passwordVerify
     })
 }
+export const editUser = (id, email, username) => {
+    return api.post('/edit', {
+        userId : id,
+        newEmail : email,
+        newUsername : username,
+    })
+}
 const apis = {
     getLoggedIn,
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    editUser
 }
 
 export default apis
