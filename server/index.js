@@ -27,6 +27,8 @@ app.use(cookieParser())
 // SETUP OUR OWN ROUTERS AS MIDDLEWARE
 const authRouter = require('./routes/auth-router')
 app.use('/auth', authRouter)
+const mapRouter = require('./routes/map-router')
+app.use('/store', mapRouter)
 // const mapRouter = require('./routes/map-router')
 // app.use('/api', mapRouter)
 
