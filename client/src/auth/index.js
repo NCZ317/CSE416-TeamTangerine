@@ -12,6 +12,7 @@ export const AuthActionType = {
     LOGOUT_USER: "LOGOUT_USER",
     REGISTER_USER: "REGISTER_USER",
     ERROR: "ERROR",
+    ERROR2: "ERROR2", //for when there is an error but the user stays logged in 
 }
 
 function AuthContextProvider(props) {
@@ -62,6 +63,13 @@ function AuthContextProvider(props) {
                 return setAuth({
                     user: null,
                     loggedIn: false,
+                    errorMessage: payload.errorMessage,
+                })
+            }
+            case AuthActionType.ERROR2: {
+                return setAuth({
+                    user: auth.user,
+                    loggedIn: auth.loggedIn,
                     errorMessage: payload.errorMessage,
                 })
             }
@@ -145,9 +153,31 @@ function AuthContextProvider(props) {
         }
     }
 
+    auth.editUser = async function (email, username) {
+        try{
+            const response = await api.editUser(auth.user.id, email, username);
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.LOGIN_USER,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                // history.push('/login');
+            }else alert("FAILED");
+        }catch (error){
+            authReducer({
+                type: AuthActionType.ERROR2,
+                payload: {
+                    errorMessage: error.response.data.errorMessage
+                }
+            });
+        }
+    }
+
     auth.hideModal = () => {
         authReducer({
-            type: AuthActionType.ERROR,
+            type: AuthActionType.ERROR2,
             payload: {
                 errorMessage: ""
             }
@@ -165,6 +195,18 @@ function AuthContextProvider(props) {
             initials += auth.user.lastName.charAt(0);
         }
         return initials;
+    }
+
+    auth.getUserEmail = function() {
+        if (auth.user) {
+            return auth.user.email;
+        }
+    }
+
+    auth.getUsername = function(){
+        if(auth.user){
+            return auth.user.username;
+        }
     }
 
     return (

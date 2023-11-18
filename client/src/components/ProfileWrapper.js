@@ -3,6 +3,7 @@ import { Card, CardContent, Typography, Box, Grid, IconButton, Popover, List, Li
 import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MapCard from './MapCard';
+import UpdateProfileScreen from './UpdateProfileScreen'
 
 import AuthContext from '../auth';
 
@@ -11,7 +12,7 @@ const ProfileWrapper = () => {
   const { auth } = useContext(AuthContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [updateInfo, setUpdateInfo] = useState('NONE'); // change profile to update profile: NONE for default, PROFILE for profile, PASSWORD for password
 
   const handleSettingsClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -21,19 +22,16 @@ const ProfileWrapper = () => {
     setAnchorEl(null);
   };
 
-  const handleMenuClick = (event) => {
-    setMenuAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setMenuAnchorEl(null);
-  };
+  const handleEditProfile = () => {
+    setUpdateInfo("PROFILE");
+    handleSettingsClose();
+  }
 
   const openSettings = Boolean(anchorEl);
-  const openMenu = Boolean(menuAnchorEl);
+
 
   const settingsId = openSettings ? 'settings-popover' : undefined;
-  const menuId = openMenu ? 'menu-popover' : undefined;
+
 
   console.log("LOGGED IN: " + auth.loggedIn);
 
@@ -64,7 +62,7 @@ const ProfileWrapper = () => {
               }}
             >
               <List>
-                <ListItem onClick={handleSettingsClose}>
+                <ListItem onClick={handleEditProfile}>
                   <ListItemText primary="Edit Profile" />
                 </ListItem>
                 <ListItem onClick={handleSettingsClose}>
@@ -115,56 +113,7 @@ const ProfileWrapper = () => {
             </CardContent>
           </Card>
         </Grid>
-
-        <Grid item xs={12} sm={8.5} id = 'profile-grid-2'>
-          <Box>
-            <Box id = 'profile-box-4'>
-              <Typography variant="h3" id = 'profile-typography-3'>
-                Private Maps
-              </Typography>
-              <IconButton
-                className='profile-down-button'
-                color="primary"
-                aria-label="menu"
-                onClick={handleMenuClick}
-              >
-                <ArrowDropDownIcon className = 'create-map-cloud-icon'/>
-              </IconButton>
-              <Popover
-                id={menuId}
-                open={openMenu}
-                anchorEl={menuAnchorEl}
-                onClose={handleMenuClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'center',
-                }}
-              >
-                <List>
-                  <ListItem onClick={handleMenuClose}>
-                    <ListItemText primary="Private Maps" />
-                  </ListItem>
-                  <ListItem onClick={handleMenuClose}>
-                    <ListItemText primary="Public Maps" />
-                  </ListItem>
-                  <ListItem onClick={handleMenuClose}>
-                    <ListItemText primary="Liked Maps" />
-                  </ListItem>
-                </List>
-              </Popover>
-            </Box>
-
-            <div id='profile-div'>
-              <MapCard myMap={true} />
-              <MapCard myMap={true}/>
-              <MapCard myMap={true}/>
-            </div>
-          </Box>
-        </Grid>
+        <UpdateProfileScreen state = {updateInfo} setState = {setUpdateInfo}/>
       </Grid>
     </div>
   );

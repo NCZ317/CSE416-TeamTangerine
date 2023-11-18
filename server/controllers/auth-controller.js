@@ -32,7 +32,8 @@ getLoggedIn = async (req, res) => {
                 numFollowers: loggedInUser.followers.length,
                 numFollowing: loggedInUser.following.length,
                 numPosts: loggedInUser.numPosts,
-                dateJoined: dateJoined
+                dateJoined: dateJoined,
+                id: loggedInUser._id,
             }
         })
     } catch (err) {
@@ -97,7 +98,8 @@ loginUser = async (req, res) => {
                 numFollowers: existingUser.followers.length,
                 numFollowing: existingUser.following.length,
                 numPosts: existingUser.numPosts,
-                dateJoined: dateJoined              
+                dateJoined: dateJoined,
+                id: existingUser._id              
             }
         })
 
@@ -191,6 +193,60 @@ registerUser = async (req, res) => {
     }
 }
 
+editUser = async (req,res) => {
+    try {
+        const { userId, newEmail, newUsername} = req.body;
+        console.log("edit user: " + newEmail + " "+ newUsername + " " + userId);
+        const existingEmail = await User.findOne({ email: newEmail, _id: {'$ne': userId} });
+        console.log(existingEmail);
+        if (newEmail && (!validateEmail(newEmail) || existingEmail)) {
+            return res
+                .status(400)
+                .json({
+                    errorMessage: "This email address is unavailable."
+                });
+        } else if (newEmail) {
+            console.log("email address is changed and valid");
+            await User.findByIdAndUpdate(userId, {email: newEmail});
+        }
+        const existingUserName = await User.findOne({ username: newUsername, _id: {'$ne': userId} });
+        console.log("existingUserName: " + existingUserName);
+        if (newUsername && existingUserName) {
+            return res
+                .status(400)
+                .json({
+                    success: false,
+                    errorMessage: "An account with this username already exists."
+                })
+        } else if (newUsername){
+            await User.findByIdAndUpdate(userId, {username: newUsername});
+        }
+        const loggedInUser = await User.findOne({ _id: userId });
+        return res.status(200).json({user: {
+            firstName: loggedInUser.firstName,
+            lastName: loggedInUser.lastName,
+            email: loggedInUser.email,
+            username: loggedInUser.username,
+            numFollowers: loggedInUser.followers.length,
+            numFollowing: loggedInUser.following.length,
+            numPosts: loggedInUser.numPosts,
+            dateJoined: loggedInUser.dateJoined,
+            id: loggedInUser._id,}});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({user: {
+            firstName: loggedInUser.firstName,
+            lastName: loggedInUser.lastName,
+            email: loggedInUser.email,
+            username: loggedInUser.username,
+            numFollowers: loggedInUser.followers.length,
+            numFollowing: loggedInUser.following.length,
+            numPosts: loggedInUser.numPosts,
+            dateJoined: loggedInUser.dateJoined,
+            id: loggedInUser._id,}});
+    }
+}
+
 // simple regex function to check whether the given email is a valid email address
 const validateEmail = (email) => {
     return String(email)
@@ -207,4 +263,5 @@ module.exports = {
     registerUser,
     loginUser,
     logoutUser,
+    editUser
 }
