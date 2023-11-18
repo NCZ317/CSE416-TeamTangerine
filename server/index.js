@@ -28,9 +28,7 @@ app.use(cookieParser())
 const authRouter = require('./routes/auth-router')
 app.use('/auth', authRouter)
 const mapRouter = require('./routes/map-router')
-app.use('/store', mapRouter)
-// const mapRouter = require('./routes/map-router')
-// app.use('/api', mapRouter)
+app.use('/api', mapRouter)
 
 
 //CREATE BUILD FOR HEROKU TO DEPLOY
