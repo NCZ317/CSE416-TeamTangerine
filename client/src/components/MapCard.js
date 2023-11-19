@@ -87,15 +87,17 @@ const MapCard = ({ myMap }) => {
         <div className='map-card-counter'>
           <Box className='map-card-box-2'>
             <FavoriteIcon className='map-card-favorite-icon' />
-            <Typography variant="body2">store.currentMap.likes</Typography>
+            <Typography variant="body2">
+              0
+            </Typography>
           </Box>
           <Box className='map-card-box-2'>
             <ChatBubbleOutlinedIcon className='map-card-favorite-icon' />
-            <Typography variant="body2">store.currentMap.comments.length</Typography>
+            <Typography variant="body2">0</Typography>
           </Box>
           <Box className='map-card-box-2'>
             <VisibilityOutlinedIcon className='map-card-favorite-icon' />
-            <Typography variant="body2">store.currentMap.views</Typography>
+            <Typography variant="body2">0</Typography>
           </Box>
         </div>
       </Box>
@@ -112,7 +114,7 @@ const MapCard = ({ myMap }) => {
           ))}
         </div>
         <Typography variant="h3" className='map-card-typography'>
-          Title {store.currentMaps.length}
+          Title
         </Typography>
         <Typography variant="h6" className='map-card-typography'>
           Author: User1

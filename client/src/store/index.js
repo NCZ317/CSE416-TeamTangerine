@@ -3,9 +3,7 @@ import { createContext, useContext, useState } from 'react'
 import api from './store-request-api'
 import AuthContext from '../auth'
 import { useNavigate } from 'react-router-dom';
-import { json } from 'body-parser';
-
-
+import jsTPS from '../common/jsTPS'
 
 // THIS IS THE CONTEXT WE'LL USE TO SHARE OUR STORE
 export const GlobalStoreContext = createContext({});
@@ -120,6 +118,7 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                 });
             }
+            //THIS SHOULD BE CALLED WHEN USER HITS SAVE AND EXIT ON MAP EDITOR
             case GlobalStoreActionType.CREATE_NEW_MAP: {
                 return setStore({
                     currentModal : CurrentModal.NONE,
@@ -134,7 +133,21 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                 });
             }
-
+            //THIS SHOULD BE CALLED WHEN USER FORKS MAP AND IT WILL REDIRECT TO THEIR PROFILE WITH THE MAP DUPED
+            case GlobalStoreActionType.DUPLICATE_MAP: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : CurrentScreen.USER,
+                    idNamePairs: [],
+                    currentMaps: [],
+                    currentMap: null,
+                    mapTemplate: null,
+                    newMapCounter: store.newMapCounter + 1,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                });
+            }
             default:
                 return store;
         }
@@ -200,6 +213,25 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
+    //Duplicates a map graphic by creating a new map with same data
+    store.duplicateMap = async function(id) {
+        async function asyncDuplicateMap(id) {
+            let response = await api.getMapById(id);
+            if (response.data.success) {
+                let mapToCopy = response.data.map;
+                let mapTitle = "Copy of " + mapToCopy.title;
+                let response2 = await api.createMap(mapTitle, mapToCopy.jsonData, mapToCopy.mapType, auth.user.email, auth.user.username );
+                if (response2.data.success) {
+                    tps.clearAllTransactions();
+                        storeReducer({
+                            type: GlobalStoreActionType.DUPLICATE_MAP,
+                            payload: response2.data.map
+                        });
+                }
+            }
+        }
+        asyncDuplicateMap(id)
+    }
 
 // //Processes changing to User screen with specified username
 // store.setCurrentScreenWithUser = (user)
@@ -254,9 +286,6 @@ function GlobalStoreContextProvider(props) {
 
 // //Adds a comment to a map graphic
 // store.addComment = (message)...
-
-// //Duplicates a map graphic by creating a new map with same data
-// store.duplicateMap = (id)...
 
 // //Publishes a map graphic, and makes it no longer editable
 // store.publishMap = (id)...
