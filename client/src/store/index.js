@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from 'react'
 import api from './store-request-api'
 import AuthContext from '../auth'
 import { useNavigate } from 'react-router-dom';
+import { json } from 'body-parser';
 
 
 
@@ -33,7 +34,7 @@ export const GlobalStoreActionType = {
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
-// const tps = new jsTPS();
+const tps = new jsTPS();
 
 
 const CurrentScreen = {
@@ -85,6 +86,7 @@ function GlobalStoreContextProvider(props) {
         idNamePairs: [],
         currentMaps: [],
         currentMap: null,
+        mapTemplate: null,
         newMapCounter: 0,
         mapMarkedForDeletion: null,
         currentSearchResult: "",
@@ -111,7 +113,22 @@ function GlobalStoreContextProvider(props) {
                     idNamePairs: [],
                     currentMaps: [],
                     currentMap: null,
+                    mapTemplate: null,
                     newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                });
+            }
+            case GlobalStoreActionType.CREATE_NEW_MAP: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : payload.screen,
+                    idNamePairs: [],
+                    currentMaps: [],
+                    currentMap: payload,
+                    mapTemplate: payload.mapType,
+                    newMapCounter: store.newMapCounter + 1,
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
@@ -122,11 +139,6 @@ function GlobalStoreContextProvider(props) {
                 return store;
         }
     }
-
-
-
-    //IMPLEMENT THE STORE FUNCTIONS BELOW
-
 
     //NEED TO MODIFY THIS FUNCTION LATER FOR RETRIEVING THE currentMaps[] FOR EACH SCREEN
     store.setScreen = function (screenType) {
@@ -170,6 +182,23 @@ function GlobalStoreContextProvider(props) {
 
     }
 
+    //Creates a  new map
+    store.createNewMap = async function(jsonData, mapTemplate)  {
+        let newMapTitle = auth.user.username + " - Untitled (" + store.newMapCounter + ")";
+        const response = await api.createMap(newMapTitle, jsonData, mapTemplate, auth.user.email, auth.user.username );
+        console.log(response);
+        if(response.status == 201) {
+            tps.clearAllTransactions();
+            let newMap = response.data.map;
+            storeReducer({
+                type: GlobalStoreActionType.CREATE_NEW_MAP,
+                payload: newMap
+            })
+        }
+        else {
+            console.log("API FAILED TO CREATE A NEW LIST");
+        }
+    }
 
 
 // //Processes changing to User screen with specified username
@@ -200,9 +229,6 @@ function GlobalStoreContextProvider(props) {
     store.closeCurrentMap = function(){
         store.setScreen(CurrentScreen.HOME);
     }
-
-// //Creates a  new map
-// store.createNewMap = ()
 
 // //Sets the current map that is being edited
 // store.setCurrentMap  =(id) => {}
@@ -238,13 +264,22 @@ function GlobalStoreContextProvider(props) {
 // //Hides all the modal from the view
 // store.hideModals = ()...
 
-// //Undo a transaction
-// store.undo = ()...
+    //Undo a transaction
+    store.undo = function () {
+        if (store.currentModal === CurrentModal.NONE) tps.undoTransaction();
+    }
 
-// Do a transaction
-// store.redo = ()...
+    // Do a transaction
+    store.redo = function () {
+        if (store.currentModal === CurrentModal.NONE) tps.doTransaction();
+    }
 
-
+    store.canUndo = function() {
+        return ((store.currentList !== null) && tps.hasTransactionToUndo() && store.currentModal === CurrentModal.NONE);
+    }
+    store.canRedo = function() {
+        return ((store.currentList !== null) && tps.hasTransactionToRedo() && store.currentModal === CurrentModal.NONE);
+    }
 
     return (
         <GlobalStoreContext.Provider value={{
