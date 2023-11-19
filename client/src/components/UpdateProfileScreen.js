@@ -20,8 +20,12 @@ const UpdateProfileScreen = ({state, setState}) => {
     const { auth } = useContext(AuthContext);
 
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-    const [email, setEmail] = useState(auth.getUserEmail());
-    const [username, setUsername] = useState(auth.getUsername());
+
+    const [formData, setFormData] = useState({
+        email: auth.getUserEmail(),
+        username: auth.getUsername(),
+        password: '',
+      });
 
     const handleMenuClick = (event) => {
         setMenuAnchorEl(event.currentTarget);
@@ -36,10 +40,13 @@ const UpdateProfileScreen = ({state, setState}) => {
     }
 
     const handleSave = () => {
-        auth.editUser(email,username);
+        auth.editUser(
+            formData.email,
+            formData.username,
+            formData.password
+            );
         setState("NONE");
     }
-    console.log(username)
     const openMenu = Boolean(menuAnchorEl);
     const menuId = openMenu ? 'menu-popover' : undefined;
 
@@ -106,29 +113,46 @@ const UpdateProfileScreen = ({state, setState}) => {
                     </Typography>
                 </Box>
                 <div id='profile-div'>
-                <Box className="login-inputs">
-                    <div>
-                    <label htmlFor="email" className='create-account-label'>Email:</label>
-                    <input
-                        type="text"
-                        id="email"
-                        placeholder={email}
-                        className="login-textfield"
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    </div>
-                    <div className='login-row'>
-                    <label htmlFor="email" className='create-account-label'>Username:</label>
-                    <input
-                        type="text"
-                        id="password"
-                        placeholder={username}
-                        className="login-textfield"
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    </div>
-                </Box>
-
+                    <Box className="create-account-box">
+                        <div className='create=account-row'>
+                            <label className='create-account-label' htmlFor="email">New Email:</label>
+                            <input
+                            type="text"
+                            id="email"
+                            placeholder={auth.getUserEmail()}
+                            className="custom-long-text-field"
+                            onChange={(e) =>
+                                setFormData({ ...formData, email: e.target.value })
+                            }
+                            autoComplete="off"
+                            />
+                        </div>
+                        <div className='create=account-row'>
+                            <label className='create-account-label' htmlFor="username">New Username:</label>
+                            <input
+                            type="text"
+                            id="username"
+                            placeholder={auth.getUsername()}
+                            className="custom-long-text-field"
+                            onChange={(e) =>
+                                setFormData({ ...formData, username: e.target.value })
+                            }
+                            autoComplete="off"
+                            />
+                        </div>
+                        <div className='create=account-row'>
+                            <label className='create-account-label' htmlFor="password">Confirm Password to save changes:</label>
+                            <input
+                            type="password"
+                            id="password"
+                            placeholder="Password"
+                            className="custom-long-text-field"
+                            onChange={(e) =>
+                                setFormData({ ...formData, password: e.target.value })
+                            }
+                            />
+                        </div>
+                    </Box>
                 </div>
                 <Box className="login-buttons">
                     <Button

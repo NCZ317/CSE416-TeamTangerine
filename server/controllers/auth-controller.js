@@ -195,10 +195,25 @@ registerUser = async (req, res) => {
 
 editUser = async (req,res) => {
     try {
-        const { userId, newEmail, newUsername} = req.body;
-        console.log("edit user: " + newEmail + " "+ newUsername + " " + userId);
+        const { userId, newEmail, newUsername, verifyPass} = req.body;
+        const loggedInUser = await User.findOne({ _id: userId });
+        console.log(loggedInUser);
+        if (!verifyPass){
+            return res
+                .status(401)
+                .json({
+                    errorMessage: "Please confirm your password."
+                })
+        }
+        const passwordCorrect = await bcrypt.compare(verifyPass, loggedInUser.passwordHash);
+        if (!passwordCorrect) {
+            return res
+                .status(401)
+                .json({
+                    errorMessage: "Incorrect password provided."
+                })
+        }
         const existingEmail = await User.findOne({ email: newEmail, _id: {'$ne': userId} });
-        console.log(existingEmail);
         if (newEmail && (!validateEmail(newEmail) || existingEmail)) {
             return res
                 .status(400)
@@ -206,7 +221,6 @@ editUser = async (req,res) => {
                     errorMessage: "This email address is unavailable."
                 });
         } else if (newEmail) {
-            console.log("email address is changed and valid");
             await User.findByIdAndUpdate(userId, {email: newEmail});
         }
         const existingUserName = await User.findOne({ username: newUsername, _id: {'$ne': userId} });
@@ -221,29 +235,25 @@ editUser = async (req,res) => {
         } else if (newUsername){
             await User.findByIdAndUpdate(userId, {username: newUsername});
         }
-        const loggedInUser = await User.findOne({ _id: userId });
+        const dateJoined = new Date(loggedInUser.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        const updatedUser = await User.findOne({ _id: userId });
         return res.status(200).json({user: {
-            firstName: loggedInUser.firstName,
-            lastName: loggedInUser.lastName,
-            email: loggedInUser.email,
-            username: loggedInUser.username,
-            numFollowers: loggedInUser.followers.length,
-            numFollowing: loggedInUser.following.length,
-            numPosts: loggedInUser.numPosts,
-            dateJoined: loggedInUser.dateJoined,
-            id: loggedInUser._id,}});
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            email: updatedUser.email,
+            username: updatedUser.username,
+            numFollowers: updatedUser.followers.length,
+            numFollowing: updatedUser.following.length,
+            numPosts: updatedUser.numPosts,
+            dateJoined: dateJoined,
+            id: updatedUser._id,}});
     } catch (error) {
         console.log(error);
-        res.status(500).json({user: {
-            firstName: loggedInUser.firstName,
-            lastName: loggedInUser.lastName,
-            email: loggedInUser.email,
-            username: loggedInUser.username,
-            numFollowers: loggedInUser.followers.length,
-            numFollowing: loggedInUser.following.length,
-            numPosts: loggedInUser.numPosts,
-            dateJoined: loggedInUser.dateJoined,
-            id: loggedInUser._id,}});
+        res.status(500).send();
     }
 }
 
