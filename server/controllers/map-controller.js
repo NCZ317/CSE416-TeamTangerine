@@ -1,104 +1,176 @@
 const Map = require('../models/map-model')
 
 createMap = async (req, res) => {
-    try {
-        const { title, description, ownerEmail, userName, jsonData, mapType, mapLayers, likes, views, comments, published, publishedDate } = req.body;
-        const newMap = new Map({
-            title,
-            description,
-            ownerEmail,
-            userName,
-            jsonData,
-            mapType,
-            mapLayers,
-            likes,
-            views,
-            comments,
-            published,
-            publishedDate,
-        });
+    const body = req.body;
+    console.log("createMap body: " + JSON.stringify(body));
 
-        const savedMap = await newMap.save();
-
-        res.status(201).json({
-            status: 201,
-            data: { Map: savedMap },
-        });
-    } catch (err) {
-        console.log("err: " + err);
-        res.json(false);
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a Map',
+        })
     }
+
+    const map = new Map(body);
+    console.log("map: " + map.toString());
+    if (!map) {
+        return res.status(400).json({ success: false, error: err })
+    }
+
+    User.findOne({ _id: req.userId }, (err, user) => {
+        console.log("user found: " + JSON.stringify(user));
+        user.maps.push(map._id);
+        user
+            .save()
+            .then(() => {
+                    map
+                    .save()
+                    .then(() => {
+                        return res.status(201).json({
+                            map: map
+                        })
+                    })
+                    .catch(error => {
+                        return res.status(400).json({
+                            errorMessage: 'Map Not Created!'
+                        })
+                    })
+            });
+    })
 }
 
 deleteMap = async (req, res) => {
-    try {
-        // Extract map ID from request parameters
-        const { id } = req.params;
+    console.log("delete Map with id: " + JSON.stringify(req.params.id));
+    Map.findById({ _id: req.params.id }, (err, map) => {
+        console.log("map found: " + JSON.stringify(map));
+        if (err) {
+            return res.status(404).json({
+                errorMessage: 'Map not found!',
+            })
+        }
 
-        await Map.findByIdAndDelete(id);
-
-        res.status(200).json({
-            status: 200,
-            data: { successMessage: 'Map deleted successfully' },
-        });
-    } catch (error) {
-        console.log("err: " + err);
-        res.json(false);
-    }
+        // DOES THIS LIST BELONG TO THIS USER?
+        async function asyncFindUser(map) {
+            User.findOne({ email: map.ownerEmail }, (err, user) => {
+                console.log("user._id: " + user._id);
+                console.log("req.userId: " + req.userId);
+                if (user._id == req.userId) {
+                    console.log("correct user!");
+                    Map.findOneAndDelete({ _id: req.params.id }, () => {
+                        return res.status(200).json({ success: true });
+                    }).catch(err => console.log(err))
+                }
+                else {
+                    console.log("incorrect user!");
+                    return res.status(401).json({ 
+                        errorMessage: "authentication error" 
+                    });
+                }
+            });
+        }
+        asyncFindUser(map);
+    })
 }
 
 getMapById = async (req, res) => {
-    try {
-        // Extract map ID from request parameters
-        const { id } = req.params;
-        const map = await Map.findById(id);
+    console.log("Find Map with id: " + JSON.stringify(req.params.id));
 
-        res.status(200).json({
-            status: 200,
-            data: { Map: map },
-        });
-    } catch (error) {
-        console.log("err: " + err);
-        res.json(false);
-    }
+    await Map.findOne({ _id: req.params.id }, (err, map) => {
+        if (err) {
+            return res.status(404).json({ success: false, error: err })
+        }
+
+        return res.status(200).json({ success: true, map: map })
+    }).catch(err => console.log(err))
 }
 
 getMapPairs = async (req, res) => {
-    try {
-        // Find all maps and retrieve title and id pairs
-        const maps = await Map.find({}, 'title');
-
-        // Respond with the pairs
-        res.status(200).json({
-            status: 200,
-            data: {
-                success: true,
-                idNamePairs: maps.map(map => ({ _id: map._id, name: map.title })),
-            },
-        });
-    } catch (error) {
-        console.log("err: " + err);
-        res.json(false);
-    }
+    console.log("getMapPairs");
+    await User.findOne({ _id: req.userId }, (err, user) => {
+        console.log("find user with id " + req.userId);
+        async function asyncFindMap(email) {
+            console.log("find all Maps owned by " + email);
+            await Map.find({ ownerEmail: email }, (err, maps) => {
+                console.log("found Maps: " + JSON.stringify(maps));
+                if (err) {
+                    return res.status(400).json({ success: false, error: err })
+                }
+                if (!maps) {
+                    console.log("!maps.length");
+                    return res
+                        .status(404)
+                        .json({ success: false, error: 'Maps not found' })
+                }
+                else {
+                    console.log("Send the Maps pairs");
+                    // PUT ALL THE LISTS INTO ID, NAME PAIRS
+                    let pairs = [];
+                    for (let key in maps) {
+                        let map = maps[key];
+                        let pair = {
+                            _id: map._id,
+                            title: map.title,
+                            description: map.description,
+                            username: map.username,
+                            mapType: map.mapType,
+                            likes: map.likes,
+                            comments: map.comments,
+                            published: map.published
+                        };
+                        pairs.push(pair);
+                    }
+                    return res.status(200).json({ success: true, idNamePairs: pairs })
+                }
+            }).catch(err => console.log(err))
+        }
+        asyncFindMap(user.email);
+    }).catch(err => console.log(err))
 }
 
 updateMap = async (req, res) => {
-    try {
-        // Extract map ID from request parameters
-        const { id } = req.params;
-        await Map.findByIdAndUpdate(id, req.body);
-
-        res.status(200).json({
-            status: 200,
-            data: { success: true, _id: id },
-        });
-    } catch (error) {
-        // Handle errors
-        if (error.name === 'CastError') {
-            console.log("err: " + err);
-            res.json(false);
+    const body = req.body
+        console.log("updateMap: " + JSON.stringify(body));
+        if (!body) {
+            return res.status(400).json({
+                success: false,
+                error: 'You must provide a body to update',
+            })
         }
-    }
+        Map.findOne({ _id: req.params.id }, (err, map) => {
+            if (err) {
+                return res.status(404).json({
+                    err,
+                    message: 'Map not found!',
+                })
+            }
+            map.title = body.map.title;
+            map.description = body.map.description;
+            map.jsonData = body.map.jsonData;
+            map.mapLayers = body.map.mapLayers;
+            map.likes = body.map.likes;
+            map.views = body.map.views;
+            map.comments = body.map.comments;
+            map.published = body.map.published;
+            map.publishedDate = body.map.publishedDate
+            
+            map
+                .save()
+                .then(() => {
+                    console.log("SUCCESS!!!");
+                    return res.status(200).json({
+                        success: true,
+                        id: map._id,
+                        message: 'Map updated!',
+                    })
+                })
+                .catch(error => {
+                    console.log("FAILURE: " + JSON.stringify(error));
+                    return res.status(404).json({
+                        error,
+                        message: 'Map not updated!',
+                    })
+                })
+        })
 }
 
 getMapsByKeyword = async (req, res) => {
@@ -138,17 +210,17 @@ getMapsByUser = async (req, res) => {
 }
 
 getMaps = async (req, res) => {
-    try {
-        const maps = await Map.find();
-
-        res.status(200).json({
-            status: 200,
-            data: { success: true, maps },
-        });
-    } catch (error) {
-        console.log("err: " + err);
-        res.json(false);
-    }
+    await Map.find({}, (err, maps) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+        if (!maps.length) {
+            return res
+                .status(404)
+                .json({ success: false, error: `Maps not found` })
+        }
+        return res.status(200).json({ success: true, idNamePairs: maps })
+    }).catch(err => console.log(err))
 }
 
 module.exports = {
