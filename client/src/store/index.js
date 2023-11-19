@@ -171,36 +171,6 @@ function GlobalStoreContextProvider(props) {
     }
 
 
-    //Process getting information from server
-    //Process getting maps from server, returns array of ids
-        //store.getMaps = function()
-        /* store.getMaps = async function(L) {
-            try {
-                const response = await api.loginUser(email, password);
-                if (response.status === 200) {
-                    authReducer({
-                        type: GlobalStoreActionType.LOAD_CURRENT_MAPS,
-                        payload: {
-                            user: response.data.user
-                        }
-                    })
-                    navigate("/");
-                    // history.push("/");
-                }
-            } catch (error) {
-                console.log(error.response.data.errorMessage);
-                authReducer({
-                    type: AuthActionType.ERROR,
-                    payload: {
-                        errorMessage: error.response.data.errorMessage
-                    }
-                });
-            }
-        } */
-    //Process getting users from server
-        //store.getUsers = function()
-// //Processes changing to a different screen, change url
-// store.setCurrentScreen = (screenType)
 
 // //Processes changing to User screen with specified username
 // store.setCurrentScreenWithUser = (user)
