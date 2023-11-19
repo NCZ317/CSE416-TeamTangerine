@@ -7,7 +7,7 @@
     "start": "node server/index.js",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client",
     "test": "npm run cypress && npm run jest",
-    "jest": "cd tests && npx jest --forceExit", 
+    "jest": "cd tests && npx jest --forceExit",
     "cypress": "npx cypress run --spec \"cypress/e2e/spec.cy.js\""
   },
   "dependencies": {

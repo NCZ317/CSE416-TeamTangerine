@@ -171,6 +171,110 @@ function GlobalStoreContextProvider(props) {
     }
 
 
+    //Process getting information from server
+    //Process getting maps from server, returns array of ids
+        //store.getMaps = function()
+        /* store.getMaps = async function(L) {
+            try {
+                const response = await api.loginUser(email, password);
+                if (response.status === 200) {
+                    authReducer({
+                        type: GlobalStoreActionType.LOAD_CURRENT_MAPS,
+                        payload: {
+                            user: response.data.user
+                        }
+                    })
+                    navigate("/");
+                    // history.push("/");
+                }
+            } catch (error) {
+                console.log(error.response.data.errorMessage);
+                authReducer({
+                    type: AuthActionType.ERROR,
+                    payload: {
+                        errorMessage: error.response.data.errorMessage
+                    }
+                });
+            }
+        } */
+    //Process getting users from server
+        //store.getUsers = function()
+// //Processes changing to a different screen, change url
+// store.setCurrentScreen = (screenType)
+
+// //Processes changing to User screen with specified username
+// store.setCurrentScreenWithUser = (user)
+
+// //Sets the current user with the specified username
+// store.setCurrentUser = (user)...
+
+// //Loads all the Id, Name Pairs to list out the maps
+// store.loadIdNamePairs = ()...
+
+// //Loads all the maps that contains the keyword
+// store.loadMapsByKeyword = (keyword)...
+
+// //Loads all the private maps owned by the user
+// store.loadPrivateMaps = ()...
+
+// //Loads all the published maps owned by the user
+// store.loadPublishedMaps = ()...
+
+// //Loads all the maps liked by the user
+// store.loadLikedMaps = ()...
+
+// //Sorts the current maps by the sort method passed
+// store.sortCurrentMaps = (sortMethod)... 
+
+// //Processes closing the currently loaded map
+    store.closeCurrentMap = function(){
+        store.setScreen(CurrentScreen.HOME);
+    }
+
+// //Creates a  new map
+// store.createNewMap = ()
+
+// //Sets the current map that is being edited
+// store.setCurrentMap  =(id) => {}
+
+// //Shows the modal for editing the map details
+// store.showMapDetailsModal = (mapToEdit)...
+
+// //Adds a transaction for updating the map
+// store.addUpdateMapTransaction = (mapData) => {...
+
+// //Updates the map data of the current map
+// store.updateMap = (mapData)...
+
+// //Marks the map that is going to be deleted
+// store.markMapForDeletion = (id)...
+
+// //Deletes the map marked for deletion
+//Removes map with id from store
+// store.deleteMap = (id)...
+
+// //Increments the number of "likes" of a map graphic
+// store.likeMap = (id)
+
+// //Adds a comment to a map graphic
+// store.addComment = (message)...
+
+// //Duplicates a map graphic by creating a new map with same data
+// store.duplicateMap = (id)...
+
+// //Publishes a map graphic, and makes it no longer editable
+// store.publishMap = (id)...
+
+// //Hides all the modal from the view
+// store.hideModals = ()...
+
+// //Undo a transaction
+// store.undo = ()...
+
+// Do a transaction
+// store.redo = ()...
+
+
 
     return (
         <GlobalStoreContext.Provider value={{
