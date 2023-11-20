@@ -175,6 +175,28 @@ function AuthContextProvider(props) {
         }
     }
 
+    auth.changeUserPassword = async function (oldPass, newPass, confirmNewPass) {
+        try{
+            const response = await api.changeUserPassword(auth.user.id, oldPass, newPass, confirmNewPass);
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.LOGIN_USER,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                // history.push('/login');
+            }else alert("FAILED");
+        }catch (error){
+            authReducer({
+                type: AuthActionType.ERROR2,
+                payload: {
+                    errorMessage: error.response.data.errorMessage
+                }
+            });
+        }
+    }
+
     auth.hideModal = () => {
         authReducer({
             type: AuthActionType.ERROR2,

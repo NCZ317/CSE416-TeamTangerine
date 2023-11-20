@@ -35,19 +35,30 @@ export const registerUser = (firstName, lastName, email, username, password, pas
     })
 }
 export const editUser = (id, email, username, password) => {
-    return api.post('/edit', {
+    return api.post('/editProfile', {
         userId : id,
         newUsername : username,
         verifyPass: password,
         newEmail : email,
     })
 }
+export const changeUserPassword = (id, oldPass, newPass, confirmNewPass) => {
+    return api.post('/changePassword', {
+        userId : id,
+        newPassword : newPass,
+        verifyPass: oldPass,
+        confirmNewPassword : confirmNewPass,
+    })
+}
+
+
 const apis = {
     getLoggedIn,
     registerUser,
     loginUser,
     logoutUser,
-    editUser
+    editUser,
+    changeUserPassword
 }
 
 export default apis

@@ -1,5 +1,16 @@
 import React, { useState, useContext } from 'react';
-import { Card, CardContent, Typography, Box, Grid, IconButton, Popover, List, ListItem, ListItemText } from '@mui/material';
+import { 
+  Card, 
+  CardContent, 
+  Typography, 
+  Box, Grid, 
+  IconButton, 
+  Popover, 
+  List, 
+  ListItem, 
+  ListItemText,
+  Menu,
+  MenuItem} from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MapCard from './MapCard';
@@ -27,13 +38,15 @@ const ProfileWrapper = () => {
     handleSettingsClose();
   }
 
+  const handleChangePassword = () => {
+    setUpdateInfo("PASSWORD");
+    handleSettingsClose();
+  }
+
   const openSettings = Boolean(anchorEl);
 
 
   const settingsId = openSettings ? 'settings-popover' : undefined;
-
-
-  console.log("LOGGED IN: " + auth.loggedIn);
 
   return (
     <div>
@@ -47,30 +60,23 @@ const ProfileWrapper = () => {
             >
               <SettingsIcon fontSize="large" />
             </IconButton>
-            <Popover
-              id={settingsId}
-              open={openSettings}
-              anchorEl={anchorEl}
-              onClose={handleSettingsClose}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+            <Menu
+            id={settingsId}
+            anchorEl={anchorEl}
+            open={openSettings}
+            onClose={handleSettingsClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
             >
-              <List>
-                <ListItem onClick={handleEditProfile}>
-                  <ListItemText primary="Edit Profile" />
-                </ListItem>
-                <ListItem onClick={handleSettingsClose}>
-                  <ListItemText primary="Change Password" />
-                </ListItem>
-              </List>
-            </Popover>
-
+              <MenuItem onClick={handleEditProfile}>Edit Profile</MenuItem>
+              <MenuItem onClick={handleChangePassword}>Change Password</MenuItem>
+            </Menu>            
             <CardContent>
               <Box align="center">
               <Box alignItems="center" className = 'profile-user-circle'>

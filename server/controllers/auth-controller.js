@@ -224,7 +224,6 @@ editUser = async (req,res) => {
             await User.findByIdAndUpdate(userId, {email: newEmail});
         }
         const existingUserName = await User.findOne({ username: newUsername, _id: {'$ne': userId} });
-        console.log("existingUserName: " + existingUserName);
         if (newUsername && existingUserName) {
             return res
                 .status(400)
@@ -235,6 +234,74 @@ editUser = async (req,res) => {
         } else if (newUsername){
             await User.findByIdAndUpdate(userId, {username: newUsername});
         }
+        const dateJoined = new Date(loggedInUser.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        const updatedUser = await User.findOne({ _id: userId });
+        return res.status(200).json({user: {
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            email: updatedUser.email,
+            username: updatedUser.username,
+            numFollowers: updatedUser.followers.length,
+            numFollowing: updatedUser.following.length,
+            numPosts: updatedUser.numPosts,
+            dateJoined: dateJoined,
+            id: updatedUser._id,}});
+    } catch (error) {
+        console.log(error);
+        res.status(500).send();
+    }
+}
+
+changeUserPassword = async (req,res) => {
+    try {
+        const { userId, newPassword, verifyPass, confirmNewPassword} = req.body;
+        const loggedInUser = await User.findOne({ _id: userId });
+        console.log(loggedInUser);
+        if (!verifyPass){
+            return res
+                .status(400)
+                .json({
+                    errorMessage: "Please input your old password to confirm the change"
+                })
+        }
+        const passwordCorrect = await bcrypt.compare(verifyPass, loggedInUser.passwordHash);
+        if (!passwordCorrect) {
+            return res
+                .status(401)
+                .json({
+                    errorMessage: "Incorrect old password provided."
+                })
+        }
+        if (newPassword && newPassword.length < 8) {
+            return res
+                .status(400)
+                .json({
+                    errorMessage: "Your new password must have at least 8 characters"
+                });
+        }
+        if (!newPassword || !confirmNewPassword || newPassword != confirmNewPassword){
+            return res
+                .status(400)
+                .json({
+                    errorMessage: "Please enter your new password twice."
+                })
+        }
+        if (!newPassword || !confirmNewPassword || newPassword == verifyPass){
+            return res
+                .status(400)
+                .json({
+                    errorMessage: "Your new password must be different than your old password."
+                })
+        }
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+        const passwordH = await bcrypt.hash(newPassword, salt);
+        console.log("passwordHash: " + passwordH);
+        await User.findByIdAndUpdate(userId, {passwordHash: passwordH});
         const dateJoined = new Date(loggedInUser.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -273,5 +340,6 @@ module.exports = {
     registerUser,
     loginUser,
     logoutUser,
-    editUser
+    editUser,
+    changeUserPassword
 }
