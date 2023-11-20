@@ -330,9 +330,10 @@ sendEmail = async (req, res) => {
     
     try {
         console.log(User);
-        var userId = auth.verifyUser(req); 
-        const existingUser = await User.findOne({email:req.body})
-        console.log("existingUser: " + existingUser);
+        //const existingUser = await User.findOne({ email: email });
+        //const existingUser  = 'TerraTroveTangerine@gmail.com'
+        //console.log("existingUser: " + existingUser);
+        const existingUser = false;
         if (!existingUser) {
             return res
                 .status(401)
@@ -340,7 +341,8 @@ sendEmail = async (req, res) => {
                     errorMessage: "Email is not in database"
                 })
         }
-        const nodemailer = require('nodemailer');
+        
+        /* const nodemailer = require('nodemailer');
         var transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -350,13 +352,13 @@ sendEmail = async (req, res) => {
         });
 
         var mailOptions = {
-            from: 'TerraTrove@gmail.com',
-            to: email,
+            from: 'TerraTroveTangerine@gmail.com',
+            to: 'TerraTroveTangerine@gmail.com',
             subject: 'Forgot Password',
             text: 'Link to make new password'
         };
-        transporter.sendMail(mailOptions, function(error, info){
-        console.log('Email sent: ' + info.response)});
+        transporter.sendMail(mailOptions, function(error, info){ */
+        console.log('Email sent: ' + info.response);
     } catch (error) {
         console.log(error);
     } 
