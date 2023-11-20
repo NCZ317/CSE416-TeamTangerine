@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import {
     Button,
     Modal,
@@ -7,15 +7,17 @@ import {
     Paper,
     Typography,
 } from '@mui/material';
+import AuthContext from '../auth';
 
 export default function ForgotPasswordModal({open, onClose}) {
 
     const [email, setEmail] = useState('');
+    const { auth } = useContext(AuthContext);
 
     const handleForgotPassword = async () => {
-
+        auth.sendEmail(email);
+        alert('sent email');
         onClose();
-
     };
 
     return (
