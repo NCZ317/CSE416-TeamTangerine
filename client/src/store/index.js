@@ -123,7 +123,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     currentModal : CurrentModal.NONE,
                     currentScreen : payload.screen,
-                    idNamePairs: [],
+                    idNamePairs: store.idNamePairs,
                     currentMaps: [],
                     currentMap: payload,
                     mapTemplate: payload.mapType,
@@ -138,7 +138,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     currentModal : CurrentModal.NONE,
                     currentScreen : CurrentScreen.USER,
-                    idNamePairs: [],
+                    idNamePairs: store.idNamePairs,
                     currentMaps: [],
                     currentMap: null,
                     mapTemplate: null,
@@ -159,6 +159,21 @@ function GlobalStoreContextProvider(props) {
                     mapTemplate: null,
                     newMapCounter: store.newMapCounter,
                     mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                })
+            }
+
+            case GlobalStoreActionType.MARK_MAP_FOR_DELETION: {
+                return setStore({
+                    currentModal : CurrentModal.DELETE_MAP,
+                    currentScreen : store.currentScreen,
+                    idNamePairs: store.idNamePairs,
+                    currentMaps: [],
+                    currentMap: null,
+                    mapTemplate: null,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: payload,
                     currentSearchResult: "",
                     currentSortMethod: "",
                 })
@@ -265,6 +280,30 @@ function GlobalStoreContextProvider(props) {
         }
         asyncLoadIdNamePairs()
     }
+    //Marks the map that is going to be deleted
+    store.markMapForDeletion = function(id) {
+        async function asyncMarkMapForDeletion(id) {
+            let response = await api.getMapById(id);
+            if (response.data.success) {
+                let mapToDelete = response.data.map;
+                storeReducer({
+                    type: GlobalStoreActionType.MARK_MAP_FOR_DELETION,
+                    payload: mapToDelete,
+                })
+            }
+        } 
+        asyncMarkMapForDeletion(id);
+    }
+    //Deletes the map marked for deletion Removes map with id from store
+    store.deleteMap = function (id) {
+        async function processDelete(id) {
+            let response = await api.deleteMapById(id);
+            if (response.data.success) {
+                store.loadIdNamePairs(); //Regrab updated list
+            }
+        }
+        processDelete(id);
+    }
 
 // //Processes changing to User screen with specified username
 // store.setCurrentScreenWithUser = (user)
@@ -301,14 +340,6 @@ function GlobalStoreContextProvider(props) {
 // //Adds a transaction for updating the map
 // store.addUpdateMapTransaction = (mapData) => {...
 
-
-
-// //Marks the map that is going to be deleted
-// store.markMapForDeletion = (id)...
-
-// //Deletes the map marked for deletion
-//Removes map with id from store
-// store.deleteMap = (id)...
 
 // //Increments the number of "likes" of a map graphic
 // store.likeMap = (id)
