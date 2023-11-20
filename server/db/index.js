@@ -32,7 +32,7 @@ if (isTestEnvironment) {
   const mongoServer = new MongoMemoryServer();
 
   mongoServer.start().then(() => {
-    const mongoUri = mongoServer.getUri('Tangerine');
+    const mongoUri = mongoServer.getUri();
 
     mongoose
       .connect(mongoUri, {
