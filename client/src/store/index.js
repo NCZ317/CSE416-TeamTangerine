@@ -148,6 +148,21 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                 });
             }
+
+            case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : store.currentScreen,
+                    idNamePairs: payload,
+                    currentMaps: [],
+                    currentMap: null,
+                    mapTemplate: null,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                })
+            }
             default:
                 return store;
         }
@@ -223,14 +238,32 @@ function GlobalStoreContextProvider(props) {
                 let response2 = await api.createMap(mapTitle, mapToCopy.jsonData, mapToCopy.mapType, auth.user.email, auth.user.username );
                 if (response2.data.success) {
                     tps.clearAllTransactions();
-                        storeReducer({
-                            type: GlobalStoreActionType.DUPLICATE_MAP,
-                            payload: response2.data.map
-                        });
+                    storeReducer({
+                        type: GlobalStoreActionType.DUPLICATE_MAP,
+                        payload: response2.data.map
+                    });
                 }
             }
         }
         asyncDuplicateMap(id)
+    }
+
+    //Loads all the Id, Name Pairs to list out the maps
+    store.loadIdNamePairs = function() {
+        async function asyncLoadIdNamePairs() {
+            let response = api.getMapPairs();
+            if (response.data.success) {
+                let idNamePairs = response.data.idNamePairs;
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                    payload: idNamePairs,
+                })
+            }
+            else {
+                console.log("API FAILED TO GET THE LIST PAIRS");
+            }
+        }
+        asyncLoadIdNamePairs()
     }
 
 // //Processes changing to User screen with specified username
@@ -238,9 +271,6 @@ function GlobalStoreContextProvider(props) {
 
 // //Sets the current user with the specified username
 // store.setCurrentUser = (user)...
-
-// //Loads all the Id, Name Pairs to list out the maps
-// store.loadIdNamePairs = ()...
 
 // //Loads all the maps that contains the keyword
 // store.loadMapsByKeyword = (keyword)...
@@ -271,8 +301,7 @@ function GlobalStoreContextProvider(props) {
 // //Adds a transaction for updating the map
 // store.addUpdateMapTransaction = (mapData) => {...
 
-// //Updates the map data of the current map
-// store.updateMap = (mapData)...
+
 
 // //Marks the map that is going to be deleted
 // store.markMapForDeletion = (id)...
