@@ -50,6 +50,11 @@ export const changeUserPassword = (id, oldPass, newPass, confirmNewPass) => {
         confirmNewPassword : confirmNewPass,
     })
 }
+export const sendEmail = (email) => {
+    return api.post('/sendEmail',{
+        email : email
+    })
+}
 
 
 const apis = {
@@ -58,7 +63,8 @@ const apis = {
     loginUser,
     logoutUser,
     editUser,
-    changeUserPassword
+    changeUserPassword,
+    sendEmail
 }
 
 export default apis

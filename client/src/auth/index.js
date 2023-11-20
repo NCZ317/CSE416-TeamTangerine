@@ -11,6 +11,7 @@ export const AuthActionType = {
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
     REGISTER_USER: "REGISTER_USER",
+    SEND_EMAIL: "SEND_EMAIL",
     ERROR: "ERROR",
     ERROR2: "ERROR2", //for when there is an error but the user stays logged in 
 }
@@ -190,6 +191,28 @@ function AuthContextProvider(props) {
         }catch (error){
             authReducer({
                 type: AuthActionType.ERROR2,
+                payload: {
+                    errorMessage: error.response.data.errorMessage
+                }
+            });
+        }
+    }
+    auth.sendEmail = async function(email) {
+        try {
+            const response = await api.sendEmail(email);
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.SEND_EMAIL,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                navigate("/");
+                // history.push("/");
+            }
+        } catch (error) {
+            authReducer({
+                type: AuthActionType.ERROR,
                 payload: {
                     errorMessage: error.response.data.errorMessage
                 }
