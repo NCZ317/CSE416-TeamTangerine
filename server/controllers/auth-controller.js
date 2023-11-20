@@ -329,9 +329,8 @@ sendEmail = async (req, res) => {
     console.log('SEND EMAIL')
     
     try {
-        console.log(User);
-        var userId = auth.verifyUser(req); 
-        const existingUser = await User.findOne({email:req.body})
+        console.log(User.schema.obj.email);
+        const existingUser = await User.findOne()//.schema.obj({email:req.body})
         console.log("existingUser: " + existingUser);
         if (!existingUser) {
             return res
