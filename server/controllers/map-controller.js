@@ -1,5 +1,5 @@
 const Map = require('../models/map-model')
-
+const User = require('../models/user-model')
 createMap = async (req, res) => {
     const body = req.body;
     console.log("createMap body: " + JSON.stringify(body));

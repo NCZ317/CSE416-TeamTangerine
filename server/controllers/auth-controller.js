@@ -324,6 +324,44 @@ changeUserPassword = async (req,res) => {
     }
 }
 
+sendEmail = async (req, res) => {
+    const {email} = req.body;
+    console.log('SEND EMAIL')
+    
+    try {
+        console.log(User);
+        var userId = auth.verifyUser(req); 
+        const existingUser = await User.findOne({email:req.body})
+        console.log("existingUser: " + existingUser);
+        if (!existingUser) {
+            return res
+                .status(401)
+                .json({
+                    errorMessage: "Email is not in database"
+                })
+        }
+        const nodemailer = require('nodemailer');
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'TerraTroveTangerine@gmail.com',
+                pass: 'Tangerine'
+            }
+        });
+
+        var mailOptions = {
+            from: 'TerraTrove@gmail.com',
+            to: email,
+            subject: 'Forgot Password',
+            text: 'Link to make new password'
+        };
+        transporter.sendMail(mailOptions, function(error, info){
+        console.log('Email sent: ' + info.response)});
+    } catch (error) {
+        console.log(error);
+    } 
+}
+
 // simple regex function to check whether the given email is a valid email address
 const validateEmail = (email) => {
     return String(email)
@@ -341,5 +379,6 @@ module.exports = {
     loginUser,
     logoutUser,
     editUser,
-    changeUserPassword
+    changeUserPassword,
+    sendEmail
 }
