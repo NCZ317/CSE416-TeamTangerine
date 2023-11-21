@@ -325,15 +325,17 @@ changeUserPassword = async (req,res) => {
 }
 
 sendEmail = async (req, res) => {
-    const {email} = req.body;
+    const {email,username,password, confirmPassword} = req.body;
     console.log('SEND EMAIL')
     
     try {
         console.log(User);
-        //const existingUser = await User.findOne({ email: email });
-        //const existingUser  = 'TerraTroveTangerine@gmail.com'
-        //console.log("existingUser: " + existingUser);
-        const existingUser = false;
+        var existingUser = false;
+        try{
+            existingUser = await User.findOne({ email: email });
+        } catch(error){
+            console.log(error);
+        }
         if (!existingUser) {
             return res
                 .status(401)
@@ -341,9 +343,21 @@ sendEmail = async (req, res) => {
                     errorMessage: "Email is not in database"
                 })
         }
-        
+        const baseURL = process.env.NODE_ENV === 'production'
+            ? 'https://terratrove-df08dd7fc1f7.herokuapp.com/auth'
+            : 'http://localhost:4000/auth';
+
+        const api = axios.create({
+            baseURL,
+        });
+        return api.post('/changePassword', {
+            userId : existingUser._id,
+            newPassword : password,
+            verifyPass: existingUser.passwordHash,
+            confirmNewPassword : confirmPassword,
+        })
         /* const nodemailer = require('nodemailer');
-        var transporter = nodemailer.createTransport({
+        var transporter = nodemailer.createTransport({ //sender email
             service: 'gmail',
             auth: {
                 user: 'TerraTroveTangerine@gmail.com',
@@ -351,14 +365,17 @@ sendEmail = async (req, res) => {
             }
         });
 
-        var mailOptions = {
+        var mailOptions = { //email contents
             from: 'TerraTroveTangerine@gmail.com',
             to: 'TerraTroveTangerine@gmail.com',
             subject: 'Forgot Password',
             text: 'Link to make new password'
         };
-        transporter.sendMail(mailOptions, function(error, info){ */
+        transporter.sendMail(mailOptions, function(error, info){ //function to send email
         console.log('Email sent: ' + info.response);
+        res.status(200).json({
+            info.response;
+        })*/
     } catch (error) {
         console.log(error);
     } 

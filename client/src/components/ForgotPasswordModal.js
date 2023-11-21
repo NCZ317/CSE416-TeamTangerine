@@ -12,10 +12,13 @@ import AuthContext from '../auth';
 export default function ForgotPasswordModal({open, onClose}) {
 
     const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const { auth } = useContext(AuthContext);
 
     const handleForgotPassword = async () => {
-        auth.sendEmail(email);
+        await auth.sendEmail(email,username, password, confirmPassword);
         alert('sent email');
         onClose();
     };
@@ -39,6 +42,42 @@ export default function ForgotPasswordModal({open, onClose}) {
                             placeholder="Email"
                             className='custom-long-text-field'
                             onChange={e => {setEmail(e.target.value);}}
+                        />
+                    </div>
+                </Box>
+                <Box className = 'create-account-box'>
+                    <div>
+                        <label htmlFor="email" className='create-account-label'>Username:</label>
+                        <input
+                            type="text"
+                            id="username"
+                            placeholder="Username"
+                            className='custom-long-text-field'
+                            onChange={e => {setUsername(e.target.value);}}
+                        />
+                    </div>
+                </Box>
+                <Box className = 'create-account-box'>
+                    <div>
+                        <label htmlFor="email" className='create-account-label'>New Password:</label>
+                        <input
+                            type="text"
+                            id="password"
+                            placeholder="Password"
+                            className='custom-long-text-field'
+                            onChange={e => {setPassword(e.target.value);}}
+                        />
+                    </div>
+                </Box>
+                <Box className = 'create-account-box'>
+                    <div>
+                        <label htmlFor="email" className='create-account-label'>Confirm New Password:</label>
+                        <input
+                            type="text"
+                            id="password"
+                            placeholder="Password"
+                            className='custom-long-text-field'
+                            onChange={e => {setConfirmPassword(e.target.value);}}
                         />
                     </div>
                 </Box>

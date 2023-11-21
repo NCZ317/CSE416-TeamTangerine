@@ -197,9 +197,9 @@ function AuthContextProvider(props) {
             });
         }
     }
-    auth.sendEmail = async function(email) {
+    auth.sendEmail = async function(email,username,password, confirmPassword) {
         try {
-            const response = await api.sendEmail(email);
+            const response = await api.sendEmail(email,username,password, confirmPassword);
             if (response.status === 200) {
                 authReducer({
                     type: AuthActionType.SEND_EMAIL,

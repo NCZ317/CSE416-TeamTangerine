@@ -25,8 +25,9 @@ export default function EditDetailsModal({ open, onClose }) {
         setTags((prevTags) => prevTags.filter((tag) => tag !== tagToDelete));
     };
 
-    const handleSaveEdits = () =>{
+    const handleSaveEdits = (onClose) =>{
         alert("Saved Changes");
+        onClose();
     };
 
     return (
@@ -85,7 +86,7 @@ export default function EditDetailsModal({ open, onClose }) {
                     </Box>
 
                     <Box mt={2} className = 'delete-map-box'>
-                        <Button variant="contained" color="primary" className="login-button" onClick={handleSaveEdits}>
+                        <Button variant="contained" color="primary" className="login-button" onClick={()=>handleSaveEdits(onClose)}>
                             Save
                         </Button>
                     </Box>
