@@ -345,7 +345,7 @@ function GlobalStoreContextProvider(props) {
                 console.log(response.data);
                 storeReducer({
                     type: GlobalStoreActionType.SET_CURRENT_MAP,
-                    payload: map,
+                    payload: store.currentMap,
                 })
             }
         }
