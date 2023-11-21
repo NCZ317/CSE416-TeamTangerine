@@ -178,6 +178,21 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                 })
             }
+
+            case GlobalStoreActionType.SET_CURRENT_MAP: {
+                return setStore({
+                    currentModal : store.currentModal,
+                    currentScreen : store.currentScreen,
+                    idNamePairs: store.idNamePairs,
+                    currentMaps: [],
+                    currentMap: payload,
+                    mapTemplate: payload.mapTemplate,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                })
+            }
             default:
                 return store;
         }
@@ -291,6 +306,7 @@ function GlobalStoreContextProvider(props) {
                     payload: mapToDelete,
                 })
             }
+            else console.log("FAILED TO MARK MAP FOR DELETION");
         } 
         asyncMarkMapForDeletion(id);
     }
@@ -301,8 +317,39 @@ function GlobalStoreContextProvider(props) {
             if (response.data.success) {
                 store.loadIdNamePairs(); //Regrab updated list
             }
+            else console.log("FAILED TO DELETE MAP");
         }
         processDelete(id);
+    }
+
+    //Sets the current map that is being edited
+    store.setCurrentMap = function (id) {
+        async function asyncSetCurrentMap(id) {
+            let response = await api.getMapById(id);
+            if (response.data.success) {
+                let map = response.data.map;
+                storeReducer({
+                    type: GlobalStoreActionType.SET_CURRENT_MAP,
+                    payload: map,
+                })
+            }
+            else console.log("FAILED TO SET CURRENT MAP");
+        }
+        asyncSetCurrentMap(id);
+    }
+
+    store.updateCurrentMap = function() {
+        async function asyncUpdateCurrentMap() {
+            const response = await api.updateMapById(store.currentMap._id, store.currentMap);
+            if (response.data.success) {
+                console.log(response.data);
+                storeReducer({
+                    type: GlobalStoreActionType.SET_CURRENT_MAP,
+                    payload: store.currentMap,
+                })
+            }
+        }
+        asyncUpdateCurrentMap();
     }
 
 // //Processes changing to User screen with specified username
@@ -330,9 +377,6 @@ function GlobalStoreContextProvider(props) {
     store.closeCurrentMap = function(){
         store.setScreen(CurrentScreen.HOME);
     }
-
-// //Sets the current map that is being edited
-// store.setCurrentMap  =(id) => {}
 
 // //Shows the modal for editing the map details
 // store.showMapDetailsModal = (mapToEdit)...
