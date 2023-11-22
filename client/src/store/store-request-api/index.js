@@ -1,8 +1,8 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true;
 const baseURL = process.env.NODE_ENV === 'production'
-  ? 'https://terratrove-df08dd7fc1f7.herokuapp.com/auth'
-  : 'http://localhost:4000/auth';
+  ? 'https://terratrove-df08dd7fc1f7.herokuapp.com/api'
+  : 'http://localhost:4000/api';
 
 const api = axios.create({
   baseURL,
@@ -10,9 +10,10 @@ const api = axios.create({
 
 
 export const createMap =(title, jsonData, mapType, ownerEmail, username) => {
-    return api.post(`map`, {
+    console.log("USERNAME "+ username);
+    return api.post(`/map/`, {
         title: title,
-        description: '',
+        description: "Add a description",
         ownerEmail: ownerEmail,
         username: username,
         jsonData: jsonData,

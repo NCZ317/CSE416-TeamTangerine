@@ -22,6 +22,13 @@ export default function CreateMapModal({open,onClose}) {
     const [template, setTemplate] = useState("");
     const [page, setPage] = useState("");
     const fileInputRef = useRef(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        console.log('Selected File:', file);
+        setSelectedFile(file);
+    };
 
 
     const handleFileUpload = () => {
@@ -29,16 +36,29 @@ export default function CreateMapModal({open,onClose}) {
         fileInputRef.current.click();
     };
 
-    const handleFileChange = (event) => {
-        const selectedFile = event.target.files[0];
-        console.log('Selected File:', selectedFile);
-    };
+    const handleCreateMap = async () => {
+        // Check if a file is selected
+        if (!selectedFile) {
+            console.log("No file selected");
+            return;
+        }
 
-    const handleCreateMap = () => {
-        console.log("Make Map");
-        onClose();
-        store.setScreen("MAP_EDITOR");
-    }
+        // Read the contents of the selected GeoJSON file
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const jsonData = JSON.parse(event.target.result);
+
+            // Call the store.createNewMap function with the GeoJSON data
+            console.log(jsonData);
+            await store.createNewMap(jsonData, template);
+            
+            // Close the modal and set the screen to "MAP_EDITOR"
+            onClose();
+            store.setScreen("MAP_EDITOR");
+        };
+
+        reader.readAsText(selectedFile);
+    };
 
     const selectedCard = {
         border: '2px solid black'
@@ -143,12 +163,12 @@ export default function CreateMapModal({open,onClose}) {
                 </Typography>
 
                  {/* Upload Button */}
-                 <Box className = "modal-title">
+                <Box className="modal-title">
                     <input
                         ref={fileInputRef}
                         type="file"
-                        accept=".geojson, .shp, .kml .zip" // Specify the accepted file types
-                        id="create-map-input"// Hide the file input
+                        accept=".geojson, .shp, .kml .zip, .json"
+                        id="create-map-input"
                         onChange={handleFileChange}
                     />
                     <IconButton
@@ -159,20 +179,28 @@ export default function CreateMapModal({open,onClose}) {
                     >
                         <CloudUploadIcon className='create-map-cloud-icon' />
                     </IconButton>
+                    {selectedFile && (
+                        <Box mt={1}>
+                            <Typography variant="body2" color="textSecondary">
+                                Selected File: {selectedFile.name}
+                            </Typography>
+                        </Box>
+                    )}
                     <Typography variant="body2" color="textSecondary" mt={1}>
                         Supported File Types:
                     </Typography>
                     <Typography variant="body2" color="textSecondary" mt={1}>
-                        geoJSON, Shapefile, KML:
+                        geoJSON, Shapefile, KML
                     </Typography>
                 </Box>
                 
-                <Box mt={2} id = "create-map-box-create">
+                <Box mt={2} id="create-map-box-create">
                     <Button
                         variant="contained"
                         color="primary"
                         className="login-button"
                         onClick={handleCreateMap}
+                        disabled={selectedFile === null}
                     >
                         Create
                     </Button>

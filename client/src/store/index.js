@@ -244,6 +244,7 @@ function GlobalStoreContextProvider(props) {
     //Creates a  new map
     store.createNewMap = async function(jsonData, mapTemplate)  {
         let newMapTitle = auth.user.username + " - Untitled (" + store.newMapCounter + ")";
+        console.log(auth.user);
         const response = await api.createMap(newMapTitle, jsonData, mapTemplate, auth.user.email, auth.user.username );
         console.log(response);
         if(response.status == 201) {
