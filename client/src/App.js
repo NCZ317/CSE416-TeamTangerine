@@ -29,7 +29,7 @@ const App = () => {
           <AppBanner/>
           <Routes>
             <Route path="/" element={<HomeWrapper />} />
-            <Route path="/user" element={<ProfileWrapper />} />
+            <Route path="/user/:id" element={<ProfileWrapper />} />
             <Route path="/post" element={<PostWrapper />} />
             <Route path="/edit" element={<MapEditorWrapper />} />
           </Routes>
