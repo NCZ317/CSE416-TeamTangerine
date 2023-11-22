@@ -17,6 +17,7 @@ import ProfileWrapper from './components/ProfileWrapper';
 import MapWrapper from './components/MapWrapper';
 import ScreenWrapper from './components/ScreenWrapper';
 import MapEditorWrapper from './components/MapEditorWrapper';
+import ResetPasswordScreen from './components/ResetPasswordScreen'
 
 import {AuthContextProvider} from './auth';
 import { GlobalStoreContextProvider } from './store';
@@ -32,6 +33,7 @@ const App = () => {
             <Route path="/user" element={<ProfileWrapper />} />
             <Route path="/post" element={<PostWrapper />} />
             <Route path="/edit" element={<MapEditorWrapper />} />
+            <Route path="/reset" element={<ResetPasswordScreen />} />
           </Routes>
           {/* <ScreenWrapper/> */}
         </GlobalStoreContextProvider>
