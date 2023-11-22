@@ -94,7 +94,7 @@ loginUser = async (req, res) => {
                 firstName: existingUser.firstName,
                 lastName: existingUser.lastName,  
                 email: existingUser.email,
-                userName: existingUser.username,
+                username: existingUser.username,
                 numFollowers: existingUser.followers.length,
                 numFollowing: existingUser.following.length,
                 numPosts: existingUser.numPosts,

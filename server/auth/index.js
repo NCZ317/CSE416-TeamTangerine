@@ -21,7 +21,7 @@ function authManager() {
 
             next();
         } catch (err) {
-            console.error(err);
+            console.log(err);
             return res.status(401).json({
                 loggedIn: false,
                 user: null,
