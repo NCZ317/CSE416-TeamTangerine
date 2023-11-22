@@ -1,4 +1,3 @@
-// ChoroplethToolbox.js
 
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
@@ -13,13 +12,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
 
-const HeatmapToolbox = () => {
+const DotDensityToolbox = () => {
     const [selectedTab, setSelectedTab] = useState(0);
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
     const [mapSettingsOpen, setMapSettingsOpen] = useState(true);
 
-    const [data, setData] = useState([{lat: 0, long: 0, intensity: 0}])
-    const [legend, setLegend] = useState([{ value: '', color: '' }]);
+    const [legend, setLegend] = useState([{ value: '', description: '', color: '' }]);
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -33,38 +31,19 @@ const HeatmapToolbox = () => {
         setMapSettingsOpen(!mapSettingsOpen);
     }
 
-    const addDataRow = () => {
-        setData([...data, { lat: 0, long: 0, intensity: '' }]);
-    };
-
-    const handleLatData = (index, latitude) => {
-        const newData = [...data];
-        newData[index].lat = latitude;
-        setData(newData);
-    };
-    const handleLongData = (index, longitude) => {
-        const newData = [...data];
-        newData[index].long = longitude;
-        setData(newData);
-    };
-    const handleIntensityData = (index, intensity) => {
-        const newData = [...data];
-        newData[index].intensity = intensity;
-        setData(newData);
-    };
-    const deleteDataRow = (index) => {
-        const newData = [...data];
-        newData.splice(index, 1);
-        setData(newData);
-    };
-
     const addLegendRow = () => {
-        setLegend([...legend, { value: '', color: '' }]);
+        setLegend([...legend, { category: '', color: '' }]);
     };
 
-    const handleLegendValue = (index, value) => {
+    const handleLegendValue = (index, category) => {
         const newLegend = [...legend];
-        newLegend[index].value = value;
+        newLegend[index].category = category;
+        setLegend(newLegend);
+    };
+
+    const handleLegendDescription = (index, description) => {
+        const newLegend = [...legend];
+        newLegend[index].description = description;
         setLegend(newLegend);
     };
 
@@ -82,7 +61,7 @@ const HeatmapToolbox = () => {
 
 
     return (
-        <div className="heatmap-toolbox">
+        <div className="dotdensity-toolbox">
             <Tabs
                 value={selectedTab}
                 onChange={handleTabChange}
@@ -103,35 +82,22 @@ const HeatmapToolbox = () => {
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-
-                        {data.map((row, index) => (
-                            <div key={index} style={{display: 'flex'}}>
-                                <TextField
-                                    label="Latitude"
-                                    value={row.lat}
-                                    fullWidth
-                                    onChange={(e) => handleLatData(index, e.target.value)}
-                                />
-                                <TextField
-                                    label="Longitude"
-                                    value={row.long}
-                                    fullWidth
-                                    onChange={(e) => handleLongData(index, e.target.value)}
-                                />
-                                <TextField
-                                    label="Intensity"
-                                    value={row.intensity}
-                                    fullWidth
-                                    onChange={(e) => handleIntensityData(index, e.target.value)}
-                                />
-                                <IconButton variant="outlined" onClick={() => deleteDataRow(index)}>
-                                    <DeleteIcon/>
-                                </IconButton>
-                            </div>
-                        ))}
-                        <Button variant="outlined" onClick={addDataRow}>
-                            Add Data Point
-                        </Button>
+                        <Typography>Click on a map region to set the data for that region</Typography>
+                        <div style={{display: 'flex'}}>
+                            <TextField
+                                label="RegionName"
+                            />
+                            <TextField
+                                label="Value"
+                                type='number'
+                            />
+                            <TextField
+                                label="Category"
+                            />
+                            <IconButton variant="outlined">
+                                <DeleteIcon/>
+                            </IconButton>
+                        </div>
 
                     </Collapse>
 
@@ -142,34 +108,40 @@ const HeatmapToolbox = () => {
                     <Collapse in={mapSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-                        <Box style={{display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', margin: 10}}>
-                            <FormGroup>
-                                <FormControlLabel control={<Switch defaultChecked />} label="Scale Radius" />
-                            </FormGroup>
-
+                        
+                        <Box style={{display: 'flex'}}>
                             <TextField 
-                                label="Radius"
-                                type="number"
+                                label="Dot Size"
+                                type='Number'
                             />
+                            <TextField 
+                                label="Value per Dot"
+                                type='Number'
+                            />
+
                         </Box>
 
-                        <Box style={{display: 'flex', alignItems: 'center'}}>
-                            <TextField label="Opacity" fullWidth/>
-                            <TextField label="Blur" fullWidth />
-                            
-                        </Box>
+                        <FormGroup>
+                            <FormControlLabel control={<Switch defaultChecked />} label="Show Legend" />
+                        </FormGroup>
 
                         <Divider style={{borderBottom: '2px solid black', margin: 10}} />
 
-                        <Typography variant='h6'>Intensity Color Gradience</Typography>
 
+                        <Typography variant='h6'>Category Color Scale</Typography>
                         {legend.map((row, index) => (
                             <div key={index} style={{display: 'flex'}}>
                                 <TextField
-                                    label="From"
-                                    value={row.value}
+                                    label="Category"
+                                    value={row.category}
                                     fullWidth
                                     onChange={(e) => handleLegendValue(index, e.target.value)}
+                                />
+                                <TextField
+                                    label="Description"
+                                    value={row.description}
+                                    fullWidth
+                                    onChange={(e) => handleLegendDescription(index, e.target.value)}
                                 />
                                 <TextField
                                     label="Color"
@@ -184,7 +156,7 @@ const HeatmapToolbox = () => {
                             </div>
                         ))}
                         <Button variant="outlined" onClick={addLegendRow}>
-                            Add Gradience
+                            Add Category
                         </Button>
 
                     </Collapse>
@@ -201,6 +173,5 @@ const HeatmapToolbox = () => {
     );
 };
 
-export default HeatmapToolbox;
-
+export default DotDensityToolbox;
 
