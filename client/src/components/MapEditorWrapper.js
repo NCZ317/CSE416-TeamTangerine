@@ -12,6 +12,8 @@ import JSZip from 'jszip';
 import MapWrapper from './MapWrapper';
 import ChoroplethToolbox from './ChoroplethToolbox';
 import HeatmapToolbox from './HeatmapToolbox';
+import DotDensityToolbox from './DotDensityToolbox';
+import GraduatedSymbolToolbox from './GraduatedSymbolToolbox';
 
 import { GlobalStoreContext } from '../store';
 
@@ -75,6 +77,9 @@ const MapEditorWrapper = () => {
 
                     {/* <ChoroplethToolbox/> */}
                     <HeatmapToolbox/>
+                    {/* <DotDensityToolbox/> */}
+                    {/* <GraduatedSymbolToolbox/> */}
+
 
                 </Drawer>
             </>

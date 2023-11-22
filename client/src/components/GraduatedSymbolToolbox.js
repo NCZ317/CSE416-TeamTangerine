@@ -1,4 +1,3 @@
-// ChoroplethToolbox.js
 
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
@@ -13,13 +12,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
 
-const HeatmapToolbox = () => {
+const GraduatedSymbolToolbox = () => {
     const [selectedTab, setSelectedTab] = useState(0);
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
     const [mapSettingsOpen, setMapSettingsOpen] = useState(true);
 
-    const [data, setData] = useState([{lat: 0, long: 0, intensity: 0}])
-    const [legend, setLegend] = useState([{ value: '', color: '' }]);
+    const [data, setData] = useState([{lat: 0, long: 0, value: 0}])
+    const [legend, setLegend] = useState([{ value: 0, radius: 0 }]);
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -28,10 +27,6 @@ const HeatmapToolbox = () => {
     const handleDataSettings = () => {
         setDataSettingsOpen(!dataSettingsOpen);
     };
-
-    const handleMapSettings = () => {
-        setMapSettingsOpen(!mapSettingsOpen);
-    }
 
     const addDataRow = () => {
         setData([...data, { lat: 0, long: 0, intensity: '' }]);
@@ -47,9 +42,9 @@ const HeatmapToolbox = () => {
         newData[index].long = longitude;
         setData(newData);
     };
-    const handleIntensityData = (index, intensity) => {
+    const handleDataValue = (index, value) => {
         const newData = [...data];
-        newData[index].intensity = intensity;
+        newData[index].value = value;
         setData(newData);
     };
     const deleteDataRow = (index) => {
@@ -58,8 +53,12 @@ const HeatmapToolbox = () => {
         setData(newData);
     };
 
+    const handleMapSettings = () => {
+        setMapSettingsOpen(!mapSettingsOpen);
+    }
+
     const addLegendRow = () => {
-        setLegend([...legend, { value: '', color: '' }]);
+        setLegend([...legend, { value: 0, radius: 0 }]);
     };
 
     const handleLegendValue = (index, value) => {
@@ -68,9 +67,9 @@ const HeatmapToolbox = () => {
         setLegend(newLegend);
     };
 
-    const handleLegendColor = (index, color) => {
+    const handleLegendRadius = (index, radius) => {
         const newLegend = [...legend];
-        newLegend[index].color = color;
+        newLegend[index].radius = radius;
         setLegend(newLegend);
     };
 
@@ -82,7 +81,7 @@ const HeatmapToolbox = () => {
 
 
     return (
-        <div className="heatmap-toolbox">
+        <div className="dotdensity-toolbox">
             <Tabs
                 value={selectedTab}
                 onChange={handleTabChange}
@@ -119,10 +118,10 @@ const HeatmapToolbox = () => {
                                     onChange={(e) => handleLongData(index, e.target.value)}
                                 />
                                 <TextField
-                                    label="Intensity"
-                                    value={row.intensity}
+                                    label="Value"
+                                    value={row.value}
                                     fullWidth
-                                    onChange={(e) => handleIntensityData(index, e.target.value)}
+                                    onChange={(e) => handleDataValue(index, e.target.value)}
                                 />
                                 <IconButton variant="outlined" onClick={() => deleteDataRow(index)}>
                                     <DeleteIcon/>
@@ -142,41 +141,33 @@ const HeatmapToolbox = () => {
                     <Collapse in={mapSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-                        <Box style={{display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', margin: 10}}>
-                            <FormGroup>
-                                <FormControlLabel control={<Switch defaultChecked />} label="Scale Radius" />
-                            </FormGroup>
-
-                            <TextField 
-                                label="Radius"
-                                type="number"
-                            />
-                        </Box>
-
-                        <Box style={{display: 'flex', alignItems: 'center'}}>
-                            <TextField label="Opacity" fullWidth/>
-                            <TextField label="Blur" fullWidth />
-                            
-                        </Box>
+                        
+                        <TextField 
+                            label="Symbol Color"
+                            type='color'
+                            fullWidth
+                        />
 
                         <Divider style={{borderBottom: '2px solid black', margin: 10}} />
 
-                        <Typography variant='h6'>Intensity Color Gradience</Typography>
 
+                        <Typography variant='h6'>Radius Scale</Typography>
                         {legend.map((row, index) => (
                             <div key={index} style={{display: 'flex'}}>
                                 <TextField
                                     label="From"
+                                    type='Number'
                                     value={row.value}
                                     fullWidth
                                     onChange={(e) => handleLegendValue(index, e.target.value)}
                                 />
+
                                 <TextField
-                                    label="Color"
-                                    type="color"
-                                    value={row.color}
+                                    label="Symbol Radius"
+                                    type="Number"
+                                    value={row.radius}
                                     fullWidth
-                                    onChange={(e) => handleLegendColor(index, e.target.value)}
+                                    onChange={(e) => handleLegendRadius(index, e.target.value)}
                                 />
                                 <IconButton variant="outlined" onClick={() => deleteLegendRow(index)}>
                                     <DeleteIcon/>
@@ -184,7 +175,7 @@ const HeatmapToolbox = () => {
                             </div>
                         ))}
                         <Button variant="outlined" onClick={addLegendRow}>
-                            Add Gradience
+                            Add Scale Value
                         </Button>
 
                     </Collapse>
@@ -201,6 +192,5 @@ const HeatmapToolbox = () => {
     );
 };
 
-export default HeatmapToolbox;
-
+export default GraduatedSymbolToolbox;
 
