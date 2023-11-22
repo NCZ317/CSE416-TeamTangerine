@@ -197,9 +197,9 @@ function AuthContextProvider(props) {
             });
         }
     }
-    auth.sendEmail = async function(email,username,password, confirmPassword) {
+    auth.sendEmail = async function(email, password, confirmPassword) {
         try {
-            const response = await api.sendEmail(email,username,password, confirmPassword);
+            const response = await api.sendEmail(email, password, confirmPassword);
             if (response.status === 200) {
                 authReducer({
                     type: AuthActionType.SEND_EMAIL,
@@ -207,8 +207,6 @@ function AuthContextProvider(props) {
                         user: response.data.user
                     }
                 })
-                navigate("/");
-                // history.push("/");
             }
         } catch (error) {
             authReducer({

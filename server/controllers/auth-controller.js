@@ -283,14 +283,14 @@ changeUserPassword = async (req,res) => {
                     errorMessage: "Your new password must have at least 8 characters"
                 });
         }
-        if (!newPassword || !confirmNewPassword || newPassword != confirmNewPassword){
+        else if (!confirmNewPassword || newPassword != confirmNewPassword){
             return res
                 .status(400)
                 .json({
                     errorMessage: "Please enter your new password twice."
                 })
         }
-        if (!newPassword || !confirmNewPassword || newPassword == verifyPass){
+        else if (newPassword == verifyPass){
             return res
                 .status(400)
                 .json({
@@ -325,7 +325,11 @@ changeUserPassword = async (req,res) => {
 }
 
 sendEmail = async (req, res) => {
-    const {email,username,password, confirmPassword} = req.body;
+    const {email, newPassword, confirmNewPassword} = req.body;
+    console.log(req.body);
+    console.log(email);
+    console.log(newPassword)
+    console.log(confirmNewPassword)
     console.log('SEND EMAIL')
     
     try {
@@ -343,25 +347,52 @@ sendEmail = async (req, res) => {
                     errorMessage: "Email is not in database"
                 })
         }
-        const baseURL = process.env.NODE_ENV === 'production'
-            ? 'https://terratrove-df08dd7fc1f7.herokuapp.com/auth'
-            : 'http://localhost:4000/auth';
-
-        const api = axios.create({
-            baseURL,
+        console.log('existingUser: '+ existingUser);
+        //temp Reseter
+        if (newPassword && newPassword.length < 8) {
+            return res
+                .status(400)
+                .json({
+                    errorMessage: "Your new password must have at least 8 characters"
+                });
+        }
+        else if (!newPassword || !confirmNewPassword || newPassword != confirmNewPassword){
+            return res
+                .status(400)
+                .json({
+                    errorMessage: "Please enter your new password twice."
+                })
+        }
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+        const passwordH = await bcrypt.hash(newPassword, salt);
+        console.log("passwordHash: " + passwordH);
+        await User.findByIdAndUpdate(existingUser._id, {passwordHash: passwordH});
+        const dateJoined = new Date(existingUser.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         });
-        return api.post('/changePassword', {
-            userId : existingUser._id,
-            newPassword : password,
-            verifyPass: existingUser.passwordHash,
-            confirmNewPassword : confirmPassword,
-        })
+        const updatedUser = existingUser;
+        return res.status(200).json({user: {
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            email: updatedUser.email,
+            username: updatedUser.username,
+            numFollowers: updatedUser.followers.length,
+            numFollowing: updatedUser.following.length,
+            numPosts: updatedUser.numPosts,
+            dateJoined: dateJoined,
+            id: updatedUser._id,}});
         /* const nodemailer = require('nodemailer');
+        //const generatedPassword = ;
         var transporter = nodemailer.createTransport({ //sender email
-            service: 'gmail',
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
             auth: {
                 user: 'TerraTroveTangerine@gmail.com',
-                pass: 'Tangerine'
+                pass: generatedPassword
             }
         });
 
@@ -371,13 +402,15 @@ sendEmail = async (req, res) => {
             subject: 'Forgot Password',
             text: 'Link to make new password'
         };
-        transporter.sendMail(mailOptions, function(error, info){ //function to send email
-        console.log('Email sent: ' + info.response);
-        res.status(200).json({
-            info.response;
-        })*/
+        transporter.sendMail(mailOptions, function(error, info){//function to send email
+            try{
+                console.log('Email sent: ' + info);
+                res.status(200)
+            } catch(error){console.log(error)}
+        })  */
     } catch (error) {
         console.log(error);
+        res.status(500).send();
     } 
 }
 

@@ -114,7 +114,7 @@ const MapCard = ({ myMap }) => {
           ))}
         </div>
         <Typography variant="h3" className='map-card-typography'>
-          Title
+          Title {/* store.currentMaps[x].title */}
         </Typography>
         <Typography variant="h6" className='map-card-typography'>
           Author: User1
