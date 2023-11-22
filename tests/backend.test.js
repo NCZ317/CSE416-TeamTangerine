@@ -110,7 +110,7 @@ describe('Authentication Tests', () => {
                 firstName: expect.any(String),
                 lastName: expect.any(String),
                 email: expect.any(String),
-                userName: expect.any(String)
+                username: expect.any(String)
             }));
 
             // Store the authentication token for future requests
