@@ -217,7 +217,27 @@ function AuthContextProvider(props) {
             });
         }
     }
-
+    auth.resetPassword = async function(email, verifyPass, password, confirmPassword){
+        try{
+            const response = await api.resetPassword(email,verifyPass, password,  confirmPassword);
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.LOGIN_USER,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                // history.push('/login');
+            }else alert("FAILED");
+        }catch (error){
+            authReducer({
+                type: AuthActionType.ERROR2,
+                payload: {
+                    errorMessage: error.response.data.errorMessage
+                }
+            });
+        }
+    }
     auth.hideModal = () => {
         authReducer({
             type: AuthActionType.ERROR2,

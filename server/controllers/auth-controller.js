@@ -348,7 +348,65 @@ sendEmail = async (req, res) => {
                 })
         }
         console.log('existingUser: '+ existingUser);
-        //temp Reseter
+        const nodemailer = require('nodemailer');
+        const generatedPassword = 'bwnz vlgl vwob krbv';
+        var transporter = nodemailer.createTransport({ //sender email
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: 'dylan.lai@stonybrook.edu',
+                pass: generatedPassword
+            }
+        });
+
+        const baseURL = process.env.NODE_ENV === 'production'
+            ? 'https://terratrove-df08dd7fc1f7.herokuapp.com/reset/'
+            : 'http://localhost:3000/reset';
+        console.log(existingUser.passwordHash)
+        const hashPass = existingUser.passwordHash;
+        console.log(hashPass)
+        var mailOptions = { //email contents
+            from: 'dylan.lai@stonybrook.edu',
+            to: email,
+            subject: 'Forgot Password',
+            text: 'Link to make new password ' + baseURL + '?' + email + '//' + hashPass + '   '
+        };
+        transporter.sendMail(mailOptions, function(error, info){//function to send email
+            try{
+                console.log('Email sent: ' + info);
+                res.status(200)
+            } catch(error){console.log(error)}
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).send();
+    } 
+}
+resetPassword = async(req,res) =>{
+     //temp Reseter
+     try {
+        const { email, verifyPass, newPassword,  confirmNewPassword} = req.body;
+        console.log(req.body)
+        console.log(email)
+        const thisUser = await User.findOne({ email: email });
+        console.log(thisUser);
+        console.log(verifyPass)
+        if (!verifyPass){
+            return res
+                .status(400)
+                .json({
+                    errorMessage: "Illegal Actions taken"
+                })
+        }
+        const passwordCorrect = (verifyPass===thisUser.passwordHash);
+        if (!passwordCorrect) {
+            return res
+                .status(401)
+                .json({
+                    errorMessage: "Illegal Actions taken"
+                })
+        }
         if (newPassword && newPassword.length < 8) {
             return res
                 .status(400)
@@ -356,7 +414,7 @@ sendEmail = async (req, res) => {
                     errorMessage: "Your new password must have at least 8 characters"
                 });
         }
-        else if (!newPassword || !confirmNewPassword || newPassword != confirmNewPassword){
+        else if (!confirmNewPassword || newPassword != confirmNewPassword){
             return res
                 .status(400)
                 .json({
@@ -367,13 +425,13 @@ sendEmail = async (req, res) => {
         const salt = await bcrypt.genSalt(saltRounds);
         const passwordH = await bcrypt.hash(newPassword, salt);
         console.log("passwordHash: " + passwordH);
-        await User.findByIdAndUpdate(existingUser._id, {passwordHash: passwordH});
-        const dateJoined = new Date(existingUser.createdAt).toLocaleDateString('en-US', {
+        await User.findByIdAndUpdate(thisUser._id, {passwordHash: passwordH});
+        const dateJoined = new Date(thisUser.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
-        const updatedUser = existingUser;
+        const updatedUser = await User.findOne({ _id: thisUser._id });
         return res.status(200).json({user: {
             firstName: updatedUser.firstName,
             lastName: updatedUser.lastName,
@@ -384,34 +442,10 @@ sendEmail = async (req, res) => {
             numPosts: updatedUser.numPosts,
             dateJoined: dateJoined,
             id: updatedUser._id,}});
-        /* const nodemailer = require('nodemailer');
-        //const generatedPassword = ;
-        var transporter = nodemailer.createTransport({ //sender email
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true,
-            auth: {
-                user: 'TerraTroveTangerine@gmail.com',
-                pass: generatedPassword
-            }
-        });
-
-        var mailOptions = { //email contents
-            from: 'TerraTroveTangerine@gmail.com',
-            to: 'TerraTroveTangerine@gmail.com',
-            subject: 'Forgot Password',
-            text: 'Link to make new password'
-        };
-        transporter.sendMail(mailOptions, function(error, info){//function to send email
-            try{
-                console.log('Email sent: ' + info);
-                res.status(200)
-            } catch(error){console.log(error)}
-        })  */
     } catch (error) {
         console.log(error);
         res.status(500).send();
-    } 
+    }
 }
 
 // simple regex function to check whether the given email is a valid email address
@@ -432,5 +466,6 @@ module.exports = {
     logoutUser,
     editUser,
     changeUserPassword,
-    sendEmail
+    sendEmail,
+    resetPassword
 }
