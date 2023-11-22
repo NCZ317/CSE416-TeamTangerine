@@ -1,5 +1,6 @@
 import React, { useState, Component, useContext } from 'react';
 import { Box, Card, CardContent, Grid, Typography, Button, Drawer, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import AppBanner from './AppBanner';
 import { styled } from '@mui/material/styles';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
@@ -9,10 +10,12 @@ import * as shapefile from 'shapefile';
 import toGeoJSON from 'togeojson';
 import JSZip from 'jszip';
 import MapWrapper from './MapWrapper';
+import ChoroplethToolbox from './ChoroplethToolbox';
+import HeatmapToolbox from './HeatmapToolbox';
 
 import { GlobalStoreContext } from '../store';
 
-const drawerWidth = 240;
+const drawerWidth = '25%';
 
 const MapEditorWrapper = () => {
 
@@ -52,11 +55,12 @@ const MapEditorWrapper = () => {
                     flexShrink: 0,
                     '& .MuiDrawer-paper': {
                         width: drawerWidth,
-                        top: '15%',
+                        top: 0,
+                        bottom: 0,
                         backgroundColor: '#79c200',
                         color: '#000',
-                        borderRadius: "25px",
-                        height: '75%',
+                        // borderRadius: "25px",
+                        // height: '75%',
                     },
                     }}
                     variant="persistent"
@@ -65,9 +69,13 @@ const MapEditorWrapper = () => {
                 >   
                     <div className='map-editor-drawer-header'>
                         <IconButton onClick={handleDrawerClose}>
-                            close
+                            <CloseIcon fontSize='large'/>
                         </IconButton>
                     </div>
+
+                    {/* <ChoroplethToolbox/> */}
+                    <HeatmapToolbox/>
+
                 </Drawer>
             </>
             <>
