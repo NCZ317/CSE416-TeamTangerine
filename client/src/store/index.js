@@ -217,7 +217,8 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.USER
                 }
             });
-            navigate("/user");
+            console.log(auth.user);
+            navigate("/user/" + auth.user.id);
         }
         if (screenType === CurrentScreen.MAP_POST) {
             storeReducer({
@@ -226,7 +227,7 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.MAP_POST
                 }
             });
-            navigate("/post");
+            navigate("/post/");
         }
         if (screenType === CurrentScreen.MAP_EDITOR) {
             storeReducer({
