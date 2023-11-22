@@ -120,7 +120,7 @@ const MapCard = ({ myMap }) => {
           Author: User1
         </Typography>
         <Typography variant="body1" className='map-card-typography-2'>
-          Map of Asia
+          Map
         </Typography>
       </CardContent>
       <EditDetailsModal open={isEditDetailsModalOpen} onClose={handleEditDetailsModalClose} />
