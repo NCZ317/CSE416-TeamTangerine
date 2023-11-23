@@ -118,11 +118,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                 });
             }
-            //THIS SHOULD BE CALLED WHEN USER HITS SAVE AND EXIT ON MAP EDITOR
             case GlobalStoreActionType.CREATE_NEW_MAP: {
                 return setStore({
                     currentModal : CurrentModal.NONE,
-                    currentScreen : payload.screen,
+                    currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
                     currentMaps: [],
                     currentMap: payload,
@@ -244,9 +243,7 @@ function GlobalStoreContextProvider(props) {
     //Creates a  new map
     store.createNewMap = async function(jsonData, mapTemplate)  {
         let newMapTitle = auth.user.username + " - Untitled (" + store.newMapCounter + ")";
-        console.log(auth.user);
         const response = await api.createMap(newMapTitle, jsonData, mapTemplate, auth.user.email, auth.user.username );
-        console.log(response);
         if(response.status == 201) {
             tps.clearAllTransactions();
             let newMap = response.data.map;
@@ -334,6 +331,7 @@ function GlobalStoreContextProvider(props) {
                     type: GlobalStoreActionType.SET_CURRENT_MAP,
                     payload: map,
                 })
+                
             }
             else console.log("FAILED TO SET CURRENT MAP");
         }
