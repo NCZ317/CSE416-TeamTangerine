@@ -10,11 +10,15 @@ import DeleteMapModal from './DeleteMapModal'
 
 import { GlobalStoreContext } from '../store';
 
-const MapCard = ({ myMap }) => {
+function MapCard(props) {
   const { store } = useContext(GlobalStoreContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isEditDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
   const [isDeleteMapModalOpen, setDeleteMapModalOpen] = useState(false);
+  const { myMap, idNamePair } = props
+
+  console.log("MAP CARD INSTANCE");
+  console.log(props)
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -54,8 +58,25 @@ const MapCard = ({ myMap }) => {
       store.setScreen("MAP_POST");
     }
   }
-
-  const tags = ['HeatMap', 'Asia'];
+  let title = "Title"
+  let author = "Author"
+  let description = "A Map";
+  let tags = ['HeatMap', 'Asia'];
+  let likes = 0;
+  let comments = 0;
+  let views = 0;
+  if (props) {
+    if (props.idNamePair) {
+      let pair = props.idNamePair;
+      title = pair.title;
+      author = pair.username;
+      description = pair.description;
+      tags = [pair.mapType];
+      likes = pair.likes;
+      comments = pair.comments.length;
+      views = pair.views;
+    }
+  }
 
   return (
     <Card className='map-card' onClick={handleCardClick}>
@@ -88,16 +109,16 @@ const MapCard = ({ myMap }) => {
           <Box className='map-card-box-2'>
             <FavoriteIcon className='map-card-favorite-icon' />
             <Typography variant="body2">
-              0
+              {likes}
             </Typography>
           </Box>
           <Box className='map-card-box-2'>
             <ChatBubbleOutlinedIcon className='map-card-favorite-icon' />
-            <Typography variant="body2">0</Typography>
+            <Typography variant="body2">{comments}</Typography>
           </Box>
           <Box className='map-card-box-2'>
             <VisibilityOutlinedIcon className='map-card-favorite-icon' />
-            <Typography variant="body2">0</Typography>
+            <Typography variant="body2">{views}</Typography>
           </Box>
         </div>
       </Box>
@@ -114,13 +135,13 @@ const MapCard = ({ myMap }) => {
           ))}
         </div>
         <Typography variant="h3" className='map-card-typography'>
-          Title {/* store.currentMaps[x].title */}
+          {title}
         </Typography>
         <Typography variant="h6" className='map-card-typography'>
-          Author: User1
+          By: {author}
         </Typography>
         <Typography variant="body1" className='map-card-typography-2'>
-          Map
+          {description}
         </Typography>
       </CardContent>
       <EditDetailsModal open={isEditDetailsModalOpen} onClose={handleEditDetailsModalClose} />

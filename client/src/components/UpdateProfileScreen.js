@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect  } from 'react';
 import { 
     Typography, 
     Box, 
@@ -14,10 +14,30 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MapCard from './MapCard';
 
 import AuthContext from '../auth';
+import GlobalStoreContext from '../store';
 
 const UpdateProfileScreen = ({state, setState}) => {
     console.log(state)
     const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
+
+    useEffect(() => {
+        store.loadIdNamePairs();
+    }, []);
+
+
+    let mapList = "";
+    if (store) {
+        mapList =
+            <List>
+                {
+                    store.idNamePairs.map((pair) => (
+                        <MapCard key={pair._id} myMap={true} idNamePair={pair}/>
+                    ))
+                }
+            </List>
+    }
+    console.log(store.idNamePairs);
 
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
@@ -108,12 +128,7 @@ const UpdateProfileScreen = ({state, setState}) => {
                         </List>
                     </Popover>
                     </Box>
-
-                    <div id='profile-div'>
-                    <MapCard myMap={true} />
-                    <MapCard myMap={true}/>
-                    <MapCard myMap={true}/>
-                    </div>
+                    {mapList}
                 </Box>
             </Grid>
         )

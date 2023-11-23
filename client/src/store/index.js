@@ -216,8 +216,8 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.USER
                 }
             });
-            console.log(auth.user);
             navigate("/user/" + auth.user.id);
+            store.loadIdNamePairs();
         }
         if (screenType === CurrentScreen.MAP_POST) {
             storeReducer({
@@ -280,7 +280,8 @@ function GlobalStoreContextProvider(props) {
     //Loads all the Id, Name Pairs to list out the maps
     store.loadIdNamePairs = function() {
         async function asyncLoadIdNamePairs() {
-            let response = api.getMapPairs();
+            let response = await api.getMapPairs();
+            console.log(response.data);
             if (response.data.success) {
                 let idNamePairs = response.data.idNamePairs;
                 storeReducer({

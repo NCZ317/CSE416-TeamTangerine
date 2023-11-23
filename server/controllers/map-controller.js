@@ -107,8 +107,8 @@ getMapPairs = async (req, res) => {
 
         console.log("found Maps: " + JSON.stringify(maps));
 
-        if (!maps || maps.length === 0) {
-            console.log("!maps.length");
+        if (!maps) {
+            console.log("!maps");
             return res.status(404).json({ success: false, error: 'Maps not found' });
         } else {
             console.log("Send the Maps pairs");
@@ -120,6 +120,7 @@ getMapPairs = async (req, res) => {
                 username: map.username,
                 mapType: map.mapType,
                 likes: map.likes,
+                views: map.views,
                 comments: map.comments,
                 published: map.published
             }));
