@@ -93,7 +93,6 @@ function GlobalStoreContextProvider(props) {
     const navigate = useNavigate();
 
     console.log("inside useGlobalStore");
-    console.log(store.mapMarkedForDeletion);
 
     // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
     const { auth } = useContext(AuthContext);
@@ -340,6 +339,34 @@ function GlobalStoreContextProvider(props) {
             else console.log("FAILED TO SET CURRENT MAP");
         }
         asyncSetCurrentMap(id);
+    }
+
+    store.updateMapDetailsById = function(id, newTitle, newRegions, newDescription) {
+        console.log(id);
+        console.log(newTitle);
+        console.log(newRegions);
+        console.log(newDescription);
+        async function asyncUpdateMapDetails(id, newTitle, newRegions, newDescription) {
+            let response = await api.getMapById(id);
+            if (response.data.success) {
+                let map = response.data.map;
+                map.title = newTitle;
+                map.regions = newRegions;
+                map.description = newDescription;
+                let response2 = await api.updateMapById(id, map);
+                if (response2.data.success) {
+                    console.log("API UPDATED DETAILS");
+                    store.loadIdNamePairs(); //Show Updates on Page
+                }
+                else {
+                    console.log("API COULDN'T UPDATE DETAILS");
+                }
+            }
+            else {
+                console.log("MAP NOT FOUND")
+            }
+        }
+        asyncUpdateMapDetails(id, newTitle, newRegions, newDescription);
     }
 
     store.updateCurrentMap = function() {

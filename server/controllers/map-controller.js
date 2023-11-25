@@ -128,6 +128,7 @@ getMapPairs = async (req, res) => {
                 description: map.description,
                 username: map.username,
                 mapType: map.mapType,
+                regions: map.regions,
                 likes: map.likes,
                 views: map.views,
                 comments: map.comments,
@@ -167,6 +168,7 @@ updateMap = async (req, res) => {
         map.description = body.map.description;
         map.jsonData = body.map.jsonData;
         map.mapLayers = body.map.mapLayers;
+        map.regions = body.map.regions;
         map.likes = body.map.likes;
         map.views = body.map.views;
         map.comments = body.map.comments;

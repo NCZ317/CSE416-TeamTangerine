@@ -53,9 +53,10 @@ function MapCard(props) {
 
   //NEED TO MODIFY LATER ON --> OPEN MAP_POST IF MAP IS ONLY PUBLISHED
   const handleCardClick = () => {
-    if (store.currentScreen === "HOME") {
+    if (props.idNamePair.published) {
       store.setScreen("MAP_POST");
     }
+    //else console.log("THIS MAP ISNT PUBLIC")
   }
   let title = "Title"
   let author = "Author"
@@ -70,11 +71,16 @@ function MapCard(props) {
       title = pair.title;
       author = pair.username;
       description = pair.description;
-      tags = [pair.mapType];
+      tags = [pair.mapType, ...pair.regions];
       likes = pair.likes;
       comments = pair.comments.length;
       views = pair.views;
     }
+  }
+
+  let editModal = "";
+  if (myMap) {
+    editModal = <EditDetailsModal idNamePair={idNamePair} open={isEditDetailsModalOpen} onClose={handleEditDetailsModalClose} />;
   }
 
   return (
@@ -143,7 +149,7 @@ function MapCard(props) {
           {description}
         </Typography>
       </CardContent>
-      <EditDetailsModal open={isEditDetailsModalOpen} onClose={handleEditDetailsModalClose} />
+      {editModal}
       <DeleteMapModal open={isDeleteMapModalOpen} onClose={handleDeleteMapModalClose} />
     </Card>
   );

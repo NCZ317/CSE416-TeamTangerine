@@ -111,6 +111,23 @@ code {
   margin-top: 6px;
 }
 
+#region-checkboxes {
+  display: flex;
+  flex-direction: row;
+  margin-top: 16px;
+  border-radius: 24px;
+  background-color: #d9d9d9;
+  color: #000; 
+  width:600px; 
+  display: block;
+  margin-bottom: 12px;
+  justify-content: center;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
 #create-account-button {
   width: 24%;
   height: 40px;
@@ -327,6 +344,10 @@ code {
 
 .edit-details-chip{
   margin: 4px;
+}
+
+.region-checkboxes{
+  margin-top: 10px;
 }
 
 #forgot-password-paper{

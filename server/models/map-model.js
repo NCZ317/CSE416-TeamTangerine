@@ -9,6 +9,7 @@ const mapSchema = new Schema({
     username: { type: String, required: true },
     jsonData: { type: Object, required: true },
     mapType: { type: String, required: true },
+    regions: { type: [String], default: [] },
     mapLayers: { type: Schema.Types.Mixed }, 
     likes: { type: Number, required: true },
     views: { type: Number, required: true },
