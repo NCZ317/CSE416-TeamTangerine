@@ -360,10 +360,9 @@ sendEmail = async (req, res) => {
             }
         });
 
-        /* const baseURL = process.env.NODE_ENV === 'production'
+        const baseURL = process.env.NODE_ENV === 'production'
             ? 'https://terratrove-df08dd7fc1f7.herokuapp.com/reset'
-            : 'http://localhost:3000/reset'; */
-        const baseURL = 'https://terratrove-df08dd7fc1f7.herokuapp.com/reset'
+            : 'http://localhost:3000/reset';
         console.log(existingUser.passwordHash)
         const hashPass = existingUser.passwordHash;
         console.log(hashPass)
