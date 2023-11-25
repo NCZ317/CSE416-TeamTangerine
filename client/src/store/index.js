@@ -20,7 +20,6 @@ export const GlobalStoreActionType = {
     SET_CURRENT_MAP: "SET_CURRENT_MAP",
     EDIT_MAP_DETAILS: "EDIT_MAP_DETAILS",
     EDIT_MAP_GRAPHICS: "EDIT_MAP_GRAPHICS",
-    MARK_MAP_FOR_DELETION: "MARK_MAP_FOR_DELETION",
     DELETE_MAP: "DELETE_MAP",
     DUPLICATE_MAP: "DUPLICATE_MAP",
     HIDE_MODALS: "HIDE_MODALS",
@@ -94,6 +93,7 @@ function GlobalStoreContextProvider(props) {
     const navigate = useNavigate();
 
     console.log("inside useGlobalStore");
+    console.log(store.mapMarkedForDeletion);
 
     // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
     const { auth } = useContext(AuthContext);
@@ -281,7 +281,6 @@ function GlobalStoreContextProvider(props) {
     store.loadIdNamePairs = function() {
         async function asyncLoadIdNamePairs() {
             let response = await api.getMapPairs();
-            console.log(response.data);
             if (response.data.success) {
                 let idNamePairs = response.data.idNamePairs;
                 storeReducer({
@@ -313,13 +312,17 @@ function GlobalStoreContextProvider(props) {
     //Deletes the map marked for deletion Removes map with id from store
     store.deleteMap = function (id) {
         async function processDelete(id) {
+            console.log(id);
             let response = await api.deleteMapById(id);
             if (response.data.success) {
-                store.loadIdNamePairs(); //Regrab updated list
+                store.loadIdNamePairs(); // Reload the idNamePairs and update the user's maps
             }
             else console.log("FAILED TO DELETE MAP");
         }
         processDelete(id);
+    }
+    store.deleteMarkedMap = function() {
+        store.deleteMap(store.mapMarkedForDeletion._id);
     }
 
     //Sets the current map that is being edited

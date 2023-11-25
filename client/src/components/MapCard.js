@@ -17,9 +17,6 @@ function MapCard(props) {
   const [isDeleteMapModalOpen, setDeleteMapModalOpen] = useState(false);
   const { myMap, idNamePair } = props
 
-  console.log("MAP CARD INSTANCE");
-  console.log(props)
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -34,6 +31,8 @@ function MapCard(props) {
   };
 
   const handleDeleteMap = () => {
+    console.log("DELETE MAP");
+    store.markMapForDeletion(idNamePair._id);
     setDeleteMapModalOpen(true);
     handleClose();
   };
@@ -66,8 +65,8 @@ function MapCard(props) {
   let comments = 0;
   let views = 0;
   if (props) {
-    if (props.idNamePair) {
-      let pair = props.idNamePair;
+    if (idNamePair) {
+      let pair = idNamePair;
       title = pair.title;
       author = pair.username;
       description = pair.description;

@@ -44,36 +44,45 @@ createMap = async (req, res) => {
 
 deleteMap = async (req, res) => {
     console.log("delete Map with id: " + JSON.stringify(req.params.id));
-    Map.findById({ _id: req.params.id }, (err, map) => {
+
+    try {
+        const map = await Map.findById(req.params.id);
         console.log("map found: " + JSON.stringify(map));
-        if (err) {
+
+        if (!map) {
             return res.status(404).json({
                 errorMessage: 'Map not found!',
-            })
-        }
-
-        // DOES THIS LIST BELONG TO THIS USER?
-        async function asyncFindUser(map) {
-            User.findOne({ email: map.ownerEmail }, (err, user) => {
-                console.log("user._id: " + user._id);
-                console.log("req.userId: " + req.userId);
-                if (user._id == req.userId) {
-                    console.log("correct user!");
-                    Map.findOneAndDelete({ _id: req.params.id }, () => {
-                        return res.status(200).json({ success: true });
-                    }).catch(err => console.log(err))
-                }
-                else {
-                    console.log("incorrect user!");
-                    return res.status(401).json({ 
-                        errorMessage: "authentication error" 
-                    });
-                }
             });
         }
-        asyncFindUser(map);
-    })
-}
+
+        const user = await User.findOne({ email: map.ownerEmail });
+        console.log("user._id: " + user._id);
+        console.log("req.userId: " + req.userId);
+
+        if (user._id == req.userId) {
+            console.log("correct user!");
+
+            // Remove the map from the user's maps array
+            const userMaps = user.maps.filter((userMap) => String(userMap) !== String(req.params.id));
+            user.maps = userMaps;
+
+            // Save the updated user object
+            await user.save();
+            
+            await Map.findOneAndDelete({ _id: req.params.id });
+            return res.status(200).json({ success: true });
+        } else {
+            console.log("incorrect user!");
+            return res.status(401).json({
+                errorMessage: "Authentication error"
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+};
+
 
 getMapById = async (req, res) => {
     console.log("Find Map with id: " + JSON.stringify(req.params.id));

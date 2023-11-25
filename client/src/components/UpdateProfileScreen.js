@@ -17,7 +17,6 @@ import AuthContext from '../auth';
 import GlobalStoreContext from '../store';
 
 const UpdateProfileScreen = ({state, setState}) => {
-    console.log(state)
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
 
@@ -37,7 +36,6 @@ const UpdateProfileScreen = ({state, setState}) => {
                 }
             </List>
     }
-    console.log(store.idNamePairs);
 
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
