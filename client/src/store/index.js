@@ -20,7 +20,6 @@ export const GlobalStoreActionType = {
     SET_CURRENT_MAP: "SET_CURRENT_MAP",
     EDIT_MAP_DETAILS: "EDIT_MAP_DETAILS",
     EDIT_MAP_GRAPHICS: "EDIT_MAP_GRAPHICS",
-    MARK_MAP_FOR_DELETION: "MARK_MAP_FOR_DELETION",
     DELETE_MAP: "DELETE_MAP",
     DUPLICATE_MAP: "DUPLICATE_MAP",
     HIDE_MODALS: "HIDE_MODALS",
@@ -118,11 +117,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                 });
             }
-            //THIS SHOULD BE CALLED WHEN USER HITS SAVE AND EXIT ON MAP EDITOR
             case GlobalStoreActionType.CREATE_NEW_MAP: {
                 return setStore({
                     currentModal : CurrentModal.NONE,
-                    currentScreen : payload.screen,
+                    currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
                     currentMaps: [],
                     currentMap: payload,
@@ -217,8 +215,8 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.USER
                 }
             });
-            console.log(auth.user);
             navigate("/user/" + auth.user.id);
+            store.loadIdNamePairs();
         }
         if (screenType === CurrentScreen.MAP_POST) {
             storeReducer({
@@ -244,9 +242,7 @@ function GlobalStoreContextProvider(props) {
     //Creates a  new map
     store.createNewMap = async function(jsonData, mapTemplate)  {
         let newMapTitle = auth.user.username + " - Untitled (" + store.newMapCounter + ")";
-        console.log(auth.user);
         const response = await api.createMap(newMapTitle, jsonData, mapTemplate, auth.user.email, auth.user.username );
-        console.log(response);
         if(response.status == 201) {
             tps.clearAllTransactions();
             let newMap = response.data.map;
@@ -283,7 +279,7 @@ function GlobalStoreContextProvider(props) {
     //Loads all the Id, Name Pairs to list out the maps
     store.loadIdNamePairs = function() {
         async function asyncLoadIdNamePairs() {
-            let response = api.getMapPairs();
+            let response = await api.getMapPairs();
             if (response.data.success) {
                 let idNamePairs = response.data.idNamePairs;
                 storeReducer({
@@ -315,13 +311,17 @@ function GlobalStoreContextProvider(props) {
     //Deletes the map marked for deletion Removes map with id from store
     store.deleteMap = function (id) {
         async function processDelete(id) {
+            console.log(id);
             let response = await api.deleteMapById(id);
             if (response.data.success) {
-                store.loadIdNamePairs(); //Regrab updated list
+                store.loadIdNamePairs(); // Reload the idNamePairs and update the user's maps
             }
             else console.log("FAILED TO DELETE MAP");
         }
         processDelete(id);
+    }
+    store.deleteMarkedMap = function() {
+        store.deleteMap(store.mapMarkedForDeletion._id);
     }
 
     //Sets the current map that is being edited
@@ -334,10 +334,39 @@ function GlobalStoreContextProvider(props) {
                     type: GlobalStoreActionType.SET_CURRENT_MAP,
                     payload: map,
                 })
+                
             }
             else console.log("FAILED TO SET CURRENT MAP");
         }
         asyncSetCurrentMap(id);
+    }
+
+    store.updateMapDetailsById = function(id, newTitle, newRegions, newDescription) {
+        console.log(id);
+        console.log(newTitle);
+        console.log(newRegions);
+        console.log(newDescription);
+        async function asyncUpdateMapDetails(id, newTitle, newRegions, newDescription) {
+            let response = await api.getMapById(id);
+            if (response.data.success) {
+                let map = response.data.map;
+                map.title = newTitle;
+                map.regions = newRegions;
+                map.description = newDescription;
+                let response2 = await api.updateMapById(id, map);
+                if (response2.data.success) {
+                    console.log("API UPDATED DETAILS");
+                    store.loadIdNamePairs(); //Show Updates on Page
+                }
+                else {
+                    console.log("API COULDN'T UPDATE DETAILS");
+                }
+            }
+            else {
+                console.log("MAP NOT FOUND")
+            }
+        }
+        asyncUpdateMapDetails(id, newTitle, newRegions, newDescription);
     }
 
     store.updateCurrentMap = function() {

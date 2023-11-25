@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import GlobalStoreContext from '../store';
 import {
     Button,
     Modal,
@@ -8,6 +9,15 @@ import {
 } from '@mui/material';
 
 export default function DeleteMapModal({ open, onClose }) {
+    const { store } = useContext(GlobalStoreContext);
+    let mapTitle = "";
+    if (store.mapMarkedForDeletion) {
+        mapTitle = " " + store.mapMarkedForDeletion.title;
+    }
+    function handleDeleteList(event) {
+        store.deleteMarkedMap();
+        onClose();
+    }
 
     return (
         <Modal open={open} onClose={onClose} id="delete-map-modal">
@@ -17,13 +27,13 @@ export default function DeleteMapModal({ open, onClose }) {
                     <Typography
                         variant='h5'
                         className="modal-title"
-                    >Are you sure you wish to permanently delete the map?</Typography>
+                    >Are you sure you wish to permanently delete the map<b>{mapTitle}</b>?</Typography>
                 </Box>
                 <Box mt={2} className="delete-map-box">
-                    <Button variant="contained" color="primary" className="login-button">
+                    <Button variant="contained" color="primary" className="login-button" onClick={handleDeleteList}>
                         Confirm
                     </Button>
-                    <Button variant="contained" color="primary" className="login-button">
+                    <Button variant="contained" color="primary" className="login-button" onClick={onClose}>
                         Cancel
                     </Button>
                 </Box>

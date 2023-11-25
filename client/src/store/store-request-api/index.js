@@ -10,7 +10,6 @@ const api = axios.create({
 
 
 export const createMap =(title, jsonData, mapType, ownerEmail, username) => {
-    console.log("USERNAME "+ username);
     return api.post(`/map/`, {
         title: title,
         description: "Add a description",

@@ -54,7 +54,6 @@ export default function CreateMapModal({open,onClose}) {
             
             // Close the modal and set the screen to "MAP_EDITOR"
             onClose();
-            store.setScreen("MAP_EDITOR");
         };
 
         reader.readAsText(selectedFile);
