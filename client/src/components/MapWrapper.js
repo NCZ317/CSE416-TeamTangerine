@@ -10,6 +10,7 @@ const MapWrapper = ({ style }) => {
     const mapRef = useRef();
 
     useEffect(() => {
+        console.log(store.currentMap);
         if (store.currentMap && store.currentMap.jsonData) {
             setMapData(store.currentMap.jsonData);
         } else {

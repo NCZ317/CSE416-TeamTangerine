@@ -62,11 +62,11 @@ export default function HomeWrapper() {
             
             <Box mt={2}>
                 <Grid container spacing={1}>
-                    {[1, 2, 3, 4, 5, 6].map((cardId) => (
+                    {/* {[1, 2, 3, 4, 5, 6].map((cardId) => (
                         <Grid item key={cardId} xs={12} sm={6}>
                             <MapCard />
                         </Grid>
-                    ))}
+                    ))} */}
                 </Grid>
             </Box>
         </div>

@@ -7,6 +7,7 @@ import { Card, CardContent, CardMedia, Typography, Chip, Box, IconButton, Menu, 
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditDetailsModal from './EditDetailsModal';
 import DeleteMapModal from './DeleteMapModal'
+import { useNavigate } from 'react-router-dom';
 
 import { GlobalStoreContext } from '../store';
 
@@ -15,7 +16,8 @@ function MapCard(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isEditDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
   const [isDeleteMapModalOpen, setDeleteMapModalOpen] = useState(false);
-  const { myMap, idNamePair } = props
+  const { myMap, idNamePair } = props;
+  const navigate = useNavigate();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -24,6 +26,12 @@ function MapCard(props) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handlePublish = () => {
+    store.publish(idNamePair._id);
+    store.loadIdNamePairs();
+    handleClose();
+  }
 
   const handleEditDetails = () => {
     setEditDetailsModalOpen(true);
@@ -52,9 +60,10 @@ function MapCard(props) {
 
 
   //NEED TO MODIFY LATER ON --> OPEN MAP_POST IF MAP IS ONLY PUBLISHED
-  const handleCardClick = () => {
+  const handleCardClick = async () => {
     if (props.idNamePair.published) {
-      store.setScreen("MAP_POST");
+      store.setCurrentMap(idNamePair._id);
+      navigate("/post/" + idNamePair._id);
     }
     //else console.log("THIS MAP ISNT PUBLIC")
   }
@@ -101,7 +110,7 @@ function MapCard(props) {
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <MenuItem onClick={handleClose}>Publish</MenuItem>
+            <MenuItem onClick={handlePublish}>Publish</MenuItem>
             <MenuItem onClick={handleEditDetails}>Edit Details</MenuItem>
             <MenuItem onClick={handleEditGraphics}>Edit Graphics</MenuItem>
             <MenuItem onClick={handleDeleteMap}>Delete</MenuItem>

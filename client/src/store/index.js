@@ -109,7 +109,7 @@ function GlobalStoreContextProvider(props) {
                     currentScreen : payload.screen,
                     idNamePairs: [],
                     currentMaps: [],
-                    currentMap: null,
+                    currentMap: store.currentMap,
                     mapTemplate: null,
                     newMapCounter: store.newMapCounter,
                     mapMarkedForDeletion: null,
@@ -225,7 +225,7 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.MAP_POST
                 }
             });
-            navigate("/post/");
+            navigate("/post/" + store.currentMap._id);
         }
         if (screenType === CurrentScreen.MAP_EDITOR) {
             storeReducer({
@@ -334,7 +334,6 @@ function GlobalStoreContextProvider(props) {
                     type: GlobalStoreActionType.SET_CURRENT_MAP,
                     payload: map,
                 })
-                
             }
             else console.log("FAILED TO SET CURRENT MAP");
         }
@@ -382,6 +381,26 @@ function GlobalStoreContextProvider(props) {
         }
         asyncUpdateCurrentMap();
     }
+    store.publish = function(id) {
+        async function asyncPublish(id){
+            let response = await api.getMapById(id);
+            if (response.data.success) {
+                let map = response.data.map;
+                map.published = true;
+                map.publishedDate = new Date();
+                let response2 = await api.updateMapById(id, map);
+                if (response2.data.success) {
+                    console.log("PUBLISHED");
+                    store.loadIdNamePairs(); //Show Updates on Page
+                    store.setCurrentMap(map._id);
+                    navigate("/post/"+map._id);
+                }
+            }
+        }
+        asyncPublish(id);
+    }
+
+    
 
 // //Processes changing to User screen with specified username
 // store.setCurrentScreenWithUser = (user)
