@@ -1,10 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, Button, Grid, Menu, MenuItem, Checkbox, FormControlLabel, Typography } from '@mui/material';
 import MapCard from './MapCard';
 import SortIcon from '@mui/icons-material/Sort';
+import GlobalStoreContext from '../store';
 
 export default function HomeWrapper() {
     const [anchorEl, setAnchorEl] = useState(null);
+    const { store } = useContext(GlobalStoreContext);
+
+    useEffect(() => {
+        store.loadAllIdNamePairs();
+    }, []);
+
+    let mapCards = "";
+    if (store) {
+        console.log(store.idNamePairs);
+        mapCards =
+            <Grid container spacing={1}>
+                {store.idNamePairs.map((pair) => (
+                        <Grid item xs={12} sm={6}>
+                            <MapCard key={pair._id} idNamePair={pair}/>
+                        </Grid>
+                    ))}
+            </Grid>
+    }
 
     const handleSortClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -61,13 +80,7 @@ export default function HomeWrapper() {
             </div>
             
             <Box mt={2}>
-                <Grid container spacing={1}>
-                    {[1, 2, 3, 4, 5, 6].map((cardId) => (
-                        <Grid item key={cardId} xs={12} sm={6}>
-                            <MapCard />
-                        </Grid>
-                    ))}
-                </Grid>
+                {mapCards}
             </Box>
         </div>
     );

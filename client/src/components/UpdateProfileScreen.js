@@ -1,14 +1,14 @@
-import React, { useState, useContext, useEffect  } from 'react';
-import { 
-    Typography, 
-    Box, 
-    Grid, 
-    IconButton, 
-    Popover, 
-    List, 
+import React, { useState, useContext, useEffect } from 'react';
+import {
+    Typography,
+    Box,
+    Grid,
+    IconButton,
+    Popover,
+    List,
     ListItem,
-    ListItemText, 
-    Button 
+    ListItemText,
+    Button
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MapCard from './MapCard';
@@ -16,25 +16,35 @@ import MapCard from './MapCard';
 import AuthContext from '../auth';
 import GlobalStoreContext from '../store';
 
-const UpdateProfileScreen = ({state, setState}) => {
+const UpdateProfileScreen = ({ state, setState }) => {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
+
+    const [selectedMenuItem, setSelectedMenuItem] = useState('Private Maps');
 
     useEffect(() => {
         store.loadIdNamePairs();
     }, []);
 
-
     let mapList = "";
     if (store) {
-        mapList =
+        const filteredPairs = store.idNamePairs.filter(pair => {
+            if (selectedMenuItem === 'Private Maps') {
+                return !pair.published;
+            } else if (selectedMenuItem === 'Public Maps') {
+                return pair.published;
+            }
+            // ADD LOGIC FOR LIKED MAPS HERE LATER
+            return true;
+        });
+
+        mapList = (
             <List>
-                {
-                    store.idNamePairs.map((pair) => (
-                        <MapCard key={pair._id} myMap={true} idNamePair={pair}/>
-                    ))
-                }
+                {filteredPairs.map((pair) => (
+                    <MapCard key={pair._id} myMap={true} idNamePair={pair} />
+                ))}
             </List>
+        );
     }
 
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -56,7 +66,12 @@ const UpdateProfileScreen = ({state, setState}) => {
     };
 
     const handleMenuClose = () => {
-    setMenuAnchorEl(null);
+        setMenuAnchorEl(null);
+    };
+
+    const handleMenuItemClick = (menuItem) => {
+        setSelectedMenuItem(menuItem);
+        handleMenuClose();
     };
 
     const handleCancel = () => {
@@ -68,9 +83,10 @@ const UpdateProfileScreen = ({state, setState}) => {
             formData.email,
             formData.username,
             formData.password
-            );
+        );
         setState("NONE");
     }
+
     const handleSavePass = () => {
         auth.changeUserPassword(
             changePass.verifyPass,
@@ -79,52 +95,54 @@ const UpdateProfileScreen = ({state, setState}) => {
         )
         setState("NONE");
     }
+
     const openMenu = Boolean(menuAnchorEl);
     const menuId = openMenu ? 'menu-popover' : undefined;
 
-    if (state == "NONE") {
-        
+    if (state === "NONE") {
+
         return (
-            <Grid item xs={12} sm={8.5} id = 'profile-grid-2'>
+            <Grid item xs={12} sm={8.5} id='profile-grid-2'>
                 <Box>
-                    <Box id = 'profile-box-4'>
-                    <Typography variant="h3" id = 'profile-typography-3'>
-                        Private Maps
-                    </Typography>
-                    <IconButton
-                        className='profile-down-button'
-                        color="primary"
-                        aria-label="menu"
-                        onClick={handleMenuClick}
-                    >
-                        <ArrowDropDownIcon className = 'create-map-cloud-icon'/>
-                    </IconButton>
-                    <Popover
-                        id={menuId}
-                        open={openMenu}
-                        anchorEl={menuAnchorEl}
-                        onClose={handleMenuClose}
-                        anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                        }}
-                    >
-                        <List>
-                        <ListItem onClick={handleMenuClose}>
-                            <ListItemText primary="Private Maps" />
-                        </ListItem>
-                        <ListItem onClick={handleMenuClose}>
-                            <ListItemText primary="Public Maps" />
-                        </ListItem>
-                        <ListItem onClick={handleMenuClose}>
-                            <ListItemText primary="Liked Maps" />
-                        </ListItem>
-                        </List>
-                    </Popover>
+                    <Box id='profile-box-4'>
+                        <Typography variant="h3" id='profile-typography-3'>
+                            {selectedMenuItem}
+                        </Typography>
+                        <IconButton
+                            className='profile-down-button'
+                            color="primary"
+                            aria-label="menu"
+                            onClick={handleMenuClick}
+                        >
+                            <ArrowDropDownIcon className='create-map-cloud-icon' />
+                        </IconButton>
+                        <Popover
+                            id={menuId}
+                            open={openMenu}
+                            anchorEl={menuAnchorEl}
+                            onClose={handleMenuClose}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'center',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'center',
+                            }}
+                        >
+                            <List>
+                                <ListItem button onClick={() => handleMenuItemClick("Private Maps")}>
+                                    <ListItemText primary="Private Maps" />
+                                </ListItem>
+                                <ListItem button onClick={() => handleMenuItemClick("Public Maps")}>
+                                    <ListItemText primary="Public Maps" />
+                                </ListItem>
+                                {/* FIGURE OUT LIKED MAP LOGIC LATER */}
+                                <ListItem button disabled={true} onClick={() => handleMenuItemClick("Liked Maps")}> 
+                                    <ListItemText primary="Liked Maps" />
+                                </ListItem>
+                            </List>
+                        </Popover>
                     </Box>
                     {mapList}
                 </Box>

@@ -40,6 +40,8 @@ export const updateMapById = (id, map) => {
 
 export const getMaps = () => api.get(`/maps`)
 
+export const getAllMapPairs = () => api.get(`/allmappairs`)
+
 //GET MAP BY KEYWORD AND USER TO BE DONE LATER
 
 const apis = {
@@ -49,6 +51,7 @@ const apis = {
     getMapPairs,
     updateMapById,
     getMaps,
+    getAllMapPairs
 }
 
 export default apis

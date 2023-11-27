@@ -11,5 +11,6 @@ router.put('/map/:id', auth.verify, MapController.updateMap)
 router.get('/map/:keyword', auth.verify, MapController.getMapsByKeyword)
 router.get('/map/:username', auth.verify, MapController.getMapsByUser)
 router.get('/maps', auth.verify, MapController.getMaps)
+router.get('/allmappairs', auth.verify, MapController.getAllPublishedMapPairs)
 
 module.exports = router

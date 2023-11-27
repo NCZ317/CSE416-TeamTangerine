@@ -93,6 +93,7 @@ function GlobalStoreContextProvider(props) {
     const navigate = useNavigate();
 
     console.log("inside useGlobalStore");
+    console.log(store.idNamePairs);
 
     // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
     const { auth } = useContext(AuthContext);
@@ -109,7 +110,7 @@ function GlobalStoreContextProvider(props) {
                     currentScreen : payload.screen,
                     idNamePairs: [],
                     currentMaps: [],
-                    currentMap: null,
+                    currentMap: store.currentMap,
                     mapTemplate: null,
                     newMapCounter: store.newMapCounter,
                     mapMarkedForDeletion: null,
@@ -206,7 +207,7 @@ function GlobalStoreContextProvider(props) {
                 }
             });
             navigate("/");
-            
+            store.loadAllIdNamePairs();
         }
         if (screenType === CurrentScreen.USER) {
             storeReducer({
@@ -225,7 +226,7 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.MAP_POST
                 }
             });
-            navigate("/post/");
+            navigate("/post/" + store.currentMap._id);
         }
         if (screenType === CurrentScreen.MAP_EDITOR) {
             storeReducer({
@@ -280,6 +281,25 @@ function GlobalStoreContextProvider(props) {
     store.loadIdNamePairs = function() {
         async function asyncLoadIdNamePairs() {
             let response = await api.getMapPairs();
+                       
+            if (response.data.success) {
+                let idNamePairs = response.data.idNamePairs;
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                    payload: idNamePairs,
+                })
+            }
+            else {
+                console.log("API FAILED TO GET THE LIST PAIRS");
+            }
+        }
+        asyncLoadIdNamePairs()
+    }
+
+    store.loadAllIdNamePairs = function() {
+        async function asyncLoadIdNamePairs() {
+            let response = await api.getAllMapPairs();
+            console.log(response); 
             if (response.data.success) {
                 let idNamePairs = response.data.idNamePairs;
                 storeReducer({
@@ -334,7 +354,6 @@ function GlobalStoreContextProvider(props) {
                     type: GlobalStoreActionType.SET_CURRENT_MAP,
                     payload: map,
                 })
-                
             }
             else console.log("FAILED TO SET CURRENT MAP");
         }
@@ -382,6 +401,26 @@ function GlobalStoreContextProvider(props) {
         }
         asyncUpdateCurrentMap();
     }
+    store.publish = function(id) {
+        async function asyncPublish(id){
+            let response = await api.getMapById(id);
+            if (response.data.success) {
+                let map = response.data.map;
+                map.published = true;
+                map.publishedDate = new Date();
+                let response2 = await api.updateMapById(id, map);
+                if (response2.data.success) {
+                    console.log("PUBLISHED");
+                    store.loadIdNamePairs(); //Show Updates on Page
+                    store.setCurrentMap(map._id);
+                    navigate("/post/"+map._id);
+                }
+            }
+        }
+        asyncPublish(id);
+    }
+
+    
 
 // //Processes changing to User screen with specified username
 // store.setCurrentScreenWithUser = (user)

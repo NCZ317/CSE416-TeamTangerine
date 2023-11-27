@@ -1,23 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, Card, CardContent, Grid, Typography, TextField, Button, Menu, MenuItem } from '@mui/material';
 import MapWrapper from './MapWrapper';
 import { styled } from '@mui/material/styles';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-
-/* THIS IS SAMPLE DATA */
-const comments = [
-    { userName: 'User1', comment: 'This is the first comment.' },
-    { userName: 'User2', comment: 'Here is another comment.' },
-    { userName: 'User3', comment: 'And one more comment for testing.' },
-    { userName: 'User4', comment: 'This is the sixth comment.' },
-    { userName: 'User5', comment: 'Here is another comment.' },
-    { userName: 'User6', comment: 'And another comment for testing.' },
-    { userName: 'User7', comment: 'Second to last one.' },
-    { userName: 'User8', comment: 'Last one.' },
-];
+import { GlobalStoreContext } from '../store/index.js';
 
 const PostWrapper = () => {
+    const { store } = useContext(GlobalStoreContext);
 
     const CssTextField = styled(TextField)({
         '& label.Mui-focused': {
@@ -39,6 +29,39 @@ const PostWrapper = () => {
         },
     });
 
+    const [mapDetails, setMapDetails] = useState({
+        title: "Title",
+        author: "User",
+        description: "Map description",
+        comments: [
+            { user: 'User1', message: 'This is the first comment.' },
+            { user: 'User2', message: 'Here is another comment.' },
+            { user: 'User3', message: 'And one more comment for testing.' },
+            { user: 'User4', message: 'This is the sixth comment.' },
+            { user: 'User5', message: 'Here is another comment.' },
+            { user: 'User6', message: 'And another comment for testing.' },
+            { user: 'User7', message: 'Second to last one.' },
+            { user: 'User8', message: 'Last one.' },
+        ],
+        views: 0,
+        likes: 0,
+    });
+
+    useEffect(() => {
+        console.log(store.currentMap);
+        if (store.currentMap) {
+            setMapDetails({
+                title: store.currentMap.title,
+                author: store.currentMap.username,
+                description: store.currentMap.description,
+                comments: store.currentMap.comments,
+                views: store.currentMap.views,
+                likes: store.currentMap.likes,
+            });
+        }
+    }, [store.currentMap]);
+    console.log(mapDetails.title);
+
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleExportMenuOpen = (event) => {
@@ -54,44 +77,43 @@ const PostWrapper = () => {
             <Grid container spacing={2} className='post-height'>
                 <Grid item xs={12} sm={9} className='post-height'>
                     <Card className='post-card'>
-                        <Box >
+                        <Box>
                             <Button id='post-button' onClick={handleExportMenuOpen} variant='contained'>Export Map</Button>
                             <Menu
-                                    anchorEl={anchorEl}
-                                    open={Boolean(anchorEl)}
-                                    onClose={handleExportMenuClose}
-                                >
-                                    <MenuItem>JPEG</MenuItem>
-                                    <MenuItem>PNG</MenuItem>
-                                    <MenuItem>JSON</MenuItem>
-                                </Menu>
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleExportMenuClose}
+                            >
+                                <MenuItem>JPEG</MenuItem>
+                                <MenuItem>PNG</MenuItem>
+                                <MenuItem>JSON</MenuItem>
+                            </Menu>
                             <Button id='post-button-2' variant='contained'>Fork</Button>
-                        </Box>   
-                        <MapWrapper style = {{height: '63vh'}}/>
+                        </Box>
+                        <MapWrapper style={{ height: '63vh' }} />
                         <CardContent className='post-card-content'>
-                            <Box id = 'post-box'>
-                                <Box className ='map-card-box'>
+                            <Box id='post-box'>
+                                <Box className='map-card-box'>
                                     <Typography variant="h4" component="div">
-                                        Title
+                                        {mapDetails.title}
                                     </Typography>
                                     <Typography variant="h6">
-                                        Author: User1
+                                        By: {mapDetails.author}
                                     </Typography>
                                     <Typography variant="body1">
-                                        Map of Asia
+                                        {mapDetails.description}
                                     </Typography>
                                 </Box>
-                                <Box id = 'post-box-2'>
+                                <Box id='post-box-2'>
                                     <Typography variant="h6" component="div">
-                                        <VisibilityOutlinedIcon /> 100
+                                        <VisibilityOutlinedIcon /> {mapDetails.views}
                                     </Typography>
                                     <Typography variant="h6" component="div">
-                                        <FavoriteIcon /> 50
+                                        <FavoriteIcon /> {mapDetails.likes}
                                     </Typography>
                                 </Box>
                             </Box>
                         </CardContent>
-                        
                     </Card>
                 </Grid>
 
@@ -102,13 +124,13 @@ const PostWrapper = () => {
                                 Comments
                             </Typography>
                             <div className='post-comment-section'>
-                                {comments.map((comment, index) => (
+                                {mapDetails.comments.map((comment, index) => (
                                     <div key={index}>
                                         <Typography variant="h6" className='post-italic'>
-                                            {comment.userName}:
+                                            {comment.user}:
                                         </Typography>
                                         <Typography variant="body1">
-                                            {comment.comment}
+                                            {comment.message}
                                         </Typography>
                                     </div>
                                 ))}
