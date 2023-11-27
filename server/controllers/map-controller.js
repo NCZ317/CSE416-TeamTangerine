@@ -143,6 +143,56 @@ getMapPairs = async (req, res) => {
     }
 };
 
+getAllPublishedMapPairs = async (req, res) => {
+    console.log("getAllPublishedMapPairs");
+    try {
+        // Find all users with published maps
+        const usersWithPublishedMaps = await User.find({});
+        console.log(usersWithPublishedMaps);
+
+        if (!usersWithPublishedMaps) {
+            console.log("No users with published maps found");
+            return res.status(404).json({ success: false, error: 'No users with published maps found' });
+        }
+
+        // Collect maps from all users with published maps
+        let allPublishedMaps = [];
+        for (const user of usersWithPublishedMaps) {
+            const maps = await Map.find({ ownerEmail: user.email, published: true });
+
+            if (maps && maps.length > 0) {
+                allPublishedMaps = allPublishedMaps.concat(maps);
+            }
+        }
+
+        if (!allPublishedMaps) {
+            console.log("No published maps found");
+            return res.status(404).json({ success: false, error: 'No published maps found' });
+        }
+
+        console.log("Send the published Maps pairs");
+        // PUT ALL THE MAPS INTO ID, NAME PAIRS
+        const pairs = allPublishedMaps.map(map => ({
+            _id: map._id,
+            title: map.title,
+            description: map.description,
+            username: map.username,
+            mapType: map.mapType,
+            regions: map.regions,
+            likes: map.likes,
+            views: map.views,
+            comments: map.comments,
+            published: map.published
+        }));
+
+        return res.status(200).json({ success: true, idNamePairs: pairs });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+};
+
+
 
 updateMap = async (req, res) => {
     const body = req.body;
@@ -248,6 +298,7 @@ module.exports = {
     deleteMap,
     getMapById,
     getMapPairs,
+    getAllPublishedMapPairs,
     updateMap,
     getMapsByKeyword,
     getMapsByUser,

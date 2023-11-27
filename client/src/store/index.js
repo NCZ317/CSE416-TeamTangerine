@@ -93,6 +93,7 @@ function GlobalStoreContextProvider(props) {
     const navigate = useNavigate();
 
     console.log("inside useGlobalStore");
+    console.log(store.idNamePairs);
 
     // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
     const { auth } = useContext(AuthContext);
@@ -206,7 +207,7 @@ function GlobalStoreContextProvider(props) {
                 }
             });
             navigate("/");
-            
+            store.loadAllIdNamePairs();
         }
         if (screenType === CurrentScreen.USER) {
             storeReducer({
@@ -280,6 +281,25 @@ function GlobalStoreContextProvider(props) {
     store.loadIdNamePairs = function() {
         async function asyncLoadIdNamePairs() {
             let response = await api.getMapPairs();
+                       
+            if (response.data.success) {
+                let idNamePairs = response.data.idNamePairs;
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                    payload: idNamePairs,
+                })
+            }
+            else {
+                console.log("API FAILED TO GET THE LIST PAIRS");
+            }
+        }
+        asyncLoadIdNamePairs()
+    }
+
+    store.loadAllIdNamePairs = function() {
+        async function asyncLoadIdNamePairs() {
+            let response = await api.getAllMapPairs();
+            console.log(response); 
             if (response.data.success) {
                 let idNamePairs = response.data.idNamePairs;
                 storeReducer({
