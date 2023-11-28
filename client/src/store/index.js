@@ -422,11 +422,6 @@ function GlobalStoreContextProvider(props) {
         }
         asyncPublish(id);
     }
-
-    store.getCurrentMap = () => {
-        if (store.currentMap)
-            return store.currentMap;
-    }
     store.getMapTemplate = () => {
         if (store.mapTemplate)
             return store.mapTemplate;
