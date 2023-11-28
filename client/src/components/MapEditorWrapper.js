@@ -88,12 +88,6 @@ const MapEditorWrapper = () => {
                         </IconButton>
                     </div>
                     <Toolbox/>
-                    {/* <ChoroplethToolbox/> */}
-                    {/* <HeatmapToolbox/> */}
-                    {/* <DotDensityToolbox/> */}
-                    {/* <GraduatedSymbolToolbox/> */}
-
-
                 </Drawer>
             </>
             <>
