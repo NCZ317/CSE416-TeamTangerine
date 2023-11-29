@@ -503,7 +503,24 @@ function GlobalStoreContextProvider(props) {
         });
     }
 
-
+    store.publish = function(id) {
+        async function asyncPublish(id){
+            let response = await api.getMapById(id);
+            if (response.data.success) {
+                let map = response.data.map;
+                map.published = true;
+                map.publishedDate = new Date();
+                let response2 = await api.updateMapById(id, map);
+                if (response2.data.success) {
+                    console.log("PUBLISHED");
+                    store.loadIdNamePairs(); //Show Updates on Page
+                    store.setCurrentMap(map._id);
+                    navigate("/post/"+map._id);
+                }
+            }
+        }
+        asyncPublish(id);
+    }
 // //Processes changing to User screen with specified username
 // store.setCurrentScreenWithUser = (user)
 
