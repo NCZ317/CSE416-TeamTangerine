@@ -115,8 +115,8 @@ function GlobalStoreContextProvider(props) {
                     idNamePairs: [],
                     currentMaps: [],
                     currentMap: store.currentMap,
-                    currentMapLayer: null,
-                    mapTemplate: null,
+                    currentMapLayer: store.currentMapLayer,
+                    mapTemplate: store.mapTemplate,
                     newMapCounter: store.newMapCounter,
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
@@ -487,6 +487,25 @@ function GlobalStoreContextProvider(props) {
             }
         }
         asyncUpdateCurrentMap();
+    }
+
+    store.publish = function(id) {
+        async function asyncPublish(id){
+            let response = await api.getMapById(id);
+            if (response.data.success) {
+                let map = response.data.map;
+                map.published = true;
+                map.publishedDate = new Date();
+                let response2 = await api.updateMapById(id, map);
+                if (response2.data.success) {
+                    console.log("PUBLISHED");
+                    store.loadIdNamePairs(); //Show Updates on Page
+                    store.setCurrentMap(map._id);
+                    navigate("/post/"+map._id);
+                }
+            }
+        }
+        asyncPublish(id);
     }
 
     store.updateCurrentMapLayer = function(mapLayer) {

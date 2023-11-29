@@ -26,6 +26,8 @@ const MapSettings = () => {
     const [descriptionOptions, setDescriptionOptions] = useState([]);
     const [mapDescription, setMapDescription] = useState('');
 
+    // const [border, setBorder] = useState(store.currentMapLayer.style.border);
+
     const [regionLabel, setRegionLabel] = useState('');
 
     const [globalSettingsOpen, setGlobalSettingsOpen] = useState(true);
@@ -88,6 +90,35 @@ const MapSettings = () => {
     }
     const handleDescriptionOptions = (event, newOption) => {
         setDescriptionOptions(newOption);
+    }
+
+    const handleBorderToggle = (event) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.border = !mapLayer.style.border;
+        store.updateCurrentMapLayer(mapLayer);
+        // setBorder(!border);
+    }
+    const handleBorderColor = (event) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.borderColor = event.target.value;
+        store.updateCurrentMapLayer(mapLayer);
+    }
+    const handleBorderWeight = (event) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.borderWeight = event.target.value;
+        store.updateCurrentMapLayer(mapLayer);
+    }
+    const handleBorderSolid = (event) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.borderDashed = false;
+        store.updateCurrentMapLayer(mapLayer);
+        handleClose();
+    }
+    const handleBorderDashed = (event) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.borderDashed = true;
+        store.updateCurrentMapLayer(mapLayer);
+        handleClose();
     }
 
 
@@ -233,7 +264,13 @@ const MapSettings = () => {
 
                 <Box style={{display: 'flex', alignItems: 'center'}}>
                     <FormGroup>
-                        <FormControlLabel control={<Switch defaultChecked />} label="Borders" />
+                        <FormControlLabel 
+                            control={<Switch 
+                                defaultChecked={store.currentMapLayer.style.border} 
+                                onChange={handleBorderToggle}
+                            />} 
+                            label="Borders" 
+                        />
                     </FormGroup>
 
                     <TextField
@@ -241,13 +278,19 @@ const MapSettings = () => {
                         type="color"
                         fullWidth
                         margin="normal"
+                        onChange={handleBorderColor}
                     />
 
                     <TextField
-                        label="Border Radius"
+                        label="Border Weight"
                         type="number"
                         fullWidth
                         margin="normal"
+                        inputProps={{
+                            min: 0,
+                            max: 10
+                        }}
+                        onChange={handleBorderWeight}
                     />
 
                     <Button
@@ -268,9 +311,8 @@ const MapSettings = () => {
                             'aria-labelledby': 'basic-button',
                             }}
                         >
-                            <MenuItem onClick={handleClose}>Solid</MenuItem>
-                            <MenuItem onClick={handleClose}>Dashed</MenuItem>
-                            <MenuItem onClick={handleClose}>Dotted</MenuItem>
+                            <MenuItem onClick={handleBorderSolid}>Solid</MenuItem>
+                            <MenuItem onClick={handleBorderDashed}>Dashed</MenuItem>
                         </Menu>
 
                 </Box>
