@@ -15,6 +15,7 @@ export default function DeleteMapModal({ open, onClose }) {
         mapTitle = " " + store.mapMarkedForDeletion.title;
     }
     function handleDeleteList(event) {
+        event.stopPropagation();
         store.deleteMarkedMap();
         onClose();
     }
