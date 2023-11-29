@@ -299,7 +299,7 @@ function GlobalStoreContextProvider(props) {
 
     store.loadAllIdNamePairs = function() {
         async function asyncLoadIdNamePairs() {
-            try {let response = await api.getAllMapPairs();
+            let response = await api.getAllMapPairs();
                 console.log(response); 
                 if (response.data.success) {
                     let idNamePairs = response.data.idNamePairs;
@@ -311,9 +311,6 @@ function GlobalStoreContextProvider(props) {
                 else {
                     console.log("API FAILED TO GET THE LIST PAIRS");
                 }
-            }catch (err){
-                console.log("API FAILED TO GET THE LIST PAIRS");
-            }
         }
         asyncLoadIdNamePairs()
     }
