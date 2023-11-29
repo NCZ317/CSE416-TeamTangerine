@@ -32,12 +32,14 @@ const MapEditorWrapper = () => {
     setOpen(false);
     };
 
-    const handleSave = () =>{
+    const handleSave = async () => {
+        
+        await store.updateCurrentMap();
         store.setScreen("USER");
     }
     const Toolbox = () => {
         console.log(store.currentMap);
-        switch(store.getMapTemplate()){
+        switch(store.mapTemplate){
             case 'choroplethMap':
                 return(<ChoroplethToolbox/>);
             case 'heatMap':
@@ -88,7 +90,14 @@ const MapEditorWrapper = () => {
                             <CloseIcon fontSize='large'/>
                         </IconButton>
                     </div>
-                    <Toolbox/>
+
+                    {/* RENDERING THE <Toolbox/> COMPONENT CAUSES THE TOOLBOX TABS TO CHANGE EVERY TIME THE STATE CHANGES */}
+                    {/* <Toolbox/> */}
+                    
+                    {store.mapTemplate === "choroplethMap" && <ChoroplethToolbox/>}
+                    {store.mapTemplate === "heatMap" && <HeatmapToolbox/>}
+                    {store.mapTemplate === "dotDensityMap" && <DotDensityToolbox/>}
+                    {store.mapTemplate === "graduatedSymbolMap" && <GraduatedSymbolToolbox/>}
                 </Drawer>
             </>
             <>

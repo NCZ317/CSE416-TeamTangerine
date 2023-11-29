@@ -17,7 +17,7 @@ export const createMap =(title, jsonData, mapType, ownerEmail, username) => {
         username: username,
         jsonData: jsonData,
         mapType: mapType,
-        mapLayers: [],
+        mapLayers: null,
         likes: 0,
         views: 0,
         comments: [],
@@ -44,6 +44,18 @@ export const getAllMapPairs = () => api.get(`/allmappairs`)
 
 //GET MAP BY KEYWORD AND USER TO BE DONE LATER
 
+
+// BACKEND REQUESTS FOR MAPLAYER
+export const getMapLayerById = (id, mapType) => api.get(`/maplayer/${id}`, { params: { mapType } });
+
+export const updateMapLayerById = (id, mapType, mapLayer) => {
+    return api.put(`/maplayer/${id}`, {
+        mapType: mapType,
+        mapLayer: mapLayer
+    })
+};
+
+
 const apis = {
     createMap,
     deleteMapById,
@@ -51,7 +63,9 @@ const apis = {
     getMapPairs,
     updateMapById,
     getMaps,
-    getAllMapPairs
+    getAllMapPairs,
+    getMapLayerById,
+    updateMapLayerById
 }
 
 export default apis

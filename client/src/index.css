@@ -752,3 +752,10 @@ code {
 .font-size-eighteen{
   font-size: 18px;
 }
+
+
+.leaflet-control-custom-title {
+  /* background-color: white; */
+  padding: 10px;
+  /* border: 1px solid #ccc; */
+}

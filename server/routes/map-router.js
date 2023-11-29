@@ -12,5 +12,7 @@ router.get('/map/:keyword', MapController.getMapsByKeyword)
 router.get('/map/:username', MapController.getMapsByUser)
 router.get('/maps', MapController.getMaps)
 router.get('/allmappairs', MapController.getAllPublishedMapPairs)
+router.get('/maplayer/:id', MapController.getMapLayerById);
+router.put('/maplayer/:id', auth.verify, MapController.updateMapLayer)
 
 module.exports = router

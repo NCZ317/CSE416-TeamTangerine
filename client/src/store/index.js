@@ -18,8 +18,10 @@ export const GlobalStoreActionType = {
     LOAD_CURRENT_MAPS: "LOAD_CURRENT_MAPS",
     MARK_MAP_FOR_DELETION: "MARK_MAP_FOR_DELETION",
     SET_CURRENT_MAP: "SET_CURRENT_MAP",
+    EDIT_MAP_LAYER: "EDIT_MAP_LAYER",
     EDIT_MAP_DETAILS: "EDIT_MAP_DETAILS",
     EDIT_MAP_GRAPHICS: "EDIT_MAP_GRAPHICS",
+    SET_CURRENT_REGION: "SET_CURRENT_REGION",
     DELETE_MAP: "DELETE_MAP",
     DUPLICATE_MAP: "DUPLICATE_MAP",
     HIDE_MODALS: "HIDE_MODALS",
@@ -83,11 +85,13 @@ function GlobalStoreContextProvider(props) {
         idNamePairs: [],
         currentMaps: [],
         currentMap: null,
+        currentMapLayer: null,
         mapTemplate: null,
         newMapCounter: 0,
         mapMarkedForDeletion: null,
         currentSearchResult: "",
         currentSortMethod: "",
+        currentRegion: {}
     });
 
     const navigate = useNavigate();
@@ -111,11 +115,13 @@ function GlobalStoreContextProvider(props) {
                     idNamePairs: [],
                     currentMaps: [],
                     currentMap: store.currentMap,
-                    mapTemplate: null,
+                    currentMapLayer: store.currentMapLayer,
+                    mapTemplate: store.mapTemplate,
                     newMapCounter: store.newMapCounter,
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
+                    currentRegion: null
                 });
             }
             case GlobalStoreActionType.CREATE_NEW_MAP: {
@@ -124,12 +130,14 @@ function GlobalStoreContextProvider(props) {
                     currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
                     currentMaps: [],
-                    currentMap: payload,
-                    mapTemplate: payload.mapType,
+                    currentMap: payload.newMap,
+                    currentMapLayer: payload.mapLayer,
+                    mapTemplate: payload.newMap.mapType,
                     newMapCounter: store.newMapCounter + 1,
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
+                    currentRegion: null
                 });
             }
             //THIS SHOULD BE CALLED WHEN USER FORKS MAP AND IT WILL REDIRECT TO THEIR PROFILE WITH THE MAP DUPED
@@ -140,11 +148,13 @@ function GlobalStoreContextProvider(props) {
                     idNamePairs: store.idNamePairs,
                     currentMaps: [],
                     currentMap: null,
+                    currentMapLayer: null,
                     mapTemplate: null,
                     newMapCounter: store.newMapCounter + 1,
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
+                    currentRegion: null
                 });
             }
 
@@ -155,11 +165,13 @@ function GlobalStoreContextProvider(props) {
                     idNamePairs: payload,
                     currentMaps: [],
                     currentMap: null,
+                    currentMapLayer: null,
                     mapTemplate: null,
                     newMapCounter: store.newMapCounter,
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
+                    currentRegion: null
                 })
             }
 
@@ -170,11 +182,13 @@ function GlobalStoreContextProvider(props) {
                     idNamePairs: store.idNamePairs,
                     currentMaps: [],
                     currentMap: null,
+                    currentMapLayer: null,
                     mapTemplate: null,
                     newMapCounter: store.newMapCounter,
                     mapMarkedForDeletion: payload,
                     currentSearchResult: "",
                     currentSortMethod: "",
+                    currentRegion: null
                 })
             }
 
@@ -185,14 +199,51 @@ function GlobalStoreContextProvider(props) {
                     currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
                     currentMaps: [],
-                    currentMap: payload,
-                    mapTemplate: payload.mapType,
+                    currentMap: payload.map,
+                    currentMapLayer: payload.mapLayer,
+                    mapTemplate: payload.map.mapType,
                     newMapCounter: store.newMapCounter,
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
+                    currentRegion: null
                 })
             }
+
+            case GlobalStoreActionType.SET_CURRENT_REGION: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : store.currentScreen,
+                    idNamePairs: store.idNamePairs,
+                    currentMaps: [],
+                    currentMap: store.currentMap,
+                    currentMapLayer: store.currentMapLayer,
+                    mapTemplate: store.mapTemplate,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                    currentRegion: payload
+                })
+            }
+
+            case GlobalStoreActionType.EDIT_MAP_LAYER: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : store.currentScreen,
+                    idNamePairs: store.idNamePairs,
+                    currentMaps: [],
+                    currentMap: store.currentMap,
+                    currentMapLayer: payload,
+                    mapTemplate: store.mapTemplate,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                    currentRegion: store.currentRegion
+                })
+            }
+
             default:
                 return store;
         }
@@ -244,14 +295,27 @@ function GlobalStoreContextProvider(props) {
     //Creates a  new map
     store.createNewMap = async function(jsonData, mapTemplate)  {
         let newMapTitle = auth.user.username + " - Untitled (" + store.newMapCounter + ")";
-        const response = await api.createMap(newMapTitle, jsonData, mapTemplate, auth.user.email, auth.user.username );
+        let response = await api.createMap(newMapTitle, jsonData, mapTemplate, auth.user.email, auth.user.username );
         if(response.status == 201) {
             tps.clearAllTransactions();
             let newMap = response.data.map;
-            storeReducer({
-                type: GlobalStoreActionType.CREATE_NEW_MAP,
-                payload: newMap
-            })
+            response = await api.getMapLayerById(newMap.mapLayers, newMap.mapType);
+                if (response.data.success) {
+                    let mapLayer = response.data.mapLayer;
+                    storeReducer({
+                        type: GlobalStoreActionType.CREATE_NEW_MAP,
+                        payload: {
+                            newMap: newMap,
+                            mapLayer: mapLayer
+                        }
+                    });
+
+                }
+
+            // storeReducer({
+            //     type: GlobalStoreActionType.CREATE_NEW_MAP,
+            //     payload: newMap
+            // })
         }
         else {
             console.log("API FAILED TO CREATE A NEW LIST");
@@ -351,10 +415,23 @@ function GlobalStoreContextProvider(props) {
             let response = await api.getMapById(id);
             if (response.data.success) {
                 let map = response.data.map;
-                storeReducer({
-                    type: GlobalStoreActionType.SET_CURRENT_MAP,
-                    payload: map,
-                })
+                response = await api.getMapLayerById(map.mapLayers, map.mapType);
+                if (response.data.success) {
+                    let mapLayer = response.data.mapLayer;
+                    storeReducer({
+                        type: GlobalStoreActionType.SET_CURRENT_MAP,
+                        payload: {
+                            map: map,
+                            mapLayer: mapLayer
+                        }
+                    });
+
+                }
+                // storeReducer({
+                //     type: GlobalStoreActionType.SET_CURRENT_MAP,
+                //     payload: map,
+                // })
+                
             }
             else console.log("FAILED TO SET CURRENT MAP");
         }
@@ -391,17 +468,27 @@ function GlobalStoreContextProvider(props) {
 
     store.updateCurrentMap = function() {
         async function asyncUpdateCurrentMap() {
-            const response = await api.updateMapById(store.currentMap._id, store.currentMap);
+            let response = await api.updateMapById(store.currentMap._id, store.currentMap);
             if (response.data.success) {
                 console.log(response.data);
-                storeReducer({
-                    type: GlobalStoreActionType.SET_CURRENT_MAP,
-                    payload: store.currentMap,
-                })
+
+                //UPDATE THE MAP LAYER AS WELL
+                response = await api.updateMapLayerById(store.currentMap.mapLayers, store.currentMap.mapType, store.currentMapLayer);
+                if (response.data.success) {
+                    storeReducer({
+                        type: GlobalStoreActionType.SET_CURRENT_MAP,
+                        // payload: store.currentMap,
+                        payload: {
+                            map: store.currentMap,
+                            mapLayer: store.currentMapLayer
+                        }
+                    })
+                }
             }
         }
         asyncUpdateCurrentMap();
     }
+
     store.publish = function(id) {
         async function asyncPublish(id){
             let response = await api.getMapById(id);
@@ -420,11 +507,21 @@ function GlobalStoreContextProvider(props) {
         }
         asyncPublish(id);
     }
-    store.getMapTemplate = () => {
-        if (store.mapTemplate)
-            return store.mapTemplate;
+
+    store.updateCurrentMapLayer = function(mapLayer) {
+        storeReducer({
+            type: GlobalStoreActionType.EDIT_MAP_LAYER,
+            payload: mapLayer
+        });
     }
-    
+
+    store.setCurrentRegion = function(region) {
+        storeReducer({
+            type: GlobalStoreActionType.SET_CURRENT_REGION,
+            payload: region
+        });
+    }
+
 
 // //Processes changing to User screen with specified username
 // store.setCurrentScreenWithUser = (user)
