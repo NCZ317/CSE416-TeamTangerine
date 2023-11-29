@@ -23,17 +23,17 @@ const mapSchema = new Schema({
 const Map = mongoose.model('Map', mapSchema);
 
 const choroplethLayerSchema = new Schema({
-    graphicTitle: { type: String },
-    graphicDescription: { type: String },
-    style: { type: Object },
+    graphicTitle: { type: String},
+    graphicDescription: { type: String},
+    style: { type: Object, required: true},
     geographicRegion: [{
         name: String,
         geometry: Object,
         value: Object
     }],
-    valueField: { type: String },
-    colorScale: { type: Object }
-});
+    valueField: { type: String},
+    colorScale: { type: Object, required: true}
+}, {minimize: false});
 
 const ChoroplethLayer = mongoose.model('ChoroplethLayer', choroplethLayerSchema);
 
@@ -48,7 +48,7 @@ const heatmapLayerSchema = new Schema({
     }],
     radius: { type: Number },
     colorScale: { type: Object }
-});
+}, {minimize: false});
 
 const HeatmapLayer = mongoose.model('HeatmapLayer', heatmapLayerSchema);
 
@@ -65,7 +65,7 @@ const dotdensityLayerSchema = new Schema({
     dotSize: { type: Number },
     dotValue: { type: Number },
     colorScale: { type: Object }
-});
+}, {minimize: false});
 
 const DotDensityLayer = mongoose.model('DotDensityLayer', dotdensityLayerSchema);
 
@@ -80,7 +80,7 @@ const graduatedSymbolLayerSchema = new Schema({
     }],
     symbolColor: { type: String },
     sizeScale: { type: Object }
-});
+}, {minimize: false});
 
 const GraduatedSymbolLayer = mongoose.model('GraduatedSymbolLayer', graduatedSymbolLayerSchema);
 
@@ -98,7 +98,7 @@ const flowmapLayerSchema = new Schema({
     }],
     lineSizeScale: { type: Object },
     colorScale: { type: Object }
-});
+}, {minimize: false});
 
 const FlowmapLayer = mongoose.model('FlowmapLayer', flowmapLayerSchema);
 

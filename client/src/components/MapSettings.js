@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Box, Typography } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -15,14 +15,16 @@ import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 
+import { GlobalStoreContext } from '../store/index.js';
+
 const MapSettings = () => {
 
+    const { store } = useContext(GlobalStoreContext);
+
     const [mapTitle, setMapTitle] = useState('');
+    const [titleOptions, setTitleOptions] = useState([]);
+    const [descriptionOptions, setDescriptionOptions] = useState([]);
     const [mapDescription, setMapDescription] = useState('');
-    const [titleStyle, setTitleStyle] = useState({ fontFamily: 'Arial', fontSize: '16px', color: '#000', fontWeight: 'normal', fontStyle: 'normal', textDecoration: 'none' });
-    const [titleFormats, setTitleFormats] = React.useState(() => ['bold', 'italic', 'underline']);
-    const [descriptionStyle, setDescriptionStyle] = useState({ fontFamily: 'Arial', fontSize: '14px', color: '#888', fontWeight: 'normal', fontStyle: 'normal', textDecoration: 'none' });
-    const [descriptionFormat, setDescriptionFormat] = React.useState(() => ['bold', 'italic', 'underline']);
 
     const [regionLabel, setRegionLabel] = useState('');
 
@@ -46,6 +48,65 @@ const MapSettings = () => {
         setRegionSettingsOpen(!regionSettingsOpen);
     };
 
+    const handleTitle = (event) => {
+        if (event.key === "Enter") {
+            let mapLayer = store.currentMapLayer;
+            mapLayer.graphicTitle = mapTitle;
+            store.updateCurrentMapLayer(mapLayer);
+        }
+    }
+    const handleTitleFont = (event) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.titleFontSize = event.target.value;
+        store.updateCurrentMapLayer(mapLayer);
+    }
+    const handleTitleColor = (event) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.titleFontColor = event.target.value;
+        store.updateCurrentMapLayer(mapLayer);
+    }
+    const handleTitleOptions = (event, newOption) => {
+        setTitleOptions(newOption);
+    }
+    
+    const handleDescription = (event) => {
+        if (event.key === "Enter") {
+            let mapLayer = store.currentMapLayer;
+            mapLayer.graphicDescription = mapDescription;
+            store.updateCurrentMapLayer(mapLayer);
+        }
+    }
+    const handleDescriptionFont = (event) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.descriptionFontSize = event.target.value;
+        store.updateCurrentMapLayer(mapLayer);
+    }
+    const handleDescriptionColor = (event) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.descriptionFontColor = event.target.value;
+        store.updateCurrentMapLayer(mapLayer);
+    }
+    const handleDescriptionOptions = (event, newOption) => {
+        setDescriptionOptions(newOption);
+    }
+
+
+    const handleFillColor = (event) => {
+        if (store.currentRegion) {
+            store.currentRegion.setStyle({
+                fillColor: event.target.value
+            });
+        }
+    }
+
+    const handleFillOpacity = (event) => {
+        if (store.currentRegion) {
+            store.currentRegion.setStyle({
+                fillOpacity: event.target.value
+            });
+        }
+    }
+
 
     return (
 
@@ -63,6 +124,7 @@ const MapSettings = () => {
                     label="Map Title"
                     value={mapTitle}
                     onChange={e => setMapTitle(e.target.value)}
+                    onKeyDown={handleTitle}
                     fullWidth
                     margin="normal"
                 />
@@ -74,6 +136,10 @@ const MapSettings = () => {
                         type="number"
                         fullWidth
                         margin="normal"
+                        inputProps={{
+                            min: 10
+                        }}
+                        onChange={handleTitleFont}
                     />
 
                     {/* Font Color Picker for Map Title */}
@@ -82,12 +148,13 @@ const MapSettings = () => {
                         type="color"
                         fullWidth
                         margin="normal"
+                        onChange={handleTitleColor}
                     />
                 </Box>
 
                 <ToggleButtonGroup
-                    // value={formats}
-                    // onChange={handleFormat}
+                    value={titleOptions}
+                    onChange={handleTitleOptions}
                     aria-label="text formatting"
                 >
                     <ToggleButton value="bold" aria-label="bold">
@@ -108,6 +175,7 @@ const MapSettings = () => {
                     label="Map Description"
                     value={mapDescription}
                     onChange={e => setMapDescription(e.target.value)}
+                    onKeyDown={handleDescription}
                     fullWidth
                     margin="normal"
                 />
@@ -119,6 +187,10 @@ const MapSettings = () => {
                         type="number"
                         fullWidth
                         margin="normal"
+                        inputProps={{
+                            min: 10
+                        }}
+                        onChange={handleDescriptionFont}
                     />
 
                     {/* Font Color Picker for Map Description */}
@@ -127,12 +199,13 @@ const MapSettings = () => {
                         type="color"
                         fullWidth
                         margin="normal"
+                        onChange={handleDescriptionColor}
                     />
                 </Box>
 
                 <ToggleButtonGroup
-                    // value={formats}
-                    // onChange={handleFormat}
+                    value={descriptionOptions}
+                    onChange={handleDescriptionOptions}
                     aria-label="text formatting"
                 >
                     <ToggleButton value="bold" aria-label="bold">
@@ -211,7 +284,7 @@ const MapSettings = () => {
             <Collapse in={regionSettingsOpen} timeout="auto" unmountOnExit
                 sx={{width: '100%', p: 1, textAlign: 'center' }}
             >
-                <Typography>Click on a map region to set its style</Typography>
+                <Typography>{store.currentRegion ? store.currentRegion.feature.properties.name : "Please Select a Region"}</Typography>
 
                 {/* The components below should render only when the user clicks on a valid map region?? */}
 
@@ -234,12 +307,31 @@ const MapSettings = () => {
                     </FormGroup>
                 </Box>
 
-                <TextField
-                    label="Fill Color"
-                    type="color"
-                    fullWidth
-                    margin="normal"
-                />
+                <Box style={{display: 'flex', alignItems: 'center'}}>
+                    <TextField
+                        label="Fill Color"
+                        type="color"
+                        fullWidth
+                        margin="normal"
+                        onChange={handleFillColor}
+                    />
+                    <TextField
+                        label="Fill Opacity"
+                        type='Number'
+                        fullWidth
+                        margin='normal'
+                        InputProps={{
+                            inputProps: {
+                              min: 0, // Set the minimum value
+                              max: 1, // Set the maximum value
+                              step: 0.1
+                            },
+                        }}
+                        onChange={handleFillOpacity}
+                    />
+
+                </Box>
+                
 
             </Collapse>
 

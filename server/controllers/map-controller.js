@@ -20,6 +20,72 @@ createMap = async (req, res) => {
         if (!map) {
             return res.status(400).json({ success: false, error: err });
         }
+
+        //Create the appropriate layer schema for the map, depending on the map type
+        let mapLayer;
+        let graphicTitle = "";
+        let graphicDescription = "";
+        let style = {};
+        if (body.mapType === "choroplethMap") {
+            let valueField = "";
+            let colorScale = {};
+            mapLayer = new ChoroplethLayer({
+                graphicTitle: graphicTitle,
+                graphicDescription: graphicDescription,
+                style: style,
+                geographicRegion: [],
+                valueField: valueField,
+                colorScale: colorScale
+            });
+            // mapLayer = new ChoroplethLayer();
+        } else if (body.mapType === "heatMap") {
+            let radius = 0;
+            let colorScale = {};
+            mapLayer = new HeatmapLayer({
+                graphicTitle: graphicTitle, 
+                graphicDescription: graphicDescription, 
+                style: style, 
+                radius: radius, 
+                colorScale: colorScale
+            });
+
+        } else if (body.mapType === "dotDensityMap") {
+            let dotSize = 0;
+            let dotValue = 0;
+            let colorScale = {};
+            mapLayer = new DotDensityLayer({
+                graphicTitle: graphicTitle, 
+                graphicDescription: graphicDescription, 
+                style: style, 
+                dotSize: dotSize, 
+                dotValue: dotValue, 
+                colorScale: colorScale
+            });
+
+        } else if (body.mapType === "graduatedSymbolMap") {
+            let symbolColor = "";
+            let sizeScale = {};
+            mapLayer = new GraduatedSymbolLayer({
+                graphicTitle: graphicTitle, 
+                graphicDescription: graphicDescription, 
+                style: style, 
+                symbolColor: symbolColor, 
+                sizeScale: sizeScale
+            });
+
+        } else if (body.mapType === "flowMap") {
+            let lineSizeScale = {};
+            let colorScale = {};
+            mapLayer = new FlowmapLayer({
+                graphicTitle: graphicTitle, 
+                graphicDescription: graphicDescription, 
+                style: style, 
+                lineSizeScale: lineSizeScale, 
+                colorScale: colorScale
+            });
+        }
+
+        map.mapLayers = mapLayer._id;
         
         const user = await User.findOne({ _id: req.userId });
 
@@ -29,7 +95,7 @@ createMap = async (req, res) => {
 
         user.maps.push(map._id);
 
-        await Promise.all([user.save(), map.save()]);
+        await Promise.all([user.save(), map.save(), mapLayer.save()]);
 
         return res.status(201).json({
             map: map
@@ -293,6 +359,126 @@ getMaps = async (req, res) => {
     }).catch(err => console.log(err))
 }
 
+getMapLayerById = async (req, res) => {
+    console.log("Find Map Layer with id: " + JSON.stringify(req.params.id));
+    let mapLayer = null;
+    const mapType = req.query.mapType;
+
+    try {
+        if (mapType === "choroplethMap") {
+            mapLayer = await ChoroplethLayer.findOne({ _id: req.params.id });
+
+        } else if (mapType === "heatMap") {
+            mapLayer = await HeatmapLayer.findOne({ _id: req.params.id });
+
+        } else if (mapType === "dotDensityMap") {
+            mapLayer = await DotDensityLayer.findOne({ _id: req.params.id });
+
+        } else if (mapType === "graduatedSymbolMap") {
+            mapLayer = await GraduatedSymbolLayer.findOne({ _id: req.params.id });
+
+        } else if (mapType === "flowMap") {
+            mapLayer = await FlowmapLayer.findOne({ _id: req.params.id });
+
+        }
+
+        if (!mapLayer) {
+            return res.status(404).json({ success: false, error: "Map Layer not found" });
+        }
+
+        return res.status(200).json({ success: true, mapLayer: mapLayer });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+};
+
+updateMapLayer = async (req, res) => {
+    const body = req.body;
+    console.log("updateMapLayer: " + JSON.stringify(body));
+
+    try {
+        if (!body) {
+            return res.status(400).json({
+                success: false,
+                error: 'You must provide a body to update',
+            });
+        }
+
+        let mapLayer;
+        let mapType = body.mapType
+
+        if (mapType === "choroplethMap") {
+            mapLayer = await ChoroplethLayer.findOne({ _id: req.params.id });
+            if (!mapLayer) {
+                mapLayer.geographicRegion = body.mapLayer.geographicRegion;
+                mapLayer.valueField = body.mapLayer.valueField;
+                mapLayer.colorScale = body.mapLayer.colorScale;
+            }
+
+        } else if (mapType === "heatMap") {
+            mapLayer = await HeatmapLayer.findOne({ _id: req.params.id });
+            if (!mapLayer) {
+                mapLayer.dataValues = body.mapLayer.dataValues;
+                mapLayer.radius = body.mapLayer.radius;
+                mapLayer.colorScale = body.mapLayer.colorScale;
+            }
+
+        } else if (mapType === "dotDensityMap") {
+            mapLayer = await DotDensityLayer.findOne({ _id: req.params.id });
+            if (!mapLayer) {
+                mapLayer.geographicRegion = body.mapLayer.geographicRegion;
+                mapLayer.dotSize = body.mapLayer.dotSize;
+                mapLayer.dotValue = body.mapLayer.dotValue;
+                mapLayer.colorScale = body.mapLayer.colorScale;
+            }
+
+        } else if (mapType === "graduatedSymbolMap") {
+            mapLayer = await GraduatedSymbolLayer.findOne({ _id: req.params.id });
+            if (!mapLayer) {
+                mapLayer.dataValues = body.mapLayer.dataValues;
+                mapLayer.symbolColor = body.mapLayer.symbolColor;
+                mapLayer.sizeScale = body.mapLayer.sizeScale;
+            }
+
+        } else if (mapType === "flowMap") {
+            mapLayer = await FlowmapLayer.findOne({ _id: req.params.id });
+            if (!mapLayer) {
+                mapLayer.dataValues = body.mapLayer.dataValues;
+                mapLayer.lineSizeScale = body.mapLayer.lineSizeScale;
+                mapLayer.colorScale = body.mapLayer.colorScale;
+            }
+
+        }
+
+        if (!mapLayer) {
+            return res.status(404).json({ success: false, error: "Map Layer not found" });
+        }
+
+        
+        mapLayer.graphicTitle = body.mapLayer.graphicTitle;
+        mapLayer.graphicDescription = body.mapLayer.graphicDescription;
+        mapLayer.style = body.mapLayer.style;
+
+        await mapLayer.save();
+
+        console.log("SUCCESS!!!");
+        return res.status(200).json({
+            success: true,
+            message: 'Map Layer updated!',
+        });
+    } catch (error) {
+        console.log("FAILURE: " + JSON.stringify(error));
+        return res.status(404).json({
+            error,
+            message: 'Map not updated!',
+        });
+    }
+};
+
+
+
+
 module.exports = {
     createMap,
     deleteMap,
@@ -303,4 +489,6 @@ module.exports = {
     getMapsByKeyword,
     getMapsByUser,
     getMaps,
+    getMapLayerById,
+    updateMapLayer
 }
