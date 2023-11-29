@@ -20,6 +20,7 @@ function MapCard(props) {
   const navigate = useNavigate();
 
   const handleClick = (event) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
 
@@ -114,11 +115,12 @@ function MapCard(props) {
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <MenuItem onClick={handlePublish}>Publish</MenuItem>
-            <MenuItem onClick={handleEditDetails}>Edit Details</MenuItem>
-            <MenuItem onClick={handleEditGraphics}>Edit Graphics</MenuItem>
-            <MenuItem onClick={handleDeleteMap}>Delete</MenuItem>
+            <MenuItem onClick={(event) => { event.stopPropagation(); handlePublish(); }}>Publish</MenuItem>
+            <MenuItem onClick={(event) => { event.stopPropagation(); handleEditDetails(); }}>Edit Details</MenuItem>
+            <MenuItem onClick={(event) => { event.stopPropagation(); handleEditGraphics(); }}>Edit Graphics</MenuItem>
+            <MenuItem onClick={(event) => { event.stopPropagation(); handleDeleteMap(); }}>Delete</MenuItem>
           </Menu>
+
         </>
       )}
       <Box className ='map-card-box'>
