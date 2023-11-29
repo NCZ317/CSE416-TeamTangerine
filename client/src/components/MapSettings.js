@@ -140,13 +140,10 @@ const MapSettings = () => {
                     break;
                 }
             }
+            console.log(store.currentRegion);
             if(!inRegions){
                 let newRegion = {
-                    feature: {
-                        properties : {
-                            name : store.currentRegion.feature.properties.name
-                        }
-                    },
+                    feature: store.currentMap.feature,
                     options: {
                         fillColor : event.target.value,
                         fillOpacity : store.currentRegion.options.fillOpacity
