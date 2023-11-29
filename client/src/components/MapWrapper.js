@@ -114,13 +114,13 @@ const MapWrapper = ({ style }) => {
         if (store.currentMapLayer.style.titleFontColor) {
             style += `color: ${store.currentMapLayer.style.titleFontColor};`
         }
-        if (true) {
+        if (store.currentMapLayer.style.titleStyles && store.currentMapLayer.style.titleStyles.italic) {
             style += 'font-style: italic;';
         }
-        if (true) {
+        if (store.currentMapLayer.style.titleStyles && store.currentMapLayer.style.titleStyles.bold) {
             style += 'font-weight: bold;';
         }
-        if (true) {
+        if (store.currentMapLayer.style.titleStyles && store.currentMapLayer.style.titleStyles.underlined) {
             style += 'text-decoration: underline;';
         }
         return style;
@@ -134,13 +134,13 @@ const MapWrapper = ({ style }) => {
         if (store.currentMapLayer.style.descriptionFontColor) {
             style += `color: ${store.currentMapLayer.style.descriptionFontColor};`
         }
-        if (true) {
+        if (store.currentMapLayer.style.descriptionStyles && store.currentMapLayer.style.descriptionStyles.italic) {
             style += 'font-style: italic;';
         }
-        if (true) {
+        if (store.currentMapLayer.style.descriptionStyles && store.currentMapLayer.style.descriptionStyles.bold) {
             style += 'font-weight: bold;';
         }
-        if (true) {
+        if (store.currentMapLayer.style.descriptionStyles && store.currentMapLayer.style.descriptionStyles.underlined) {
             style += 'text-decoration: underline;';
         }
         return style;
@@ -151,7 +151,7 @@ const MapWrapper = ({ style }) => {
         weight: store.currentMapLayer && store.currentMapLayer.style.borderWeight ? store.currentMapLayer.style.borderWeight : 2,
         stroke: store.currentMapLayer && store.currentMapLayer.style.border, 
         opacity: 1,
-        dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : ''
+        dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : '',
     }
 
     if (store.mapTemplate == 'choroplethMap' && store.currentMap.legend){
