@@ -35,7 +35,20 @@ const MapEditorWrapper = () => {
     const handleSave = () =>{
         store.setScreen("USER");
     }
-
+    const Toolbox = () => {
+        switch(store.getMapTemplate()){
+            case 'choroplethMap':
+                return(<ChoroplethToolbox/>);
+            case 'heatMap':
+                return(<HeatmapToolbox/>);
+            case 'dotDensityMap':
+                return(<DotDensityToolbox/>);
+            case 'graduatedSymbolMap':
+                return(<GraduatedSymbolToolbox/>);
+            // case 'flowMap':  //for when we get the flowMap toolbox
+            //     return(<FlowMapToolbox/>);
+        }
+    }
     return (
         <div style={{ height: '100%' }}>
             {/* <AppBanner /> */}            
@@ -74,13 +87,7 @@ const MapEditorWrapper = () => {
                             <CloseIcon fontSize='large'/>
                         </IconButton>
                     </div>
-
-                    {/* <ChoroplethToolbox/> */}
-                    <HeatmapToolbox/>
-                    {/* <DotDensityToolbox/> */}
-                    {/* <GraduatedSymbolToolbox/> */}
-
-
+                    <Toolbox/>
                 </Drawer>
             </>
             <>

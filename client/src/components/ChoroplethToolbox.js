@@ -1,6 +1,6 @@
 // ChoroplethToolbox.js
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Box } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -13,6 +13,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
 
+import { GlobalStoreContext } from '../store';
+
 const ChoroplethToolbox = () => {
     const [selectedTab, setSelectedTab] = useState(0);
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
@@ -20,6 +22,12 @@ const ChoroplethToolbox = () => {
 
     const [legend, setLegend] = useState([{ value: '', color: '' }]);
 
+    const { store } = useContext(GlobalStoreContext);
+    const currentMap = store.currentMap.jsonData; 
+     console.log(currentMap);
+    const [features, setFeatures] = useState(currentMap.features.map(x => [x.properties.name, ((x.properties.value) ? x.properties.value : null)]))
+    console.log(features);
+    console.log(legend);
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
     };
@@ -53,6 +61,10 @@ const ChoroplethToolbox = () => {
         newLegend.splice(index, 1);
         setLegend(newLegend);
     };
+    const handleValueChange = (index, value) =>{
+        features[index][1] = value;
+       setFeatures(features) 
+    }
 
 
     return (
@@ -77,19 +89,18 @@ const ChoroplethToolbox = () => {
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-                        <Typography>Click on a map region to set the data for that region</Typography>
-                        <div style={{display: 'flex'}}>
-                            <TextField
-                                label="RegionName"
-                            />
-                            <TextField
-                                label="Value"
-                            />
-                            <IconButton variant="outlined">
-                                <DeleteIcon/>
-                            </IconButton>
-                        </div>
-
+                        {features.map(([name,value], index) => (
+                            <div style={{display: 'flex'}}>
+                                <div style={{width: '50%', paddingTop: '5%'}}>{name}</div>
+                                <TextField
+                                    label={value}
+                                    onChange = {(e) => handleValueChange(index, e.target.value)}
+                                />
+                                <IconButton variant="outlined">
+                                    <DeleteIcon/>
+                                </IconButton>
+                            </div>
+                        ))}
                     </Collapse>
 
                     <IconButton onClick={handleLegendSettings} aria-label="toggle" sx={{width: '100%'}}>

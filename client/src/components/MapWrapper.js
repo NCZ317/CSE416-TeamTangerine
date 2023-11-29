@@ -31,6 +31,10 @@ const MapWrapper = ({ style }) => {
         return null;
     };
 
+    const mapDataStyle = {
+        color: '#79C200', weight: 2, opacity: 1 
+    }
+
     return (
         <MapContainer
             center={[0, 0]}
@@ -44,7 +48,7 @@ const MapWrapper = ({ style }) => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {mapData && <GeoJSON data={mapData} style={{ color: '#79C200', weight: 2, opacity: 1 }} />}
+            {mapData && <GeoJSON data={mapData} style={mapDataStyle} />}
             <FitBounds />
         </MapContainer>
     );

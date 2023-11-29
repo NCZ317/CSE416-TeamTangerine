@@ -298,16 +298,19 @@ function GlobalStoreContextProvider(props) {
 
     store.loadAllIdNamePairs = function() {
         async function asyncLoadIdNamePairs() {
-            let response = await api.getAllMapPairs();
-            console.log(response); 
-            if (response.data.success) {
-                let idNamePairs = response.data.idNamePairs;
-                storeReducer({
-                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-                    payload: idNamePairs,
-                })
-            }
-            else {
+            try {let response = await api.getAllMapPairs();
+                console.log(response); 
+                if (response.data.success) {
+                    let idNamePairs = response.data.idNamePairs;
+                    storeReducer({
+                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                        payload: idNamePairs,
+                    })
+                }
+                else {
+                    console.log("API FAILED TO GET THE LIST PAIRS");
+                }
+            }catch (err){
                 console.log("API FAILED TO GET THE LIST PAIRS");
             }
         }
@@ -419,7 +422,10 @@ function GlobalStoreContextProvider(props) {
         }
         asyncPublish(id);
     }
-
+    store.getMapTemplate = () => {
+        if (store.mapTemplate)
+            return store.mapTemplate;
+    }
     
 
 // //Processes changing to User screen with specified username
