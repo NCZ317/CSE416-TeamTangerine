@@ -16,13 +16,14 @@ import {
 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-export default function CreateMapModal({open,onClose}) {
+export default function CreateMapModal({ open, onClose }) {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [template, setTemplate] = useState("");
     const [page, setPage] = useState("");
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [shouldCloseModal, setShouldCloseModal] = useState(false);
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -30,30 +31,22 @@ export default function CreateMapModal({open,onClose}) {
         setSelectedFile(file);
     };
 
-
     const handleFileUpload = () => {
-        // Trigger the file input when the IconButton is clicked
         fileInputRef.current.click();
     };
 
     const handleCreateMap = async () => {
-        // Check if a file is selected
         if (!selectedFile) {
             console.log("No file selected");
             return;
         }
 
-        // Read the contents of the selected GeoJSON file
         const reader = new FileReader();
         reader.onload = async (event) => {
             const jsonData = JSON.parse(event.target.result);
-
-            // Call the store.createNewMap function with the GeoJSON data
             console.log(jsonData);
             await store.createNewMap(jsonData, template);
-            
-            // Close the modal and set the screen to "MAP_EDITOR"
-            onClose();
+            setShouldCloseModal(true);
         };
 
         reader.readAsText(selectedFile);
@@ -64,7 +57,7 @@ export default function CreateMapModal({open,onClose}) {
     }
 
     return (
-        <Modal open={open} onClose={onClose} id='create-map-modal'>
+        <Modal open={open} onClose={() => shouldCloseModal ? onClose() : null} id='create-map-modal'>
             <Paper id = "create-map-paper">
                 <Typography variant="h3" gutterBottom className="modal-title">
                     Select Template

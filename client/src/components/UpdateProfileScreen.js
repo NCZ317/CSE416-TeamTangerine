@@ -20,7 +20,7 @@ const UpdateProfileScreen = ({ state, setState }) => {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
 
-    const [selectedMenuItem, setSelectedMenuItem] = useState('Private Maps');
+    const [selectedMenuItem, setSelectedMenuItem] = useState('Drafts');
 
     useEffect(() => {
         store.loadIdNamePairs();
@@ -29,9 +29,9 @@ const UpdateProfileScreen = ({ state, setState }) => {
     let mapList = "";
     if (store) {
         const filteredPairs = store.idNamePairs.filter(pair => {
-            if (selectedMenuItem === 'Private Maps') {
+            if (selectedMenuItem === 'Drafts') {
                 return !pair.published;
-            } else if (selectedMenuItem === 'Public Maps') {
+            } else if (selectedMenuItem === 'Published') {
                 return pair.published;
             }
             // ADD LOGIC FOR LIKED MAPS HERE LATER
@@ -131,11 +131,11 @@ const UpdateProfileScreen = ({ state, setState }) => {
                             }}
                         >
                             <List>
-                                <ListItem button onClick={() => handleMenuItemClick("Private Maps")}>
-                                    <ListItemText primary="Private Maps" />
+                                <ListItem button onClick={() => handleMenuItemClick("Drafts")}>
+                                    <ListItemText primary="Drafts" />
                                 </ListItem>
-                                <ListItem button onClick={() => handleMenuItemClick("Public Maps")}>
-                                    <ListItemText primary="Public Maps" />
+                                <ListItem button onClick={() => handleMenuItemClick("Published")}>
+                                    <ListItemText primary="Published" />
                                 </ListItem>
                                 {/* FIGURE OUT LIKED MAP LOGIC LATER */}
                                 <ListItem button disabled={true} onClick={() => handleMenuItemClick("Liked Maps")}> 
