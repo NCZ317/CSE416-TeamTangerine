@@ -55,6 +55,10 @@ const MapSettings = () => {
             let mapLayer = store.currentMapLayer;
             mapLayer.graphicTitle = mapTitle;
             store.updateCurrentMapLayer(mapLayer);
+            console.log(mapTitle);
+            console.log(store.currentMap);
+            store.currentMap.title = mapTitle;
+            console.log(store.currentMap);
         }
     }
     const handleTitleFont = (event) => {
@@ -75,6 +79,7 @@ const MapSettings = () => {
         if (event.key === "Enter") {
             let mapLayer = store.currentMapLayer;
             mapLayer.graphicDescription = mapDescription;
+            store.currentMap.description = mapDescription;
             store.updateCurrentMapLayer(mapLayer);
         }
     }
@@ -127,11 +132,37 @@ const MapSettings = () => {
             store.currentRegion.setStyle({
                 fillColor: event.target.value
             });
+            var inRegions = false;
+            for(let region of store.currentMap.currentRegions){
+                if(region.feature.properties.name===store.currentRegion.feature.properties.name){
+                    inRegions = true;
+                    region.options.fillColor=event.target.value
+                    break;
+                }
+            }
+            if(!inRegions){
+                let newRegion = {
+                    feature: {
+                        properties : {
+                            name : store.currentRegion.feature.properties.name
+                        }
+                    },
+                    options: {
+                        fillColor : event.target.value,
+                        fillOpacity : store.currentRegion.options.fillOpacity
+                    }
+                }
+                store.currentMap.currentRegions.push(newRegion); 
+            }
+            var allRegions = store.currentMap.currentRegions;
+            console.log(allRegions);
+            console.log(store.currentMap);
         }
     }
 
     const handleFillOpacity = (event) => {
         if (store.currentRegion) {
+            console.log(store.currentRegion);
             store.currentRegion.setStyle({
                 fillOpacity: event.target.value
             });
@@ -321,6 +352,7 @@ const MapSettings = () => {
 
             <IconButton onClick={handleRegionSettings} aria-label="toggle" sx={{width: '100%'}}>
                 Region Settings
+                (Click region to edit it)
                 {regionSettingsOpen ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
             <Collapse in={regionSettingsOpen} timeout="auto" unmountOnExit

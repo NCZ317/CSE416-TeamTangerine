@@ -13,6 +13,7 @@ const MapWrapper = ({ style }) => {
         console.log(store.currentMap);
         if (store.currentMap && store.currentMap.jsonData) {
             setMapData(store.currentMap.jsonData);
+            //store.currentRegion = 
         } else {
             setMapData(null);
         }

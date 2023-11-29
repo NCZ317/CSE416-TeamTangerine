@@ -18,7 +18,8 @@ const mapSchema = new Schema({
         message: { type: String, required: true }
     }],
     published: { type: Boolean, required: true },
-    publishedDate: { type: Date, required: true }
+    publishedDate: { type: Date, required: true },
+    currentRegions: {type: [Object], default: []}
 });
 const Map = mongoose.model('Map', mapSchema);
 

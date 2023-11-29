@@ -37,7 +37,7 @@ const MapEditorWrapper = () => {
         await store.updateCurrentMap();
         store.setScreen("USER");
     }
-    const Toolbox = () => {
+    /* const Toolbox = () => {
         console.log(store.currentMap);
         switch(store.mapTemplate){
             case 'choroplethMap':
@@ -51,7 +51,7 @@ const MapEditorWrapper = () => {
             // case 'flowMap':  //for when we get the flowMap toolbox
             //     return(<FlowMapToolbox/>);
         }
-    }
+    } */
     return (
         <div style={{ height: '100%' }}>
             {/* <AppBanner /> */}            

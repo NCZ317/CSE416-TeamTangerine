@@ -52,7 +52,10 @@ const ChoroplethToolbox = () => {
     const handleLegendValue = (index, value) => {
         const newLegend = [...legend];
         newLegend[index].value = value;
+        console.log(store.currentMap.legend);
         store.currentMap.legend = newLegend;
+        console.log(store.currentMap.legend);
+        console.log(store.currentMap.mapType);
         setLegend(newLegend);
     };
 

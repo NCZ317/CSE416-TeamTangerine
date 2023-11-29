@@ -180,7 +180,7 @@ getMapPairs = async (req, res) => {
         console.log("find all Maps owned by " + user.email);
         const maps = await Map.find({ ownerEmail: user.email });
 
-        console.log("found Maps: " + JSON.stringify(maps));
+        //console.log("found Maps: " + JSON.stringify(maps));
 
         if (!maps) {
             console.log("!maps");
@@ -262,7 +262,7 @@ getAllPublishedMapPairs = async (req, res) => {
 
 updateMap = async (req, res) => {
     const body = req.body;
-    console.log("updateMap: " + JSON.stringify(body));
+    //console.log("updateMap: " + JSON.stringify(body));
 
     try {
         if (!body) {
@@ -290,6 +290,7 @@ updateMap = async (req, res) => {
         map.comments = body.map.comments;
         map.published = body.map.published;
         map.publishedDate = body.map.publishedDate;
+        map.currentRegions = body.map.currentRegions;
 
         await map.save();
 
