@@ -46,6 +46,10 @@ const MapWrapper = ({ style }) => {
             click: handleFeatureClick,
         });
 
+        // if (store.currentMapLayer && store.currentMapLayer.style.borderColor) {
+        //     layer.setStyle({color: store.currentMapLayer.style.borderColor});
+        // }   
+
         // layer.setStyle({
         //     color: "#FF0000",
         //     dashArray: '5, 5',
@@ -142,7 +146,11 @@ const MapWrapper = ({ style }) => {
     };
 
     const mapDataStyle = {
-        color: '#79C200', weight: 2, opacity: 1 
+        color: store.currentMapLayer && store.currentMapLayer.style.borderColor ? store.currentMapLayer.style.borderColor : '#79C200',
+        weight: store.currentMapLayer && store.currentMapLayer.style.borderWeight ? store.currentMapLayer.style.borderWeight : 2,
+        stroke: store.currentMapLayer && store.currentMapLayer.style.border, 
+        opacity: 1,
+        dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : ''
     }
 
     if (store.mapTemplate == 'choroplethMap' && store.currentMap.legend){
@@ -180,7 +188,8 @@ const MapWrapper = ({ style }) => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {mapData && <GeoJSON data={mapData} style={mapDataStyle} 
+
+            {mapData && <GeoJSON data={mapData} style={mapDataStyle}
                 onEachFeature={onEachFeature}
             />}
             <FitBounds />
