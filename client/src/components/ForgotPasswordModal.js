@@ -17,7 +17,7 @@ export default function ForgotPasswordModal({open, onClose}) {
     const handleForgotPassword = async () => {
         alert('sending');
         await auth.sendEmail(email);
-        alert('Please retry');
+        alert('Email sent');
         onClose();
     };
 

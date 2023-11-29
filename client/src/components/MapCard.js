@@ -46,6 +46,7 @@ function MapCard(props) {
   };
 
   const handleEditGraphics = () => {
+    store.setCurrentMap(idNamePair._id);
     store.setScreen("MAP_EDITOR");
     handleClose();
   };
