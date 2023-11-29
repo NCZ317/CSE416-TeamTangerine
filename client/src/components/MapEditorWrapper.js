@@ -22,7 +22,7 @@ const drawerWidth = '25%';
 const MapEditorWrapper = () => {
 
     const { store } = useContext(GlobalStoreContext);
-
+    console.log(store);
     const [open, setOpen] = React.useState(false);
     const handleDrawerOpen = (event) => {
         setOpen(true);

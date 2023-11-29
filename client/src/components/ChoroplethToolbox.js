@@ -12,21 +12,26 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
+import L from 'leaflet';
 
 import { GlobalStoreContext } from '../store';
 
 const ChoroplethToolbox = () => {
+    const { store } = useContext(GlobalStoreContext);
+
     const [selectedTab, setSelectedTab] = useState(0);
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
     const [legendSettingsOpen, setLegendSettingsOpen] = useState(true);
+    var leg = []
+    if(store.currentMap.legend){
+       leg = store.currentMap.legend;}
+    else leg =[{ value: '', color: '' }];
 
-    const [legend, setLegend] = useState([{ value: '', color: '' }]);
+    const [legend, setLegend] = useState(leg);
 
-    const { store } = useContext(GlobalStoreContext);
+    
     const currentMap = store.currentMap.jsonData; 
-     console.log(currentMap);
-    const [features, setFeatures] = useState(currentMap.features.map(x => [x.properties.name, ((x.properties.value) ? x.properties.value : null)]))
-    console.log(features);
+    const features = currentMap.features.map(x => x.properties);
     console.log(legend);
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -47,25 +52,23 @@ const ChoroplethToolbox = () => {
     const handleLegendValue = (index, value) => {
         const newLegend = [...legend];
         newLegend[index].value = value;
+        store.currentMap.legend = newLegend;
         setLegend(newLegend);
     };
 
     const handleLegendColor = (index, color) => {
         const newLegend = [...legend];
         newLegend[index].color = color;
+        store.currentMap.legend = newLegend;
         setLegend(newLegend);
     };
 
     const deleteLegendRow = (index) => {
         const newLegend = [...legend];
         newLegend.splice(index, 1);
+        store.currentMap.legend = newLegend;
         setLegend(newLegend);
     };
-    const handleValueChange = (index, value) =>{
-        features[index][1] = value;
-       setFeatures(features) 
-    }
-
 
     return (
         <div className="choropleth-toolbox">
@@ -89,12 +92,12 @@ const ChoroplethToolbox = () => {
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-                        {features.map(([name,value], index) => (
-                            <div style={{display: 'flex'}}>
-                                <div style={{width: '50%', paddingTop: '5%'}}>{name}</div>
+                        {features.map((property, index) => (
+                            <div style={{display: 'flex'}} value = {property.name}>
+                                <div style={{width: '50%', paddingTop: '5%'}}>{property.name}</div>
                                 <TextField
-                                    label={value}
-                                    onChange = {(e) => handleValueChange(index, e.target.value)}
+                                    label={property.value}
+                                    onChange = {(e) => (property.value =  e.target.value)}
                                 />
                                 <IconButton variant="outlined">
                                     <DeleteIcon/>
@@ -150,7 +153,7 @@ const ChoroplethToolbox = () => {
             )}
 
             {selectedTab === 1 && (
-                <MapSettings/>
+                <MapSettings />
             
             )}
 

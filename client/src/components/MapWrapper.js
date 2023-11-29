@@ -7,7 +7,7 @@ import L from 'leaflet';
 const MapWrapper = ({ style }) => {
     const { store } = useContext(GlobalStoreContext);
     const [mapData, setMapData] = useState(null);
-    const mapRef = useRef();
+    const [map, setMap] = useState(null);
 
     useEffect(() => {
         console.log(store.currentMap);
@@ -30,9 +30,28 @@ const MapWrapper = ({ style }) => {
 
         return null;
     };
-
     const mapDataStyle = {
-        color: '#79C200', weight: 2, opacity: 1 
+        color: '#79C200', weight: 2, opacity: 1 ,fillColor : 'white', fillOpacity: 0,
+    } 
+    if (store.getMapTemplate() == 'choroplethMap' && store.currentMap.legend){
+        L.geoJson(mapData, {style: chorpleth}).addTo(map);
+    }else{
+        
+    }
+    function chorpleth(feature) {
+        return {
+            fillColor: getColor(feature.properties.value),
+            color: '#79C200',
+            weight: 2, 
+            opacity: 0.5,
+        };
+    }
+    function getColor(d) {
+        for (var i = 0; i< store.currentMap.legend.length ; i++){
+            if (d>=store.currentMap.legend[i].value)
+                return store.currentMap.legend[i].color;
+
+        }
     }
 
     return (
@@ -42,7 +61,7 @@ const MapWrapper = ({ style }) => {
             zoomControl={false}
             scrollWheelZoom={true}
             style={style ? style : { height: '83vh' }}
-            whenCreated={(map) => (mapRef.current = map)}
+            ref={setMap}
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
