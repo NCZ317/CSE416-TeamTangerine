@@ -130,9 +130,9 @@ function GlobalStoreContextProvider(props) {
                     currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
                     currentMaps: [],
-                    currentMap: payload,
-                    currentMapLayer: null,
-                    mapTemplate: payload.mapType,
+                    currentMap: payload.newMap,
+                    currentMapLayer: payload.mapLayer,
+                    mapTemplate: payload.newMap.mapType,
                     newMapCounter: store.newMapCounter + 1,
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
@@ -295,14 +295,27 @@ function GlobalStoreContextProvider(props) {
     //Creates a  new map
     store.createNewMap = async function(jsonData, mapTemplate)  {
         let newMapTitle = auth.user.username + " - Untitled (" + store.newMapCounter + ")";
-        const response = await api.createMap(newMapTitle, jsonData, mapTemplate, auth.user.email, auth.user.username );
+        let response = await api.createMap(newMapTitle, jsonData, mapTemplate, auth.user.email, auth.user.username );
         if(response.status == 201) {
             tps.clearAllTransactions();
             let newMap = response.data.map;
-            storeReducer({
-                type: GlobalStoreActionType.CREATE_NEW_MAP,
-                payload: newMap
-            })
+            response = await api.getMapLayerById(newMap.mapLayers, newMap.mapType);
+                if (response.data.success) {
+                    let mapLayer = response.data.mapLayer;
+                    storeReducer({
+                        type: GlobalStoreActionType.CREATE_NEW_MAP,
+                        payload: {
+                            newMap: newMap,
+                            mapLayer: mapLayer
+                        }
+                    });
+
+                }
+
+            // storeReducer({
+            //     type: GlobalStoreActionType.CREATE_NEW_MAP,
+            //     payload: newMap
+            // })
         }
         else {
             console.log("API FAILED TO CREATE A NEW LIST");

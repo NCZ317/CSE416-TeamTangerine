@@ -32,9 +32,9 @@ const MapEditorWrapper = () => {
     setOpen(false);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         
-        // await store.updateCurrentMap();
+        await store.updateCurrentMap();
         store.setScreen("USER");
     }
     const Toolbox = () => {
