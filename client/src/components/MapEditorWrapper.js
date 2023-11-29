@@ -36,6 +36,7 @@ const MapEditorWrapper = () => {
         store.setScreen("USER");
     }
     const Toolbox = () => {
+        console.log(store.currentMap);
         switch(store.getMapTemplate()){
             case 'choroplethMap':
                 return(<ChoroplethToolbox/>);

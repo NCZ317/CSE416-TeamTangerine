@@ -2,6 +2,7 @@ const auth = require('../auth')
 const User = require('../models/user-model')
 const bcrypt = require('bcryptjs')
 
+
 getLoggedIn = async (req, res) => {
     try {
         let userId = auth.verifyUser(req);
@@ -331,15 +332,12 @@ changeUserPassword = async (req,res) => {
 }
 
 sendEmail = async (req, res) => {
-    const {email, newPassword, confirmNewPassword} = req.body;
+    const {email} = req.body;
     console.log(req.body);
     console.log(email);
-    console.log(newPassword)
-    console.log(confirmNewPassword)
     console.log('SEND EMAIL')
     
     try {
-        console.log(User);
         var existingUser = false;
         try{
             existingUser = await User.findOne({ email: email });
@@ -355,6 +353,8 @@ sendEmail = async (req, res) => {
         }
         console.log('existingUser: '+ existingUser);
         const nodemailer = require('nodemailer');
+        //insert oauth2
+        
         const generatedPassword = 'bwnz vlgl vwob krbv';
         var transporter = nodemailer.createTransport({ //sender email
             host: "smtp.gmail.com",
@@ -381,12 +381,66 @@ sendEmail = async (req, res) => {
         transporter.sendMail(mailOptions, function(error, info){//function to send email
             try{
                 console.log('Email sent: ' + info);
-                res.status(200)
+                res.status(200).send();
             } catch(error){
                 console.log(error);
                 res.status(500).send()
             }
         })
+       
+        
+        /* const { google } = require("googleapis");
+        const OAuth2 = google.auth.OAuth2;
+        const oauth2Client = new OAuth2(
+            "686887097191-v8ouubp0eslnvoq5j8ot14lc6725geoj.apps.googleusercontent.com", // ClientID
+            "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", // Client Secret
+            "https://developers.google.com/oauthplayground" // Redirect URL
+        );
+        oauth2Client.setCredentials({
+            refresh_token: "1//04tjbcUOAy7kwCgYIARAAGAQSNwF-L9Irn5yyaEc2fJ2XDMNXDU4GYgELXB-NCUfigyy3A5KGuoxbEJeu_dsA0ypNvykNASZw65o"
+        });
+        const accessToken = await oauth2Client.getAccessToken();
+        const generatedPassword = 'bwnz vlgl vwob krbv';
+        let transporter = nodemailer.createTransport({ //sender email
+            service: "gmail",
+            host : "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                type: "OAuth2",
+                clientId: "686887097191-v8ouubp0eslnvoq5j8ot14lc6725geoj.apps.googleusercontent.com", // ClientID
+                clientSecret: "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", // Client Secret
+                refresh_token: "1//04tjbcUOAy7kwCgYIARAAGAQSNwF-L9Irn5yyaEc2fJ2XDMNXDU4GYgELXB-NCUfigyy3A5KGuoxbEJeu_dsA0ypNvykNASZw65o", //refresh token
+                user: 'dylan.lai@stonybrook.edu',
+                accessToken: accessToken
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+        });
+        console.log(transporter);
+        const baseURL = process.env.NODE_ENV === 'production'
+            ? 'https://terratrove-df08dd7fc1f7.herokuapp.com/reset'
+            : 'http://localhost:3000/reset';
+        console.log(existingUser.passwordHash)
+        const hashPass = existingUser.passwordHash;
+        console.log(hashPass)
+        let mailOptions = { //email contents
+            from: 'dillypily888@gmail.com',
+            to: email,
+            subject: 'Forgot Password',
+            text: 'Link to make new password ' + baseURL + '?' + email + '//' + hashPass + '   ',
+        };
+        transporter.sendMail(mailOptions, function(error, info){//function to send email
+            try{
+                console.log('Email sent: ' + info);
+                console.log(info);
+                res.status(200);
+            } catch(error){
+                console.log(error);
+                res.status(500).send()
+            }
+        }) */
     } catch (error) {
         console.log(error);
         res.status(500).send();

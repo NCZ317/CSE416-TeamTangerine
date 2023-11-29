@@ -179,13 +179,14 @@ function GlobalStoreContextProvider(props) {
             }
 
             case GlobalStoreActionType.SET_CURRENT_MAP: {
+                console.log(payload);
                 return setStore({
                     currentModal : store.currentModal,
                     currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
                     currentMaps: [],
                     currentMap: payload,
-                    mapTemplate: payload.mapTemplate,
+                    mapTemplate: payload.mapType,
                     newMapCounter: store.newMapCounter,
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
