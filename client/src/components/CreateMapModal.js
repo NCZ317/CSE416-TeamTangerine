@@ -15,15 +15,17 @@ import {
 } from '@mui/material';
 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import JSZip from 'jszip';
+import * as shapefile from 'shapefile';
+import togeojson from '@mapbox/togeojson';
 
-export default function CreateMapModal({ open, onClose }) {
+export default function CreateMapModal({open,onClose}) {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [template, setTemplate] = useState("");
     const [page, setPage] = useState("");
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [shouldCloseModal, setShouldCloseModal] = useState(false);
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -31,25 +33,83 @@ export default function CreateMapModal({ open, onClose }) {
         setSelectedFile(file);
     };
 
+
     const handleFileUpload = () => {
+        // Trigger the file input when the IconButton is clicked
         fileInputRef.current.click();
     };
 
     const handleCreateMap = async () => {
+        let geojson = "";
+        // Check if a file is selected
         if (!selectedFile) {
             console.log("No file selected");
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-            const jsonData = JSON.parse(event.target.result);
-            console.log(jsonData);
-            await store.createNewMap(jsonData, template);
-            setShouldCloseModal(true);
-        };
+        if (selectedFile.name.endsWith('.zip')) {
+            // Handle .zip file containing shapefiles
 
-        reader.readAsText(selectedFile);
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const zipData = e.target.result;
+                console.log(zipData);
+
+                // Read the contents of the zip file using JSZip
+                const zip = new JSZip();
+                const zipContents = await zip.loadAsync(zipData);
+
+                // Extract the .shp and .dbf files as ArrayBuffer
+                const shpBuffer = await zipContents.file(/\.shp$/)[0].async('arraybuffer');
+                const dbfBuffer = await zipContents.file(/\.dbf$/)[0].async('arraybuffer');
+
+                // Parse the .shp file
+                geojson = await shapefile.read(
+                    shpBuffer,
+                    dbfBuffer,
+                    { type: 'buffer' } // Specify the type of data source
+                );
+
+                console.log(geojson);
+                await store.createNewMap(geojson, template);
+
+                // Close the modal and set the screen to "MAP_EDITOR"
+                onClose();
+            };
+
+            reader.readAsArrayBuffer(selectedFile);
+        }
+        else if (selectedFile.name.endsWith('.kml')) {
+            const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const kmlData = e.target.result;
+                    const kmlParser = new DOMParser();
+                    const kmlDoc = kmlParser.parseFromString(kmlData, 'application/xml');
+                    const geojson = togeojson.kml(kmlDoc);
+
+                    console.log(geojson);
+                    await store.createNewMap(geojson, template);
+
+                    onClose();
+                };
+                reader.readAsText(selectedFile);
+        }
+        else {
+            // Read the contents of the selected GeoJSON file
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const jsonData = JSON.parse(event.target.result);
+
+                // Call the store.createNewMap function with the GeoJSON data
+                console.log(jsonData);
+                await store.createNewMap(jsonData, template);
+
+                // Close the modal and set the screen to "MAP_EDITOR"
+                onClose();
+            };
+
+            reader.readAsText(selectedFile);
+        }
     };
 
     const selectedCard = {
@@ -57,7 +117,7 @@ export default function CreateMapModal({ open, onClose }) {
     }
 
     return (
-        <Modal open={open} onClose={() => shouldCloseModal ? onClose() : null} id='create-map-modal'>
+        <Modal open={open} onClose={onClose} id='create-map-modal'>
             <Paper id = "create-map-paper">
                 <Typography variant="h3" gutterBottom className="modal-title">
                     Select Template
@@ -159,7 +219,7 @@ export default function CreateMapModal({ open, onClose }) {
                     <input
                         ref={fileInputRef}
                         type="file"
-                        accept=".geojson, .shp, .kml .zip, .json"
+                        
                         id="create-map-input"
                         onChange={handleFileChange}
                     />
