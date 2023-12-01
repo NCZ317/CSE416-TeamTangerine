@@ -90,7 +90,7 @@ const ProfileWrapper = () => {
               </Typography>
 
               <Typography variant="h6" id='profile-typography-2'>
-                {auth.loggedIn && auth.user.username}
+                {auth.loggedIn && "@"+auth.user.username}
               </Typography>
 
               <Box id='profile-box' className = 'profile-followers'>

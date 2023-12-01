@@ -70,7 +70,7 @@ function MapCard(props) {
       store.setCurrentMap(idNamePair._id);
       navigate("/post/" + idNamePair._id);
     }
-    //else console.log("THIS MAP ISNT PUBLIC")
+    else handleEditGraphics();
   }
   let title = "Title"
   let author = "Author"

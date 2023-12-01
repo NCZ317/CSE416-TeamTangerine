@@ -35,7 +35,7 @@ export default function EditDetailsModal({ idNamePair, open, onClose }) {
 
     return (
         <>
-            <Modal open={open} onClose={onClose} id="edit-details-modal">
+            <Modal open={open} onClose={onClose} onClick={(e) => e.stopPropagation()} id="edit-details-modal">
                 <Paper id="edit-details-paper">
                     <Typography variant="h3" gutterBottom className="modal-title">
                         Edit Map Details
@@ -50,6 +50,7 @@ export default function EditDetailsModal({ idNamePair, open, onClose }) {
                                 type="text"
                                 className="custom-long-text-field"
                                 value={title}
+                                
                                 onChange={(e) => setTitle(e.target.value)}
                             />
                         </div>

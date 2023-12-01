@@ -21,15 +21,31 @@ const MapWrapper = ({ style }) => {
 
     const FitBounds = () => {
         const map = useMap();
-
+    
         useEffect(() => {
             if (mapData) {
-                //TODO: NEED TO CHECK IF BOUNDS ARE VALID
+                // Calculate bounds from GeoJSON
                 const bounds = L.geoJSON(mapData).getBounds();
-                map.fitBounds(bounds, { padding: [10, 10] });
+    
+                // Check if the bounds are valid (not equal to default bounds)
+                const isValidBounds =
+                    bounds.isValid() &&
+                    bounds.getSouthWest().lat !== 0 &&
+                    bounds.getSouthWest().lng !== 0 &&
+                    bounds.getNorthEast().lat !== 0 &&
+                    bounds.getNorthEast().lng !== 0;
+    
+                if (isValidBounds) {
+                    // Fit bounds with padding
+                    map.fitBounds(bounds, { padding: [10, 10] });
+                } else {
+                    // Handle invalid bounds (e.g., when GeoJSON has no features)
+                    console.log("Invalid bounds or no features in GeoJSON");
+                    // Optionally, you can set a default view or handle it differently.
+                }
             }
         }, [map, mapData]);
-
+    
         return null;
     };
 
@@ -115,13 +131,13 @@ const MapWrapper = ({ style }) => {
         if (store.currentMapLayer.style.titleFontColor) {
             style += `color: ${store.currentMapLayer.style.titleFontColor};`
         }
-        if (true) {
+        if (store.currentMapLayer.style.titleStyles && store.currentMapLayer.style.titleStyles.italic) {
             style += 'font-style: italic;';
         }
-        if (true) {
+        if (store.currentMapLayer.style.titleStyles && store.currentMapLayer.style.titleStyles.bold) {
             style += 'font-weight: bold;';
         }
-        if (true) {
+        if (store.currentMapLayer.style.titleStyles && store.currentMapLayer.style.titleStyles.underlined) {
             style += 'text-decoration: underline;';
         }
         return style;
@@ -135,13 +151,13 @@ const MapWrapper = ({ style }) => {
         if (store.currentMapLayer.style.descriptionFontColor) {
             style += `color: ${store.currentMapLayer.style.descriptionFontColor};`
         }
-        if (true) {
+        if (store.currentMapLayer.style.descriptionStyles && store.currentMapLayer.style.descriptionStyles.italic) {
             style += 'font-style: italic;';
         }
-        if (true) {
+        if (store.currentMapLayer.style.descriptionStyles && store.currentMapLayer.style.descriptionStyles.bold) {
             style += 'font-weight: bold;';
         }
-        if (true) {
+        if (store.currentMapLayer.style.descriptionStyles && store.currentMapLayer.style.descriptionStyles.underlined) {
             style += 'text-decoration: underline;';
         }
         return style;
@@ -152,7 +168,7 @@ const MapWrapper = ({ style }) => {
         weight: store.currentMapLayer && store.currentMapLayer.style.borderWeight ? store.currentMapLayer.style.borderWeight : 2,
         stroke: store.currentMapLayer && store.currentMapLayer.style.border, 
         opacity: 1,
-        dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : ''
+        dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : '',
     }
 
     if (store.mapTemplate == 'choroplethMap' && store.currentMap.legend){

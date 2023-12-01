@@ -32,6 +32,8 @@ export const getMapById = (id) => api.get(`/map/${id}`)
 
 export const  getMapPairs = () => api.get(`/mappairs/`)
 
+export const getLikedMapPairs = () => api.get(`/likedmappairs`)
+
 export const updateMapById = (id, map) => {
     return api.put(`/map/${id}`, {
         map: map
@@ -55,17 +57,24 @@ export const updateMapLayerById = (id, mapType, mapLayer) => {
     })
 };
 
+export const likeMapById = (id) => api.post(`/map/${id}/like`);
+
+export const unlikeMapById = (id) => api.post(`/map/${id}/unlike`);
+
 
 const apis = {
     createMap,
     deleteMapById,
     getMapById,
     getMapPairs,
+    getLikedMapPairs,
     updateMapById,
     getMaps,
     getAllMapPairs,
     getMapLayerById,
-    updateMapLayerById
+    updateMapLayerById,
+    likeMapById,
+    unlikeMapById
 }
 
 export default apis

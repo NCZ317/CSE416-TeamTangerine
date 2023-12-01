@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 // import { useHistory} from 'react-router-dom'
-import api from './store-request-api'
+import api, { getMapById } from './store-request-api'
 import AuthContext from '../auth'
 import { useNavigate } from 'react-router-dom';
 import jsTPS from '../common/jsTPS'
@@ -15,6 +15,7 @@ export const GlobalStoreActionType = {
     CLOSE_CURRENT_MAP: "CLOSE_CURRENT_MAP",
     CREATE_NEW_MAP: "CREATE_NEW_MAP",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
+    LOAD_LIKED_MAP_PAIRS: "LOAD_LIKED_MAP_PAIRS",
     LOAD_CURRENT_MAPS: "LOAD_CURRENT_MAPS",
     MARK_MAP_FOR_DELETION: "MARK_MAP_FOR_DELETION",
     SET_CURRENT_MAP: "SET_CURRENT_MAP",
@@ -83,6 +84,7 @@ function GlobalStoreContextProvider(props) {
         currentModal : CurrentModal.NONE,
         currentScreen : CurrentScreen.HOME,
         idNamePairs: [],
+        likedMapPairs: [],
         currentMaps: [],
         currentMap: null,
         currentMapLayer: null,
@@ -113,6 +115,7 @@ function GlobalStoreContextProvider(props) {
                     currentModal : CurrentModal.NONE,
                     currentScreen : payload.screen,
                     idNamePairs: [],
+                    likedMapPairs: [],
                     currentMaps: [],
                     currentMap: store.currentMap,
                     currentMapLayer: store.currentMapLayer,
@@ -129,6 +132,7 @@ function GlobalStoreContextProvider(props) {
                     currentModal : CurrentModal.NONE,
                     currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
+                    likedMapPairs: store.likedMapPairs,
                     currentMaps: [],
                     currentMap: payload.newMap,
                     currentMapLayer: payload.mapLayer,
@@ -146,6 +150,7 @@ function GlobalStoreContextProvider(props) {
                     currentModal : CurrentModal.NONE,
                     currentScreen : CurrentScreen.USER,
                     idNamePairs: store.idNamePairs,
+                    likedMapPairs: store.likedMapPairs,
                     currentMaps: [],
                     currentMap: null,
                     currentMapLayer: null,
@@ -163,6 +168,25 @@ function GlobalStoreContextProvider(props) {
                     currentModal : CurrentModal.NONE,
                     currentScreen : store.currentScreen,
                     idNamePairs: payload,
+                    likedMapPairs: store.likedMapPairs,
+                    currentMaps: [],
+                    currentMap: null,
+                    currentMapLayer: null,
+                    mapTemplate: null,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                    currentRegion: null
+                })
+            }
+
+            case GlobalStoreActionType.LOAD_LIKED_MAP_PAIRS: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : store.currentScreen,
+                    idNamePairs: store.idNamePairs,
+                    likedMapPairs: payload,
                     currentMaps: [],
                     currentMap: null,
                     currentMapLayer: null,
@@ -180,6 +204,7 @@ function GlobalStoreContextProvider(props) {
                     currentModal : CurrentModal.DELETE_MAP,
                     currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
+                    likedMapPairs: store.likedMapPairs,
                     currentMaps: [],
                     currentMap: null,
                     currentMapLayer: null,
@@ -198,6 +223,7 @@ function GlobalStoreContextProvider(props) {
                     currentModal : store.currentModal,
                     currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
+                    likedMapPairs: store.likedMapPairs,
                     currentMaps: [],
                     currentMap: payload.map,
                     currentMapLayer: payload.mapLayer,
@@ -215,6 +241,7 @@ function GlobalStoreContextProvider(props) {
                     currentModal : CurrentModal.NONE,
                     currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
+                    likedMapPairs: store.likedMapPairs,
                     currentMaps: [],
                     currentMap: store.currentMap,
                     currentMapLayer: store.currentMapLayer,
@@ -232,6 +259,7 @@ function GlobalStoreContextProvider(props) {
                     currentModal : CurrentModal.NONE,
                     currentScreen : store.currentScreen,
                     idNamePairs: store.idNamePairs,
+                    likedMapPairs: store.likedMapPairs,
                     currentMaps: [],
                     currentMap: store.currentMap,
                     currentMapLayer: payload,
@@ -270,6 +298,7 @@ function GlobalStoreContextProvider(props) {
             });
             navigate("/user/" + auth.user.id);
             store.loadIdNamePairs();
+            store.loadLikedMapPairs();
         }
         if (screenType === CurrentScreen.MAP_POST) {
             storeReducer({
@@ -345,12 +374,32 @@ function GlobalStoreContextProvider(props) {
     //Loads all the Id, Name Pairs to list out the maps
     store.loadIdNamePairs = function() {
         async function asyncLoadIdNamePairs() {
-            let response = await api.getMapPairs();
+            if (auth.user) {
+                let response = await api.getMapPairs();
+
+                if (response.data.success) {
+                    let idNamePairs = response.data.idNamePairs;
+                    storeReducer({
+                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                        payload: idNamePairs,
+                    })
+                }
+                else {
+                    console.log("API FAILED TO GET THE LIST PAIRS");
+                }
+            }
+            else console.log("USER ISNT LOGGED IN")
+        }
+        asyncLoadIdNamePairs()
+    }
+    store.loadLikedMapPairs = function() {
+        async function asyncLoadLikedNamePairs() {
+            let response = await api.getLikedMapPairs();
                        
             if (response.data.success) {
                 let idNamePairs = response.data.idNamePairs;
                 storeReducer({
-                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                    type: GlobalStoreActionType.LOAD_LIKED_MAP_PAIRS,
                     payload: idNamePairs,
                 })
             }
@@ -358,7 +407,7 @@ function GlobalStoreContextProvider(props) {
                 console.log("API FAILED TO GET THE LIST PAIRS");
             }
         }
-        asyncLoadIdNamePairs()
+        asyncLoadLikedNamePairs()
     }
 
     store.loadAllIdNamePairs = function() {
@@ -487,6 +536,51 @@ function GlobalStoreContextProvider(props) {
             }
         }
         asyncUpdateCurrentMap();
+    }
+
+    store.comment = function(comment) {
+        async function commentOnMap(comment) {
+            if (store.currentMap) {
+                let response = await api.getMapById(store.currentMap._id);
+                if (response.data.success) {
+                    let map = response.data.map;
+                    let user = auth.user.username;
+                    map.comments.push({ user, message: comment });
+                    let response2 = await api.updateMapById(store.currentMap._id, map);
+                    if (response2.data.success) {
+                        store.setCurrentMap(map._id);
+                    }
+                    else {
+                        console.log("COULDNT POST COMMENT");
+                    }
+                }
+            }
+        }
+        commentOnMap(comment);
+    }
+
+    store.like = function() {
+        async function likeMap() {
+            if (store.currentMap) {
+                let response = await api.likeMapById(store.currentMap._id);
+                if (response.data.success) {
+                    console.log("Liked map " + store.currentMap._id);
+                }
+            }
+        }
+        likeMap();
+    }
+
+    store.unlike = function() {
+        async function unlikeMap() {
+            if (store.currentMap) {
+                let response = await api.unlikeMapById(store.currentMap._id);
+                if (response.data.success) {
+                    console.log("Unliked map " + store.currentMap._id);
+                }
+            }
+        }
+        unlikeMap()
     }
 
     store.publish = function(id) {

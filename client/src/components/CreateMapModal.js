@@ -15,6 +15,9 @@ import {
 } from '@mui/material';
 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import JSZip from 'jszip';
+import * as shapefile from 'shapefile';
+import togeojson from '@mapbox/togeojson';
 
 export default function CreateMapModal({open,onClose}) {
     const { auth } = useContext(AuthContext);
@@ -37,26 +40,76 @@ export default function CreateMapModal({open,onClose}) {
     };
 
     const handleCreateMap = async () => {
+        let geojson = "";
         // Check if a file is selected
         if (!selectedFile) {
             console.log("No file selected");
             return;
         }
 
-        // Read the contents of the selected GeoJSON file
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-            const jsonData = JSON.parse(event.target.result);
+        if (selectedFile.name.endsWith('.zip')) {
+            // Handle .zip file containing shapefiles
 
-            // Call the store.createNewMap function with the GeoJSON data
-            console.log(jsonData);
-            await store.createNewMap(jsonData, template);
-            
-            // Close the modal and set the screen to "MAP_EDITOR"
-            onClose();
-        };
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const zipData = e.target.result;
+                console.log(zipData);
 
-        reader.readAsText(selectedFile);
+                // Read the contents of the zip file using JSZip
+                const zip = new JSZip();
+                const zipContents = await zip.loadAsync(zipData);
+
+                // Extract the .shp and .dbf files as ArrayBuffer
+                const shpBuffer = await zipContents.file(/\.shp$/)[0].async('arraybuffer');
+                const dbfBuffer = await zipContents.file(/\.dbf$/)[0].async('arraybuffer');
+
+                // Parse the .shp file
+                geojson = await shapefile.read(
+                    shpBuffer,
+                    dbfBuffer,
+                    { type: 'buffer' } // Specify the type of data source
+                );
+
+                console.log(geojson);
+                await store.createNewMap(geojson, template);
+
+                // Close the modal and set the screen to "MAP_EDITOR"
+                onClose();
+            };
+
+            reader.readAsArrayBuffer(selectedFile);
+        }
+        else if (selectedFile.name.endsWith('.kml')) {
+            const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const kmlData = e.target.result;
+                    const kmlParser = new DOMParser();
+                    const kmlDoc = kmlParser.parseFromString(kmlData, 'application/xml');
+                    const geojson = togeojson.kml(kmlDoc);
+
+                    console.log(geojson);
+                    await store.createNewMap(geojson, template);
+
+                    onClose();
+                };
+                reader.readAsText(selectedFile);
+        }
+        else {
+            // Read the contents of the selected GeoJSON file
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const jsonData = JSON.parse(event.target.result);
+
+                // Call the store.createNewMap function with the GeoJSON data
+                console.log(jsonData);
+                await store.createNewMap(jsonData, template);
+
+                // Close the modal and set the screen to "MAP_EDITOR"
+                onClose();
+            };
+
+            reader.readAsText(selectedFile);
+        }
     };
 
     const selectedCard = {
@@ -166,7 +219,7 @@ export default function CreateMapModal({open,onClose}) {
                     <input
                         ref={fileInputRef}
                         type="file"
-                        accept=".geojson, .shp, .kml .zip, .json"
+                        
                         id="create-map-input"
                         onChange={handleFileChange}
                     />

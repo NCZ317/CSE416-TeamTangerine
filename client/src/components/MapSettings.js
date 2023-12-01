@@ -55,10 +55,13 @@ const MapSettings = () => {
             let mapLayer = store.currentMapLayer;
             mapLayer.graphicTitle = mapTitle;
             store.updateCurrentMapLayer(mapLayer);
-            console.log(mapTitle);
-            console.log(store.currentMap);
-            store.currentMap.title = mapTitle;
-            console.log(store.currentMap);
+
+            // NOTE: graphicTitle IS DIFFERENT FROM currentMap.title --> currentMap.title SHOULD BE CHANGED IN EditDetailsModal
+
+            // console.log(mapTitle);
+            // console.log(store.currentMap);
+            // store.currentMap.title = mapTitle;
+            // console.log(store.currentMap);
         }
     }
     const handleTitleFont = (event) => {
@@ -72,6 +75,15 @@ const MapSettings = () => {
         store.updateCurrentMapLayer(mapLayer);
     }
     const handleTitleOptions = (event, newOption) => {
+
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.titleStyles = {};
+
+        for (let option of newOption) {
+            mapLayer.style.titleStyles[option] = true;
+        }
+
+        store.updateCurrentMapLayer(mapLayer);
         setTitleOptions(newOption);
     }
     
@@ -79,7 +91,8 @@ const MapSettings = () => {
         if (event.key === "Enter") {
             let mapLayer = store.currentMapLayer;
             mapLayer.graphicDescription = mapDescription;
-            store.currentMap.description = mapDescription;
+            // NOTE: graphicDescription IS DIFFERENT FROM currentMap.description --> currentMap.description changed in EditDetailsModal
+            // store.currentMap.description = mapDescription;
             store.updateCurrentMapLayer(mapLayer);
         }
     }
@@ -94,6 +107,15 @@ const MapSettings = () => {
         store.updateCurrentMapLayer(mapLayer);
     }
     const handleDescriptionOptions = (event, newOption) => {
+
+        let mapLayer = store.currentMapLayer;
+        mapLayer.style.descriptionStyles = {};
+
+        for (let option of newOption) {
+            mapLayer.style.descriptionStyles[option] = true;
+        }
+
+        store.updateCurrentMapLayer(mapLayer);
         setDescriptionOptions(newOption);
     }
 

@@ -209,6 +209,48 @@ getMapPairs = async (req, res) => {
     }
 };
 
+getLikedMapPairs = async (req, res) => {
+    console.log("getLikedMapPairs");
+    try {
+        // Find the user by userId
+        const user = await User.findOne({ _id: req.userId });
+        console.log("find user with id " + req.userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        // Find maps that the user has liked
+        console.log("find all Maps liked by " + user.email);
+        let likedMaps = []
+        likedMaps = await Map.find({ _id: { $in: user.likedMaps } });
+
+        if (!likedMaps) {
+            console.log("!likedMaps");
+            return res.status(404).json({ success: false, error: 'Liked maps not found' });
+        } else {
+            console.log("Send the liked Maps pairs");
+            // Put all the liked maps into id, name pairs
+            const pairs = likedMaps.map(map => ({
+                _id: map._id,
+                title: map.title,
+                description: map.description,
+                username: map.username,
+                mapType: map.mapType,
+                regions: map.regions,
+                likes: map.likes,
+                views: map.views,
+                comments: map.comments,
+                published: map.published
+            }));
+
+            return res.status(200).json({ success: true, idNamePairs: pairs });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+};
 getAllPublishedMapPairs = async (req, res) => {
     console.log("getAllPublishedMapPairs");
     try {
@@ -477,7 +519,90 @@ updateMapLayer = async (req, res) => {
     }
 };
 
+likeMapById = async (req, res) => {
+    console.log("Like with id: " + JSON.stringify(req.params.id));
 
+    try {
+        const map = await Map.findById(req.params.id);
+        console.log("map found: " + JSON.stringify(map));
+
+        if (!map) {
+            return res.status(404).json({
+                errorMessage: 'Map not found!',
+            });
+        }
+
+        const user = await User.findOne({ _id: req.userId });
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        console.log("User found!");
+
+        map.likes += 1;
+
+        // Save the updated map
+        await map.save();
+
+        // Push the map's _id to the user's likedMaps array
+        user.likedMaps.push(map._id);
+
+        // Save the updated user
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Map liked successfully!',
+            map: map,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+}
+
+unlikeMapById = async (req, res) => {
+    console.log("Unlike with id: " + JSON.stringify(req.params.id));
+
+    try {
+        const map = await Map.findById(req.params.id);
+
+        if (!map) {
+            return res.status(404).json({
+                errorMessage: 'Map not found!',
+            });
+        }
+
+        const user = await User.findOne({ _id: req.userId });
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        console.log("User found!");
+
+        map.likes -= 1;
+
+        // Save the updated map
+        await map.save();
+
+        // Remove the map's _id from the user's likedMaps array
+        user.likedMaps = user.likedMaps.filter((mapId) => mapId.toString() !== map._id.toString());
+
+        // Save the updated user
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Map unliked successfully!',
+            map: map,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+}
 
 
 module.exports = {
@@ -485,11 +610,14 @@ module.exports = {
     deleteMap,
     getMapById,
     getMapPairs,
+    getLikedMapPairs,
     getAllPublishedMapPairs,
     updateMap,
     getMapsByKeyword,
     getMapsByUser,
     getMaps,
     getMapLayerById,
-    updateMapLayer
+    updateMapLayer,
+    likeMapById,
+    unlikeMapById
 }

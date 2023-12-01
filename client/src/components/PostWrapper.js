@@ -5,9 +5,13 @@ import { styled } from '@mui/material/styles';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { GlobalStoreContext } from '../store/index.js';
+import AuthContext from '../auth';
 
 const PostWrapper = () => {
+    const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
+    const [liked, setLiked] = useState(false);
+
 
     const CssTextField = styled(TextField)({
         '& label.Mui-focused': {
@@ -60,9 +64,30 @@ const PostWrapper = () => {
             });
         }
     }, [store.currentMap]);
-    console.log(mapDetails.title);
+
+    useEffect(() => {
+        const isMapLiked = auth.user && auth.user.likedMaps.includes(store.currentMap?._id);
+        setLiked(isMapLiked); 
+        
+    }, [store.currentMap, auth.user]);
 
     const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleLikeClick = () => {
+        if (auth.user === null) {
+            // You may show a message to prompt the user to log in
+            console.log('Please log in to like the map.');
+            return;
+        }
+        setLiked((prevLiked) => !prevLiked);
+        if (liked) {
+            store.unlike();
+            setMapDetails((prevDetails) => ({ ...prevDetails, likes: prevDetails.likes - 1 }));
+        } else {
+            store.like();
+            setMapDetails((prevDetails) => ({ ...prevDetails, likes: prevDetails.likes + 1 }));
+        }
+    };
 
     const handleExportMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -70,6 +95,26 @@ const PostWrapper = () => {
 
     const handleExportMenuClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleCommentKeyDown = (event) => {
+        if (event.keyCode === 13) {
+            // Prevent the default behavior of the Enter key
+            event.preventDefault();
+
+            // Get the trimmed comment text
+            const commentText = event.target.value.trim();
+            console.log(commentText);
+
+            // Check if the comment is not blank
+            if (commentText !== '') {
+                // Call store.comment() function here
+                store.comment(commentText);
+
+                // Clear the comment text field
+                event.target.value = '';
+            }
+        }
     };
 
     return (
@@ -109,7 +154,13 @@ const PostWrapper = () => {
                                         <VisibilityOutlinedIcon /> {mapDetails.views}
                                     </Typography>
                                     <Typography variant="h6" component="div">
-                                        <FavoriteIcon /> {mapDetails.likes}
+                                        <FavoriteIcon
+                                            sx={{
+                                                cursor: auth.user !== null ? "pointer" : "default",
+                                            }}
+                                            color={liked ? 'error' : 'inherit'}
+                                            onClick={handleLikeClick}
+                                        /> {mapDetails.likes}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -143,6 +194,8 @@ const PostWrapper = () => {
                                 sx={{
                                     input: { color: 'white' },
                                 }}
+                                disabled={auth.user === null}
+                                onKeyDown={handleCommentKeyDown}
                             />
                         </CardContent>
                     </Card>

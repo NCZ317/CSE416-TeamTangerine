@@ -20,31 +20,50 @@ const UpdateProfileScreen = ({ state, setState }) => {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
 
-    const [selectedMenuItem, setSelectedMenuItem] = useState('Private Maps');
+    const [selectedMenuItem, setSelectedMenuItem] = useState('Drafts');
+    const [likedMapsLoaded, setLikedMapsLoaded] = useState(false);
 
     useEffect(() => {
         store.loadIdNamePairs();
     }, []);
 
+    useEffect(() => {
+        if (selectedMenuItem === 'Liked Maps' && !likedMapsLoaded) {
+            // Fetch liked map pairs here
+            store.loadLikedMapPairs();
+            setLikedMapsLoaded(true);
+        }
+    }, [selectedMenuItem, likedMapsLoaded, store]);
+
+
     let mapList = "";
     if (store) {
-        const filteredPairs = store.idNamePairs.filter(pair => {
-            if (selectedMenuItem === 'Private Maps') {
-                return !pair.published;
-            } else if (selectedMenuItem === 'Public Maps') {
-                return pair.published;
-            }
-            // ADD LOGIC FOR LIKED MAPS HERE LATER
-            return true;
-        });
+        if (selectedMenuItem === 'Liked Maps' && likedMapsLoaded) {
+            mapList = (
+                <List>
+                    {store.likedMapPairs.map((pair) => (
+                        <MapCard key={pair._id} myMap={false} idNamePair={pair} />
+                    ))}
+                </List>
+            );
+        } else {
+            const filteredPairs = store.idNamePairs.filter(pair => {
+                if (selectedMenuItem === 'Drafts') {
+                    return !pair.published;
+                } else if (selectedMenuItem === 'Published') {
+                    return pair.published;
+                }
+                return true;
+            });
 
-        mapList = (
-            <List>
-                {filteredPairs.map((pair) => (
-                    <MapCard key={pair._id} myMap={true} idNamePair={pair} />
-                ))}
-            </List>
-        );
+            mapList = (
+                <List>
+                    {filteredPairs.map((pair) => (
+                        <MapCard key={pair._id} myMap={true} idNamePair={pair} />
+                    ))}
+                </List>
+            );
+        }
     }
 
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -131,14 +150,13 @@ const UpdateProfileScreen = ({ state, setState }) => {
                             }}
                         >
                             <List>
-                                <ListItem button onClick={() => handleMenuItemClick("Private Maps")}>
-                                    <ListItemText primary="Private Maps" />
+                                <ListItem button onClick={() => handleMenuItemClick("Drafts")}>
+                                    <ListItemText primary="Drafts" />
                                 </ListItem>
-                                <ListItem button onClick={() => handleMenuItemClick("Public Maps")}>
-                                    <ListItemText primary="Public Maps" />
+                                <ListItem button onClick={() => handleMenuItemClick("Published")}>
+                                    <ListItemText primary="Published" />
                                 </ListItem>
-                                {/* FIGURE OUT LIKED MAP LOGIC LATER */}
-                                <ListItem button disabled={true} onClick={() => handleMenuItemClick("Liked Maps")}> 
+                                <ListItem button onClick={() => handleMenuItemClick("Liked Maps")}> 
                                     <ListItemText primary="Liked Maps" />
                                 </ListItem>
                             </List>
