@@ -35,6 +35,7 @@ const MapWrapper = ({ style }) => {
 
     const handleFeatureClick = (event) => {
         const clickedLayer = event.target;
+        console.log(clickedLayer);
         store.setCurrentRegion(clickedLayer);
         console.log("FEATURE: " + JSON.stringify(clickedLayer.feature));
  
