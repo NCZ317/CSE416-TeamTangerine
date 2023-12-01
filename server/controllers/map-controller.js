@@ -477,7 +477,90 @@ updateMapLayer = async (req, res) => {
     }
 };
 
+likeMapById = async (req, res) => {
+    console.log("Like with id: " + JSON.stringify(req.params.id));
 
+    try {
+        const map = await Map.findById(req.params.id);
+        console.log("map found: " + JSON.stringify(map));
+
+        if (!map) {
+            return res.status(404).json({
+                errorMessage: 'Map not found!',
+            });
+        }
+
+        const user = await User.findOne({ _id: req.userId });
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        console.log("User found!");
+
+        map.likes += 1;
+
+        // Save the updated map
+        await map.save();
+
+        // Push the map's _id to the user's likedMaps array
+        user.likedMaps.push(map._id);
+
+        // Save the updated user
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Map liked successfully!',
+            map: map,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+}
+
+unlikeMapById = async (req, res) => {
+    console.log("Unlike with id: " + JSON.stringify(req.params.id));
+
+    try {
+        const map = await Map.findById(req.params.id);
+
+        if (!map) {
+            return res.status(404).json({
+                errorMessage: 'Map not found!',
+            });
+        }
+
+        const user = await User.findOne({ _id: req.userId });
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        console.log("User found!");
+
+        map.likes -= 1;
+
+        // Save the updated map
+        await map.save();
+
+        // Remove the map's _id from the user's likedMaps array
+        user.likedMaps = user.likedMaps.filter((mapId) => mapId.toString() !== map._id.toString());
+
+        // Save the updated user
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Map unliked successfully!',
+            map: map,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+}
 
 
 module.exports = {
@@ -491,5 +574,7 @@ module.exports = {
     getMapsByUser,
     getMaps,
     getMapLayerById,
-    updateMapLayer
+    updateMapLayer,
+    likeMapById,
+    unlikeMapById
 }

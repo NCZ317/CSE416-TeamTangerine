@@ -496,7 +496,6 @@ function GlobalStoreContextProvider(props) {
                 if (response.data.success) {
                     let map = response.data.map;
                     let user = auth.user.username;
-                    //PUSH COMMENT HERE
                     map.comments.push({ user, message: comment });
                     let response2 = await api.updateMapById(store.currentMap._id, map);
                     if (response2.data.success) {
@@ -509,6 +508,30 @@ function GlobalStoreContextProvider(props) {
             }
         }
         commentOnMap(comment);
+    }
+
+    store.like = function() {
+        async function likeMap() {
+            if (store.currentMap) {
+                let response = await api.likeMapById(store.currentMap._id);
+                if (response.data.success) {
+                    console.log("Liked map " + store.currentMap._id);
+                }
+            }
+        }
+        likeMap();
+    }
+
+    store.unlike = function() {
+        async function unlikeMap() {
+            if (store.currentMap) {
+                let response = await api.unlikeMapById(store.currentMap._id);
+                if (response.data.success) {
+                    console.log("Unliked map " + store.currentMap._id);
+                }
+            }
+        }
+        unlikeMap()
     }
 
     store.publish = function(id) {
