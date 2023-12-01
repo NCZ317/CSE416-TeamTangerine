@@ -209,6 +209,48 @@ getMapPairs = async (req, res) => {
     }
 };
 
+getLikedMapPairs = async (req, res) => {
+    console.log("getLikedMapPairs");
+    try {
+        // Find the user by userId
+        const user = await User.findOne({ _id: req.userId });
+        console.log("find user with id " + req.userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        // Find maps that the user has liked
+        console.log("find all Maps liked by " + user.email);
+        let likedMaps = []
+        likedMaps = await Map.find({ _id: { $in: user.likedMaps } });
+
+        if (!likedMaps) {
+            console.log("!likedMaps");
+            return res.status(404).json({ success: false, error: 'Liked maps not found' });
+        } else {
+            console.log("Send the liked Maps pairs");
+            // Put all the liked maps into id, name pairs
+            const pairs = likedMaps.map(map => ({
+                _id: map._id,
+                title: map.title,
+                description: map.description,
+                username: map.username,
+                mapType: map.mapType,
+                regions: map.regions,
+                likes: map.likes,
+                views: map.views,
+                comments: map.comments,
+                published: map.published
+            }));
+
+            return res.status(200).json({ success: true, idNamePairs: pairs });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+};
 getAllPublishedMapPairs = async (req, res) => {
     console.log("getAllPublishedMapPairs");
     try {
@@ -568,6 +610,7 @@ module.exports = {
     deleteMap,
     getMapById,
     getMapPairs,
+    getLikedMapPairs,
     getAllPublishedMapPairs,
     updateMap,
     getMapsByKeyword,

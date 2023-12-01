@@ -7,6 +7,7 @@ router.post('/map', auth.verify, MapController.createMap)
 router.delete('/map/:id', auth.verify, MapController.deleteMap)
 router.get('/map/:id', MapController.getMapById)
 router.get('/mappairs', auth.verify, MapController.getMapPairs)
+router.get('/likedmappairs', auth.verify, MapController.getLikedMapPairs);
 router.put('/map/:id', auth.verify, MapController.updateMap)
 router.get('/map/:keyword', MapController.getMapsByKeyword)
 router.get('/map/:username', MapController.getMapsByUser)
