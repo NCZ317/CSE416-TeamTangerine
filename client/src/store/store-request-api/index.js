@@ -61,6 +61,8 @@ export const likeMapById = (id) => api.post(`/map/${id}/like`);
 
 export const unlikeMapById = (id) => api.post(`/map/${id}/unlike`);
 
+export const viewMapById = (id) => api.post(`/map/${id}/view`);
+
 
 const apis = {
     createMap,
@@ -74,7 +76,8 @@ const apis = {
     getMapLayerById,
     updateMapLayerById,
     likeMapById,
-    unlikeMapById
+    unlikeMapById,
+    viewMapById
 }
 
 export default apis
