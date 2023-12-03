@@ -165,7 +165,7 @@ const MapSettings = () => {
             console.log(store.currentRegion);
             if(!inRegions){
                 let newRegion = {
-                    feature: store.currentMap.feature,
+                    feature: store.currentMap.feature,      //store.currentRegion.feature?????
                     options: {
                         fillColor : event.target.value,
                         fillOpacity : store.currentRegion.options.fillOpacity

@@ -21,18 +21,17 @@ const ChoroplethToolbox = () => {
 
     const [selectedTab, setSelectedTab] = useState(0);
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
-    const [legendSettingsOpen, setLegendSettingsOpen] = useState(true);
-    var leg = []
-    if(store.currentMap.legend){
-       leg = store.currentMap.legend;}
-    else leg =[{ value: '', color: '' }];
+    const [legendSettingsOpen, setLegendSettingsOpen] = useState(false);
 
-    const [legend, setLegend] = useState(leg);
+    const [regionData, setRegionData] = useState("");
+    const [valueField, setValueField] = useState("");
 
-    
+    const [legend, setLegend] = useState(store.currentMapLayer.colorScale);
+
     const currentMap = store.currentMap.jsonData; 
-    const features = currentMap.features.map(x => x.properties);
-    console.log(legend);
+    const properties = currentMap.features.map(x => x.properties);
+
+    // console.log(legend);
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
     };
@@ -45,33 +44,83 @@ const ChoroplethToolbox = () => {
         setLegendSettingsOpen(!legendSettingsOpen);
     }
 
+    const handleRegionData = (event, index) => {
+        if (event.key === "Enter") {
+            console.log("VALUE: " + regionData);
+            let map = store.currentMap;
+            map.jsonData.features[index].properties.value = regionData;
+            store.updateMapData(map);
+        }
+    }
+
+    const handleValueField = (event) => {
+        if (event.key === "Enter") {
+            let mapLayer = store.currentMapLayer;
+            mapLayer.valueField = valueField;
+            store.updateCurrentMapLayer(mapLayer);
+        }
+    }
+
     const addLegendRow = () => {
-        setLegend([...legend, { value: '', color: '' }]);
+        setLegend([...legend, { value: '', color: store.currentMapLayer.defaultColor }]);
     };
 
     const handleLegendValue = (index, value) => {
         const newLegend = [...legend];
         newLegend[index].value = value;
-        console.log(store.currentMap.legend);
-        store.currentMap.legend = newLegend;
-        console.log(store.currentMap.legend);
-        console.log(store.currentMap.mapType);
         setLegend(newLegend);
     };
 
     const handleLegendColor = (index, color) => {
         const newLegend = [...legend];
         newLegend[index].color = color;
-        store.currentMap.legend = newLegend;
+
+        let mapLayer = store.currentMapLayer;
+        mapLayer.colorScale = newLegend;
+        store.updateCurrentMapLayer(mapLayer);
         setLegend(newLegend);
     };
 
     const deleteLegendRow = (index) => {
         const newLegend = [...legend];
         newLegend.splice(index, 1);
-        store.currentMap.legend = newLegend;
+        // store.currentMap.legend = newLegend;
+        // setLegend(newLegend);
+        let mapLayer = store.currentMapLayer;
+        mapLayer.colorScale = newLegend;
+        store.updateCurrentMapLayer(mapLayer);
         setLegend(newLegend);
     };
+
+    const updateLegendValue = (event, index) => {
+        if (event.key === "Enter") {
+
+            if (event.target.value === "") {
+                const newLegend = [...legend];
+                newLegend[index].value = "";
+                newLegend[index].color = store.currentMapLayer.defaultColor;     //CHANGE IT TO DEFAULT VALUE WHEN USER CLEARS LEGEND VALUE
+                
+                let mapLayer = store.currentMapLayer;
+                mapLayer.colorScale = newLegend;
+                store.updateCurrentMapLayer(mapLayer);
+                setLegend(newLegend);
+
+            } else {
+                let mapLayer = store.currentMapLayer;
+                mapLayer.colorScale = legend;
+                store.updateCurrentMapLayer(mapLayer);
+
+            }
+
+        }
+    }
+
+    const handleDefaultColor = (event) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.defaultColor = event.target.value;
+        store.updateCurrentMapLayer(mapLayer);
+    }
+
 
     return (
         <div className="choropleth-toolbox">
@@ -95,12 +144,15 @@ const ChoroplethToolbox = () => {
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-                        {features.map((property, index) => (
+                        {properties.map((property, index) => (
                             <div style={{display: 'flex'}} value = {property.name}>
-                                <div style={{width: '50%', paddingTop: '5%'}}>{property.name}</div>
+                                <div style={{width: '50%', paddingTop: '5%'}}>{property.name || `Region ${index}`}</div>
                                 <TextField
-                                    label={property.value}
-                                    onChange = {(e) => (property.value =  e.target.value)}
+                                    // label={property.value}
+                                    defaultValue={property.value}
+                                    // onChange = {(e) => (property.value =  e.target.value)}
+                                    onChange={(e) => setRegionData(e.target.value)}
+                                    onKeyDown={(e) => handleRegionData(e, index)}
                                 />
                                 <IconButton variant="outlined">
                                     <DeleteIcon/>
@@ -116,16 +168,30 @@ const ChoroplethToolbox = () => {
                     <Collapse in={legendSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-                        <TextField
-                            label="Data Type (ex. population, gdp, etc.)"
-                            fullWidth
-                        />
+                        <Box style={{p: 5}}>
+                            <TextField
+                                label="Data Description (ex. population, gdp, etc.)"
+                                onChange={(e) => setValueField(e.target.value)}
+                                onKeyDown={handleValueField}
+                                defaultValue={store.currentMapLayer.valueField}
+                                fullWidth
+                            />
+                            <TextField
+                                label="Default Map Color"
+                                type='color'
+                                style={{marginTop: 20}}
+                                fullWidth
+                                defaultValue={store.currentMapLayer.defaultColor}
+                                onChange={handleDefaultColor}
+                            />
+                        </Box>
+                        
 
                         <Divider style={{borderBottom: '2px solid black', margin: 10}} />
 
-                        <Typography>For numeric data, add the starting value for each color</Typography>
-                        <Typography>For categorical data, add the category name and its corresponding color</Typography>
-
+                        <Typography style={{fontSize: '16px'}}>For numeric data, add start value in decreasing order</Typography>
+                        <Typography style={{fontSize: '16px'}}>For categorical data, add the category name and its corresponding color</Typography>
+                        <br></br>
                         {legend.map((row, index) => (
                             <div key={index} style={{display: 'flex'}}>
                                 <TextField
@@ -133,6 +199,7 @@ const ChoroplethToolbox = () => {
                                     value={row.value}
                                     fullWidth
                                     onChange={(e) => handleLegendValue(index, e.target.value)}
+                                    onKeyDown={(e) => updateLegendValue(e, index)}
                                 />
                                 <TextField
                                     label="Color"

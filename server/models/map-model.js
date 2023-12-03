@@ -33,7 +33,11 @@ const choroplethLayerSchema = new Schema({
         value: Object
     }],
     valueField: { type: String},
-    colorScale: { type: Object, required: true}
+    colorScale: [{
+        value: String,
+        color: String
+    }],
+    defaultColor: {type: String}
 }, {minimize: false});
 
 const ChoroplethLayer = mongoose.model('ChoroplethLayer', choroplethLayerSchema);

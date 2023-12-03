@@ -5,7 +5,7 @@ const User = require('../models/user-model')
 createMap = async (req, res) => {
     try {
         const body = req.body;
-        console.log("createMap body: " + JSON.stringify(body));
+        // console.log("createMap body: " + JSON.stringify(body));
 
         if (!body) {
             return res.status(400).json({
@@ -15,7 +15,7 @@ createMap = async (req, res) => {
         }
 
         const map = new Map(body);
-        console.log("map: " + map.toString());
+        // console.log("map: " + map.toString());
 
         if (!map) {
             return res.status(400).json({ success: false, error: err });
@@ -28,14 +28,15 @@ createMap = async (req, res) => {
         let style = {};
         if (body.mapType === "choroplethMap") {
             let valueField = "";
-            let colorScale = {};
+            let colorScale = [];
             mapLayer = new ChoroplethLayer({
                 graphicTitle: graphicTitle,
                 graphicDescription: graphicDescription,
                 style: style,
                 geographicRegion: [],
                 valueField: valueField,
-                colorScale: colorScale
+                colorScale: colorScale,
+                defaultColor: "#79C200"
             });
             // mapLayer = new ChoroplethLayer();
         } else if (body.mapType === "heatMap") {
@@ -113,7 +114,7 @@ deleteMap = async (req, res) => {
 
     try {
         const map = await Map.findById(req.params.id);
-        console.log("map found: " + JSON.stringify(map));
+        // console.log("map found: " + JSON.stringify(map));
 
         if (!map) {
             return res.status(404).json({
@@ -438,7 +439,7 @@ getMapLayerById = async (req, res) => {
 
 updateMapLayer = async (req, res) => {
     const body = req.body;
-    console.log("updateMapLayer: " + JSON.stringify(body));
+    // console.log("updateMapLayer: " + JSON.stringify(body));
 
     try {
         if (!body) {
@@ -453,15 +454,16 @@ updateMapLayer = async (req, res) => {
 
         if (mapType === "choroplethMap") {
             mapLayer = await ChoroplethLayer.findOne({ _id: req.params.id });
-            if (!mapLayer) {
+            if (mapLayer) {
                 mapLayer.geographicRegion = body.mapLayer.geographicRegion;
                 mapLayer.valueField = body.mapLayer.valueField;
                 mapLayer.colorScale = body.mapLayer.colorScale;
+                mapLayer.defaultColor = body.mapLayer.defaultColor;
             }
 
         } else if (mapType === "heatMap") {
             mapLayer = await HeatmapLayer.findOne({ _id: req.params.id });
-            if (!mapLayer) {
+            if (mapLayer) {
                 mapLayer.dataValues = body.mapLayer.dataValues;
                 mapLayer.radius = body.mapLayer.radius;
                 mapLayer.colorScale = body.mapLayer.colorScale;
@@ -469,7 +471,7 @@ updateMapLayer = async (req, res) => {
 
         } else if (mapType === "dotDensityMap") {
             mapLayer = await DotDensityLayer.findOne({ _id: req.params.id });
-            if (!mapLayer) {
+            if (mapLayer) {
                 mapLayer.geographicRegion = body.mapLayer.geographicRegion;
                 mapLayer.dotSize = body.mapLayer.dotSize;
                 mapLayer.dotValue = body.mapLayer.dotValue;
@@ -478,7 +480,7 @@ updateMapLayer = async (req, res) => {
 
         } else if (mapType === "graduatedSymbolMap") {
             mapLayer = await GraduatedSymbolLayer.findOne({ _id: req.params.id });
-            if (!mapLayer) {
+            if (mapLayer) {
                 mapLayer.dataValues = body.mapLayer.dataValues;
                 mapLayer.symbolColor = body.mapLayer.symbolColor;
                 mapLayer.sizeScale = body.mapLayer.sizeScale;
@@ -486,7 +488,7 @@ updateMapLayer = async (req, res) => {
 
         } else if (mapType === "flowMap") {
             mapLayer = await FlowmapLayer.findOne({ _id: req.params.id });
-            if (!mapLayer) {
+            if (mapLayer) {
                 mapLayer.dataValues = body.mapLayer.dataValues;
                 mapLayer.lineSizeScale = body.mapLayer.lineSizeScale;
                 mapLayer.colorScale = body.mapLayer.colorScale;
