@@ -34,12 +34,13 @@ export const registerUser = (firstName, lastName, email, username, password, pas
         passwordVerify : passwordVerify
     })
 }
-export const editUser = (id, email, username, password) => {
+export const editUser = (id, email, username, bio, password) => {
     return api.post('/editProfile', {
         userId : id,
         newUsername : username,
         verifyPass: password,
         newEmail : email,
+        newBio : bio,
     })
 }
 export const changeUserPassword = (id, oldPass, newPass, confirmNewPass) => {

@@ -71,6 +71,7 @@ const UpdateProfileScreen = ({ state, setState }) => {
     const [formData, setFormData] = useState({
         email: auth.getUserEmail(),
         username: auth.getUsername(),
+        bio: auth.getUserBio(),
         password: '',
     });
 
@@ -101,6 +102,7 @@ const UpdateProfileScreen = ({ state, setState }) => {
         auth.editUser(
             formData.email,
             formData.username,
+            formData.bio,
             formData.password
         );
         setState("NONE");
@@ -150,13 +152,13 @@ const UpdateProfileScreen = ({ state, setState }) => {
                             }}
                         >
                             <List>
-                                <ListItem button onClick={() => handleMenuItemClick("Drafts")}>
+                                <ListItem onClick={() => handleMenuItemClick("Drafts")}>
                                     <ListItemText primary="Drafts" />
                                 </ListItem>
-                                <ListItem button onClick={() => handleMenuItemClick("Published")}>
+                                <ListItem onClick={() => handleMenuItemClick("Published")}>
                                     <ListItemText primary="Published" />
                                 </ListItem>
-                                <ListItem button onClick={() => handleMenuItemClick("Liked Maps")}> 
+                                <ListItem onClick={() => handleMenuItemClick("Liked Maps")}> 
                                     <ListItemText primary="Liked Maps" />
                                 </ListItem>
                             </List>
@@ -199,6 +201,20 @@ const UpdateProfileScreen = ({ state, setState }) => {
                             className="custom-long-text-field"
                             onChange={(e) =>
                                 setFormData({ ...formData, username: e.target.value })
+                            }
+                            autoComplete="off"
+                            />
+                        </div>
+                        <div className='create=account-row'>
+                            <label className='create-account-label' htmlFor="bio">Bio:</label>
+                            <div className='create-account-label-1' >Must be less than 200 characters</div>
+                            <input
+                            type="text"
+                            id="bio"
+                            placeholder={auth.getUserBio() ? auth.getUserBio : "I love TerraTrove!"}
+                            className="custom-long-text-field"
+                            onChange={(e) =>
+                                setFormData({ ...formData, bio: e.target.value })
                             }
                             autoComplete="off"
                             />
