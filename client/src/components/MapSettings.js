@@ -151,21 +151,25 @@ const MapSettings = () => {
 
     const handleFillColor = (event) => {
         if (store.currentRegion) {
+            //console.log(store.currentRegion);
             store.currentRegion.setStyle({
                 fillColor: event.target.value
             });
             var inRegions = false;
+            //console.log(store.currentMap);
             for(let region of store.currentMap.currentRegions){
+                //console.log(region);
                 if(region.feature.properties.name===store.currentRegion.feature.properties.name){
+                    console.log("Updating region " + region);
                     inRegions = true;
                     region.options.fillColor=event.target.value
                     break;
                 }
             }
-            console.log(store.currentRegion);
+            //console.log(store.currentRegion);
             if(!inRegions){
                 let newRegion = {
-                    feature: store.currentMap.feature,      //store.currentRegion.feature?????
+                    feature: store.currentRegion.feature,      //store.currentRegion.feature?????
                     options: {
                         fillColor : event.target.value,
                         fillOpacity : store.currentRegion.options.fillOpacity
@@ -174,8 +178,8 @@ const MapSettings = () => {
                 store.currentMap.currentRegions.push(newRegion); 
             }
             var allRegions = store.currentMap.currentRegions;
-            console.log(allRegions);
-            console.log(store.currentMap);
+            //console.log(allRegions);
+            //console.log(store.currentMap);
         }
     }
 
