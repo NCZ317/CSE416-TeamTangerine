@@ -376,7 +376,7 @@ sendEmail = async (req, res) => {
             from: 'dylan.lai@stonybrook.edu',
             to: email,
             subject: 'Forgot Password',
-            text: 'Link to make new password ' + baseURL + '?' + email + '//' + hashPass + '   '
+            text: 'Link to make new password ' + baseURL + '?' + email + '//' + hashPass + '.   '
         };
         transporter.sendMail(mailOptions, function(error, info){//function to send email
             try{

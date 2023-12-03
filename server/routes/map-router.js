@@ -17,5 +17,6 @@ router.get('/maplayer/:id', MapController.getMapLayerById);
 router.put('/maplayer/:id', auth.verify, MapController.updateMapLayer)
 router.post('/map/:id/like', auth.verify, MapController.likeMapById);
 router.post('/map/:id/unlike', auth.verify, MapController.unlikeMapById);
+router.post('/map/:id/view', auth.verify, MapController.viewMapById);
 
 module.exports = router
