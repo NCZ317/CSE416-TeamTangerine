@@ -5,15 +5,9 @@ import {
   Typography, 
   Box, Grid, 
   IconButton, 
-  Popover, 
-  List, 
-  ListItem, 
-  ListItemText,
   Menu,
   MenuItem} from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import MapCard from './MapCard';
 import UpdateProfileScreen from './UpdateProfileScreen'
 
 import AuthContext from '../auth';
@@ -21,10 +15,9 @@ import AuthContext from '../auth';
 const ProfileWrapper = () => {
 
   const { auth } = useContext(AuthContext);
-
   const [anchorEl, setAnchorEl] = useState(null);
   const [updateInfo, setUpdateInfo] = useState('NONE'); // change profile to update profile: NONE for default, PROFILE for profile, PASSWORD for password
-
+  console.log(auth.user);
   const handleSettingsClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -44,7 +37,6 @@ const ProfileWrapper = () => {
   }
 
   const openSettings = Boolean(anchorEl);
-
 
   const settingsId = openSettings ? 'settings-popover' : undefined;
 
@@ -77,7 +69,7 @@ const ProfileWrapper = () => {
               <MenuItem onClick={handleEditProfile}>Edit Profile</MenuItem>
               <MenuItem onClick={handleChangePassword}>Change Password</MenuItem>
             </Menu>            
-            <CardContent>
+            <CardContent style = {{height: '80%'}}>
               <Box align="center">
               <Box alignItems="center" className = 'profile-user-circle'>
                 <Typography variant="h2" id = 'profile-color'>
@@ -95,25 +87,21 @@ const ProfileWrapper = () => {
 
               <Box id='profile-box' className = 'profile-followers'>
                 <Box className ='profile-box-2'>
-                  <Typography variant="h5">{auth.loggedIn && auth.user.numPosts}</Typography>
                   <Typography variant="h6">Posts</Typography>
+                  <Typography variant="h5">{auth.loggedIn && auth.user.numPosts}</Typography>
                 </Box>
                 <Box className ='profile-box-2'>
-                  <Typography variant="h5">{auth.loggedIn && auth.user.numFollowers}</Typography>
-                  <Typography variant="h6">Followers</Typography>
+                  <Typography variant="h6">Joined</Typography>
+                  <Typography variant="h5">{auth.loggedIn && intDate(auth.user.dateJoined)}</Typography>
                 </Box>
                 <Box className ='profile-box-2'>
-                  <Typography variant="h5">{auth.loggedIn && auth.user.numFollowing}</Typography>
-                  <Typography variant="h6">Following</Typography>
+                  <Typography variant="h6">Karma</Typography>
+                  <Typography variant="h5">{auth.loggedIn && auth.user.numLikes}</Typography>
                 </Box>
               </Box>
               <Box id = 'profile-box-3' mt={2} className = 'profile-joined'>
-                <Typography variant="h5" className='profile-margin'>
-                  Joined: {auth.loggedIn && auth.user.dateJoined}
-                </Typography>
-                {/* NEED TO MODIFY LATER WHEN MAPS ARE PUBLISHED */}
-                <Typography variant="h5" className='profile-margin'>
-                  Total Likes: 
+                <Typography variant="h5" className='profile-margin' id  = 'profile-typography-4'>
+                  { auth.loggedIn && auth.user.bio}
                 </Typography>
               </Box>
             </CardContent>
@@ -124,5 +112,14 @@ const ProfileWrapper = () => {
     </div>
   );
 };
+
+function intDate(str) {
+  const event = new Date('November 15, 2023');
+  const date = event.toISOString();
+  const year = date.split('-')[0];
+  const month = date.split('-')[1];
+  const day = date.split('-')[2].split('T')[0];
+  return month + "/" + day + '/' + year
+}
 
 export default ProfileWrapper;

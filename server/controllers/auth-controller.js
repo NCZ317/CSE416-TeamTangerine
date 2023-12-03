@@ -32,11 +32,11 @@ getLoggedIn = async (req, res) => {
                 username: loggedInUser.username,
                 maps: loggedInUser.maps,
                 likedMaps: loggedInUser.likedMaps,
-                numFollowers: loggedInUser.followers.length,
-                numFollowing: loggedInUser.following.length,
+                bio: loggedInUser.bio,
                 numPosts: loggedInUser.numPosts,
                 dateJoined: dateJoined,
                 id: loggedInUser._id,
+                numLikes: loggedInUser.numLikes,
             }
         })
     } catch (err) {
@@ -100,11 +100,11 @@ loginUser = async (req, res) => {
                 username: existingUser.username,
                 maps: existingUser.maps,
                 likedMaps: existingUser.likedMaps,
-                numFollowers: existingUser.followers.length,
-                numFollowing: existingUser.following.length,
+                bio: existingUser.bio,
                 numPosts: existingUser.numPosts,
                 dateJoined: dateJoined,
-                id: existingUser._id              
+                id: existingUser._id,   
+                numLikes: existingUser.numLikes,
             }
         })
 
@@ -183,9 +183,10 @@ registerUser = async (req, res) => {
         console.log("passwordHash: " + passwordHash);
 
         const numPosts = 0;
-
+        const numLikes = 0;
+        const bio = "I love TerraTrove!";
         const newUser = new User({
-            firstName, lastName, email, username, passwordHash, numPosts
+            firstName, lastName, email, username, passwordHash, numPosts, numLikes, bio
         });
         const savedUser = await newUser.save();
         console.log("new user saved: " + savedUser._id);
@@ -200,7 +201,7 @@ registerUser = async (req, res) => {
 
 editUser = async (req,res) => {
     try {
-        const { userId, newEmail, newUsername, verifyPass} = req.body;
+        const { userId, newEmail, newUsername, newBio, verifyPass} = req.body;
         const loggedInUser = await User.findOne({ _id: userId });
         console.log(loggedInUser);
         if (!verifyPass){
@@ -219,25 +220,36 @@ editUser = async (req,res) => {
                 })
         }
         const existingEmail = await User.findOne({ email: newEmail, _id: {'$ne': userId} });
+        const existingUserName = await User.findOne({ username: newUsername, _id: {'$ne': userId} });
         if (newEmail && (!validateEmail(newEmail) || existingEmail)) {
             return res
                 .status(400)
                 .json({
                     errorMessage: "This email address is unavailable."
                 });
-        } else if (newEmail) {
-            await User.findByIdAndUpdate(userId, {email: newEmail});
-        }
-        const existingUserName = await User.findOne({ username: newUsername, _id: {'$ne': userId} });
-        if (newUsername && existingUserName) {
+        } else if (newUsername && existingUserName) {
             return res
                 .status(400)
                 .json({
                     success: false,
                     errorMessage: "An account with this username already exists."
                 })
-        } else if (newUsername){
+        } else if (newBio && newBio.length > 200){
+            return res
+            .status(400)
+            .json({
+                success: false,
+                errorMessage: "Bio must be at most 200 characters."
+            })
+        }
+        if (newEmail) {
+            await User.findByIdAndUpdate(userId, {email: newEmail});
+        }
+        if (newUsername){
             await User.findByIdAndUpdate(userId, {username: newUsername});
+        }
+        if (newBio){
+            await User.findByIdAndUpdate(userId, {bio: newBio});
         }
         const dateJoined = new Date(loggedInUser.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -252,11 +264,12 @@ editUser = async (req,res) => {
             username: updatedUser.username,
             maps: updatedUser.maps,
             likedMaps: updatedUser.likedMaps,
-            numFollowers: updatedUser.followers.length,
-            numFollowing: updatedUser.following.length,
+            bio: updatedUser.bio,
             numPosts: updatedUser.numPosts,
             dateJoined: dateJoined,
-            id: updatedUser._id,}});
+            id: updatedUser._id,
+            numLikes: updatedUser.numLikes,
+        }});
     } catch (error) {
         console.log(error);
         res.status(500).send();
@@ -320,11 +333,12 @@ changeUserPassword = async (req,res) => {
             lastName: updatedUser.lastName,
             email: updatedUser.email,
             username: updatedUser.username,
-            numFollowers: updatedUser.followers.length,
-            numFollowing: updatedUser.following.length,
+            bio: updatedUser.bio,
             numPosts: updatedUser.numPosts,
             dateJoined: dateJoined,
-            id: updatedUser._id,}});
+            id: updatedUser._id,
+            numLikes: updatedUser.numLikes
+        }});
     } catch (error) {
         console.log(error);
         res.status(500).send();
@@ -500,11 +514,12 @@ resetPassword = async(req,res) =>{
             lastName: updatedUser.lastName,
             email: updatedUser.email,
             username: updatedUser.username,
-            numFollowers: updatedUser.followers.length,
-            numFollowing: updatedUser.following.length,
+            bio: updatedUser.bio,
             numPosts: updatedUser.numPosts,
             dateJoined: dateJoined,
-            id: updatedUser._id,}});
+            id: updatedUser._id,
+            numLikes: updatedUser.numLikes
+        }});
     } catch (error) {
         console.log(error);
         res.status(500).send();
