@@ -211,7 +211,7 @@ const UpdateProfileScreen = ({ state, setState }) => {
                             <input
                             type="text"
                             id="bio"
-                            placeholder={auth.getUserBio() ? auth.getUserBio : "I love TerraTrove!"}
+                            placeholder={auth.getUserBio() ? auth.getUserBio() : "I love TerraTrove!"}
                             className="custom-long-text-field"
                             onChange={(e) =>
                                 setFormData({ ...formData, bio: e.target.value })
