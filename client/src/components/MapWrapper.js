@@ -28,29 +28,27 @@ const MapWrapper = ({ style }) => {
     const FitBounds = () => {
         const map = useMap();
     
-        useEffect(() => {
-            if (mapData) {
-                // Calculate bounds from GeoJSON
-                const bounds = L.geoJSON(mapData).getBounds();
-    
-                // Check if the bounds are valid (not equal to default bounds)
-                const isValidBounds =
-                    bounds.isValid() &&
-                    bounds.getSouthWest().lat !== 0 &&
-                    bounds.getSouthWest().lng !== 0 &&
-                    bounds.getNorthEast().lat !== 0 &&
-                    bounds.getNorthEast().lng !== 0;
-    
-                if (isValidBounds) {
-                    // Fit bounds with padding
-                    map.fitBounds(bounds, { padding: [10, 10] });
-                } else {
-                    // Handle invalid bounds (e.g., when GeoJSON has no features)
-                    console.log("Invalid bounds or no features in GeoJSON");
-                    // Optionally, you can set a default view or handle it differently.
-                }
+        if (mapData) {
+            // Calculate bounds from GeoJSON
+            const bounds = L.geoJSON(mapData).getBounds();
+
+            // Check if the bounds are valid (not equal to default bounds)
+            const isValidBounds =
+                bounds.isValid() &&
+                bounds.getSouthWest().lat !== 0 &&
+                bounds.getSouthWest().lng !== 0 &&
+                bounds.getNorthEast().lat !== 0 &&
+                bounds.getNorthEast().lng !== 0;
+
+            if (isValidBounds) {
+                // Fit bounds with padding
+                map.fitBounds(bounds, { padding: [10, 10] });
+            } else {
+                // Handle invalid bounds (e.g., when GeoJSON has no features)
+                console.log("Invalid bounds or no features in GeoJSON");
+                // Optionally, you can set a default view or handle it differently.
             }
-        }, [map, mapData]);
+        }
     
         return null;
     };
@@ -87,6 +85,7 @@ const MapWrapper = ({ style }) => {
 
     const handleFeatureClick = (event) => {
         const clickedLayer = event.target;
+        console.log(clickedLayer);
         store.setCurrentRegion(clickedLayer);
         // console.log("FEATURE: " + JSON.stringify(clickedLayer.feature));
         console.log("GEOMETRY: " + JSON.stringify(clickedLayer.feature.properties.name));
@@ -326,7 +325,7 @@ const MapWrapper = ({ style }) => {
             {mapData && <GeoJSON data={mapData} style={getMapStyle}
                 onEachFeature={onEachFeature}
             />}
-            <FitBounds />
+            {/* <FitBounds /> IS BUGGY; CONSTANTLY ZOOMS OUT*/}
 
             {/* RENDER ONLY IF TITLE OR DESCRIPTION IS AVAILABLE */}
             {store.currentMapLayer && <CustomTitleControl position="topleft" title={store.currentMapLayer.graphicTitle} />}

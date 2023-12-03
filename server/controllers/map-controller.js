@@ -153,10 +153,9 @@ deleteMap = async (req, res) => {
 
 getMapById = async (req, res) => {
     console.log("Find Map with id: " + JSON.stringify(req.params.id));
-
     try {
         const map = await Map.findOne({ _id: req.params.id });
-
+        console.log(map);
         if (!map) {
             return res.status(404).json({ success: false, error: "Map not found" });
         }
@@ -606,7 +605,42 @@ unlikeMapById = async (req, res) => {
     }
 }
 
+viewMapById = async (req, res) => {
+    console.log("View with id: " + JSON.stringify(req.params.id));
 
+    try {
+        const map = await Map.findById(req.params.id);
+        console.log("map found: " + JSON.stringify(map));
+
+        if (!map) {
+            return res.status(404).json({
+                errorMessage: 'Map not found!',
+            });
+        }
+
+        const user = await User.findOne({ _id: req.userId });
+
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        console.log("User found!");
+
+        map.views += 1;
+
+        // Save the updated map
+        await map.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Map viewed successfully!',
+            map: map,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+}
 module.exports = {
     createMap,
     deleteMap,
@@ -621,5 +655,6 @@ module.exports = {
     getMapLayerById,
     updateMapLayer,
     likeMapById,
-    unlikeMapById
+    unlikeMapById,
+    viewMapById
 }

@@ -64,9 +64,11 @@ function MapCard(props) {
   };
 
 
-  //NEED TO MODIFY LATER ON --> OPEN MAP_POST IF MAP IS ONLY PUBLISHED
+  
   const handleCardClick = async () => {
     if (props.idNamePair.published) {
+      console.log(idNamePair);
+      store.view(idNamePair._id);
       store.setCurrentMap(idNamePair._id);
       navigate("/post/" + idNamePair._id);
     }

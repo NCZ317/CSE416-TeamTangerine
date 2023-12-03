@@ -591,6 +591,7 @@ function GlobalStoreContextProvider(props) {
 
     store.unlike = function() {
         async function unlikeMap() {
+            console.log(store.currentMap);
             if (store.currentMap) {
                 let response = await api.unlikeMapById(store.currentMap._id);
                 if (response.data.success) {
@@ -599,6 +600,18 @@ function GlobalStoreContextProvider(props) {
             }
         }
         unlikeMap()
+    }
+
+    store.view = function(id) {
+        async function viewMap(id) {
+            console.log("viewing Map");
+            console.log(id);
+            let response = await api.viewMapById(id);
+            if (response.data.success) {
+                console.log("Viewed map " + id);
+            }
+        }
+        viewMap(id);
     }
 
     store.publish = function(id) {
