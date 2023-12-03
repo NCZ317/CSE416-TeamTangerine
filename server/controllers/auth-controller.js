@@ -355,7 +355,7 @@ sendEmail = async (req, res) => {
         const nodemailer = require('nodemailer');
         //insert oauth2
         
-        const generatedPassword = 'bwnz vlgl vwob krbv';
+        const generatedPassword = 'bwnz vlgl vwob krbv'; //get from google accounts, security sign-in 2-step verification, app-password
         var transporter = nodemailer.createTransport({ //sender email
             host: "smtp.gmail.com",
             port: 465,
@@ -373,7 +373,7 @@ sendEmail = async (req, res) => {
         const hashPass = existingUser.passwordHash;
         console.log(hashPass)
         var mailOptions = { //email contents
-            from: 'dylan.lai@stonybrook.edu',
+            from: {name:'TerraTrove', address: 'dylan.lai@stonybrook.edu'},
             to: email,
             subject: 'Forgot Password',
             text: 'Link to make new password ' + baseURL + '?' + email + '//' + hashPass + '.   '

@@ -618,14 +618,6 @@ viewMapById = async (req, res) => {
             });
         }
 
-        const user = await User.findOne({ _id: req.userId });
-
-        if (!user) {
-            return res.status(404).json({ success: false, error: 'User not found' });
-        }
-
-        console.log("User found!");
-
         map.views += 1;
 
         // Save the updated map

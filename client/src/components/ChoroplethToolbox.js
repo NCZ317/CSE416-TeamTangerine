@@ -144,6 +144,8 @@ const ChoroplethToolbox = () => {
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
+                        <Typography style={{fontSize: '16px'}}>Change text and press enter to change values</Typography>
+                        <Typography style={{fontSize: '16px'}}>Clicking out of text box without pressing enter will cause errors</Typography>
                         {properties.map((property, index) => (
                             <div style={{display: 'flex'}} value = {property.name}>
                                 <div style={{width: '50%', paddingTop: '5%'}}>{property.name || `Region ${index}`}</div>
@@ -154,9 +156,9 @@ const ChoroplethToolbox = () => {
                                     onChange={(e) => setRegionData(e.target.value)}
                                     onKeyDown={(e) => handleRegionData(e, index)}
                                 />
-                                <IconButton variant="outlined">
+                                {/* <IconButton variant="outlined">
                                     <DeleteIcon/>
-                                </IconButton>
+                                </IconButton> */}
                             </div>
                         ))}
                     </Collapse>
