@@ -20,6 +20,7 @@ export const GlobalStoreActionType = {
     MARK_MAP_FOR_DELETION: "MARK_MAP_FOR_DELETION",
     SET_CURRENT_MAP: "SET_CURRENT_MAP",
     EDIT_MAP_LAYER: "EDIT_MAP_LAYER",
+    EDIT_MAP_DATA: "EDIT_MAP_DATA",
     EDIT_MAP_DETAILS: "EDIT_MAP_DETAILS",
     EDIT_MAP_GRAPHICS: "EDIT_MAP_GRAPHICS",
     SET_CURRENT_REGION: "SET_CURRENT_REGION",
@@ -263,6 +264,24 @@ function GlobalStoreContextProvider(props) {
                     currentMaps: [],
                     currentMap: store.currentMap,
                     currentMapLayer: payload,
+                    mapTemplate: store.mapTemplate,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                    currentRegion: store.currentRegion
+                })
+            }
+
+            case GlobalStoreActionType.EDIT_MAP_DATA: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : store.currentScreen,
+                    idNamePairs: store.idNamePairs,
+                    likedMapPairs: store.likedMapPairs,
+                    currentMaps: [],
+                    currentMap: payload,
+                    currentMapLayer: store.currentMapLayer,
                     mapTemplate: store.mapTemplate,
                     newMapCounter: store.newMapCounter,
                     mapMarkedForDeletion: null,
@@ -520,7 +539,6 @@ function GlobalStoreContextProvider(props) {
             let response = await api.updateMapById(store.currentMap._id, store.currentMap);
             if (response.data.success) {
                 console.log(response.data);
-
                 //UPDATE THE MAP LAYER AS WELL
                 response = await api.updateMapLayerById(store.currentMap.mapLayers, store.currentMap.mapType, store.currentMapLayer);
                 if (response.data.success) {
@@ -647,6 +665,16 @@ function GlobalStoreContextProvider(props) {
         }
         asyncPublish(id);
     }
+
+    store.updateMapData = function(mapData) {
+        storeReducer({
+            type: GlobalStoreActionType.EDIT_MAP_DATA,
+            payload: mapData
+        });
+    }    
+
+
+
 // //Processes changing to User screen with specified username
 // store.setCurrentScreenWithUser = (user)
 

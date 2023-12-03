@@ -9,11 +9,17 @@ const MapWrapper = ({ style }) => {
     const [mapData, setMapData] = useState(null);
     const [map, setMap] = useState(null);
 
+
+    //USED FOR RENDERING THE INFO POPUP FOR CHOROPLETH MAPS
+    const [region, setRegion] = useState({
+        name: "",
+        value: ""
+    });
+
     useEffect(() => {
-        console.log(store.currentMap);
+        // console.log(store.currentMap);
         if (store.currentMap && store.currentMap.jsonData) {
             setMapData(store.currentMap.jsonData);
-            //store.currentRegion = 
         } else {
             setMapData(null);
         }
@@ -49,34 +55,44 @@ const MapWrapper = ({ style }) => {
         return null;
     };
 
-    const handleFeatureClick = (event) => {
-        const clickedLayer = event.target;
-        console.log(clickedLayer);
-        store.setCurrentRegion(clickedLayer);
-        console.log("FEATURE: " + JSON.stringify(clickedLayer.feature));
- 
-    };
-
     const onEachFeature = (feature, layer) => {
 
         // Add click event listener
         layer.on({
             click: handleFeatureClick,
+            mouseover: (e) => {
+                
+                if (store.mapTemplate === 'choroplethMap') {
+                    //UPDATE THE POPUP STATE TO RERENDER
+                    setRegion({
+                        name: feature.properties.name,
+                        value: feature.properties.value
+                    });
+                }
+
+            },
+
+            mouseout: (e) => {
+                if (store.mapTemplate === 'choroplethMap') {
+                    setRegion({
+                        name: "",
+                        value: ""
+                    });
+                }
+
+            }
         });
 
-        // if (store.currentMapLayer && store.currentMapLayer.style.borderColor) {
-        //     layer.setStyle({color: store.currentMapLayer.style.borderColor});
-        // }   
-
-        // layer.setStyle({
-        //     color: "#FF0000",
-        //     dashArray: '5, 5',
-        //     weight: 2,
-        //     opacity: 1
-        // })
-
-
     };
+
+    const handleFeatureClick = (event) => {
+        const clickedLayer = event.target;
+        store.setCurrentRegion(clickedLayer);
+        // console.log("FEATURE: " + JSON.stringify(clickedLayer.feature));
+        console.log("GEOMETRY: " + JSON.stringify(clickedLayer.feature.properties.name));
+ 
+    };
+
 
 
     const CustomTitleControl = ({ position, title }) => {
@@ -163,36 +179,136 @@ const MapWrapper = ({ style }) => {
         return style;
     };
 
+    //THIS OBJECT CONTAINS STYLING FOR ALL TYPES OF MAPS
     const mapDataStyle = {
         color: store.currentMapLayer && store.currentMapLayer.style.borderColor ? store.currentMapLayer.style.borderColor : '#79C200',
         weight: store.currentMapLayer && store.currentMapLayer.style.borderWeight ? store.currentMapLayer.style.borderWeight : 2,
         stroke: store.currentMapLayer && store.currentMapLayer.style.border, 
-        opacity: 1,
+        fillOpacity: 0.7,
         dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : '',
     }
 
-    if (store.mapTemplate == 'choroplethMap' && store.currentMap.legend){
-        L.geoJson(mapData, {style: chorpleth}).addTo(map);
-    }else{
-        
-    }
-    function chorpleth(feature) {
-        return {
-            fillColor: getColor(feature.properties.value),
-            color: '#79C200',
-            weight: 2, 
-            opacity: 0.5,
-        };
-    }
-    function getColor(d) {
-        for (var i = 0; i< store.currentMap.legend.length ; i++){
-            if (d>=store.currentMap.legend[i].value)
-                return store.currentMap.legend[i].color;
+    //THIS FUNCTION IS CALLED EVERY TIME THE MAP IS RENDERED --> RENDERS UPDATED STYLES
+    const getMapStyle = (feature) => {
 
+        if (store.mapTemplate === 'choroplethMap') {
+            return {
+                ...mapDataStyle,
+                fillColor: getChoroplethColor(feature.properties.value)
+            }
         }
+        return mapDataStyle
     }
 
+    //--------------------------------------------------------------------------------------------------------------//
+    // CHOROPLETH MAPS
+
+    //THIS FUNCTION ASSUMES THAT THE VALUES ARE ARRANGED IN DECREASING ORDER IN THE COLORSCALE (LEGEND)
+    const getChoroplethColor = (value) => {
+        const colorScale = store.currentMapLayer.colorScale;
+
+        // Check if value is numeric
+        const numericValue = parseFloat(value);
     
+        if (!isNaN(numericValue) && isFinite(numericValue)) {
+            // If numeric, iterate through colorScale array to find the appropriate color
+            for (var i = 0; i < colorScale.length; i++) {
+                const scaleValue = parseFloat(colorScale[i].value);
+                if (!isNaN(scaleValue) && isFinite(scaleValue) && numericValue >= scaleValue) {
+                    return colorScale[i].color;
+                }
+            }
+        } else {
+            // If not numeric, treat as categorical data
+            const categoricalMatch = colorScale.find((item) => item.value === value);
+    
+            // If a match is found, return the corresponding color
+            if (categoricalMatch) {
+                if (categoricalMatch.value === "") {
+                    return store.currentMapLayer.defaultColor;   //RETURN DEFAULT VALUE WHEN REGION DATA IS ""
+                }
+                return categoricalMatch.color;
+            }
+        }
+    
+        // Default color if no condition is met
+        return store.currentMapLayer.defaultColor;
+    }
+
+    //POPUP THAT SHOWS THE REGION NAME AND VALUE WHEN HOVERED OVER
+    const InfoPopup = ({ position, name, value }) => {
+        const map = useMap();
+    
+        useEffect(() => {
+            const container = L.DomUtil.create('div', 'info-popup');
+
+            //ADD VALUETYPE PROPERTY HERE
+            if (!name || !value) {
+                container.innerHTML = `<span>Hover over a region with data</span>`;
+            } else {
+                container.innerHTML = `<h4>${name}: ${value}</h4>`;
+            }
+
+            L.DomEvent.disableClickPropagation(container);
+    
+            const control = L.control({ position });
+            control.onAdd = () => container;
+            control.addTo(map);
+    
+            return () => {
+                // Cleanup on component unmount
+                control.remove();
+            };
+        }, [map, position, name, value]);
+    
+        return null;
+    };
+
+    //LEGEND VALUE
+    const MapLegend = ({position, legend}) => {
+        const map = useMap();
+
+        useEffect(() => {
+            const container = L.DomUtil.create('div', 'legend info-popup');
+            if (store.mapTemplate === 'choroplethMap') {
+
+                container.innerHTML += `<h4>${store.currentMapLayer.valueField}</h4>`
+                let legendValues = legend.map(x => x.value).reverse();
+
+                for (var i = 0; i < legendValues.length; i++) {
+                    if (legendValues[i] !== "") {
+                        if (isNaN(legendValues[i])) {
+                            container.innerHTML +=
+                            '<i style="background:' + getChoroplethColor(legendValues[i]) + '"></i>' +
+                            legendValues[i] + '<br>';
+    
+                        } else {
+                            container.innerHTML += 
+                            '<i style="background:' + getChoroplethColor(legendValues[i]) + '"></i> ' +
+                            legendValues[i] + (legendValues[i + 1] ? '&ndash;' + legendValues[i + 1] + '<br>' : '+');
+                        }
+
+                    }
+                }
+    
+                L.DomEvent.disableClickPropagation(container);
+        
+                const control = L.control({ position });
+                control.onAdd = () => container;
+                control.addTo(map);
+        
+                return () => {
+                    // Cleanup on component unmount
+                    control.remove();
+                };
+            }
+
+        }, [position, legend])
+    }
+    
+    //--------------------------------------------------------------------------------------------------------------//
+
+
     return (
         <MapContainer
             center={[0, 0]}
@@ -207,7 +323,7 @@ const MapWrapper = ({ style }) => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {mapData && <GeoJSON data={mapData} style={mapDataStyle}
+            {mapData && <GeoJSON data={mapData} style={getMapStyle}
                 onEachFeature={onEachFeature}
             />}
             <FitBounds />
@@ -215,6 +331,8 @@ const MapWrapper = ({ style }) => {
             {/* RENDER ONLY IF TITLE OR DESCRIPTION IS AVAILABLE */}
             {store.currentMapLayer && <CustomTitleControl position="topleft" title={store.currentMapLayer.graphicTitle} />}
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
+            {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
+            {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
         </MapContainer>
 
     );
