@@ -115,7 +115,7 @@ export default function CreateMapModal({open,onClose}) {
     const selectedCard = {
         border: '2px solid black'
     }
-
+    console.log(template);
     return (
         <Modal open={open} onClose={onClose} id='create-map-modal'>
             <Paper id = "create-map-paper">
