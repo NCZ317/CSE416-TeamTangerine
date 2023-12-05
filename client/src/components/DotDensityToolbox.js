@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { Box } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -11,13 +11,26 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
+import GlobalStoreContext from '../store';
 
 const DotDensityToolbox = () => {
+    const { store } = useContext(GlobalStoreContext);
+
     const [selectedTab, setSelectedTab] = useState(0);
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
     const [mapSettingsOpen, setMapSettingsOpen] = useState(true);
 
     const [legend, setLegend] = useState([{ value: '', description: '', color: '' }]);
+
+    const currentMap = store.currentMap.jsonData; 
+    const properties = currentMap.features.map((feature, index) => ({
+        id: index,
+        name: feature.properties.name,
+    }));
+    const [dotCounts, setDotCounts] = useState(properties.reduce((acc, property) => {
+        acc[property.name] = 10;
+        return acc;
+    }, {}));
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -82,22 +95,23 @@ const DotDensityToolbox = () => {
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-                        <Typography>Click on a map region to set the data for that region</Typography>
-                        <div style={{display: 'flex'}}>
-                            <TextField
-                                label="RegionName"
-                            />
-                            <TextField
-                                label="Value"
-                                type='number'
-                            />
-                            <TextField
-                                label="Category"
-                            />
-                            <IconButton variant="outlined">
-                                <DeleteIcon/>
-                            </IconButton>
-                        </div>
+                        {properties.map((property) => (
+                            <div style={{display: 'flex', marginTop: '12px'}} value = {property.name}>
+                                <div style={{width: '50%', paddingTop: '5%'}}>{property.name || `Region ${property.index}`}</div>
+                                <TextField
+                                    label="Dot Count"
+                                    type="number"
+                                    InputProps={{
+                                        inputProps: {
+                                          min: 0,
+                                          step: 1
+                                        },
+                                    }}
+                                    value={dotCounts[property.name]}
+                                    onChange={(e) => setDotCounts({ ...dotCounts, [property.name]: e.target.value })}
+                                />
+                            </div>
+                        ))}
 
                     </Collapse>
 
@@ -108,7 +122,6 @@ const DotDensityToolbox = () => {
                     <Collapse in={mapSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-                        
                         <Box style={{display: 'flex'}}>
                             <TextField 
                                 label="Dot Size"

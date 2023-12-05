@@ -1,5 +1,6 @@
 const { ChoroplethLayer, HeatmapLayer, DotDensityLayer, GraduatedSymbolLayer, FlowmapLayer, Map } = require('../models/map-model');
 const User = require('../models/user-model')
+const turf = require('@turf/turf');
 
 
 createMap = async (req, res) => {
@@ -15,7 +16,7 @@ createMap = async (req, res) => {
         }
 
         const map = new Map(body);
-        // console.log("map: " + map.toString());
+        console.log("map: " + map.toString());
 
         if (!map) {
             return res.status(400).json({ success: false, error: err });
@@ -51,6 +52,7 @@ createMap = async (req, res) => {
             });
 
         } else if (body.mapType === "dotDensityMap") {
+            
             let dotSize = 0;
             let dotValue = 0;
             let colorScale = {};
@@ -60,8 +62,49 @@ createMap = async (req, res) => {
                 style: style, 
                 dotSize: dotSize, 
                 dotValue: dotValue, 
-                colorScale: colorScale
+                colorScale: colorScale,
+                defaultColor: "#79C200"
             });
+            map.jsonData.features.forEach((feature) => {
+                const regionName = feature.properties.name || `Region ${feature.index}`;
+                //console.log(regionName);
+        
+                // Get the polygon geometry of the region
+                const regionPolygon = feature.geometry;
+                //console.log(regionPolygon);
+        
+                // Generate 10 random dots for each region using Turf.js
+                const dots = Array.from({ length: 10 }, () => {
+                    let randomPoint;
+        
+                    // Ensure that the generated point is within the region's polygon
+                    do {
+                        // Get the bounding box of the region geometry
+                        const bbox = turf.bbox(regionPolygon);
+        
+                        // Generate random coordinates within the bounding box
+                        const randomLng = bbox[0] + Math.random() * (bbox[2] - bbox[0]);
+                        const randomLat = bbox[1] + Math.random() * (bbox[3] - bbox[1]);
+        
+                        // Create a Turf.js point geometry
+                        randomPoint = turf.point([randomLng, randomLat]);
+                        if (turf.booleanPointInPolygon(randomPoint, regionPolygon)) break;
+        
+                        // Check if the point is inside the region's polygon
+                    } while (!turf.booleanPointInPolygon(randomPoint, regionPolygon));
+        
+                    return {
+                        coordinates: turf.getCoord(randomPoint).reverse(),
+                    };
+                });
+        
+                // Add the region and its dots to the geographicRegion array
+                mapLayer.geographicRegion.push({
+                    name: regionName,
+                    dots: dots,
+                });
+            });
+            console.log(mapLayer.geographicRegion);
 
         } else if (body.mapType === "graduatedSymbolMap") {
             let symbolColor = "";
