@@ -78,7 +78,7 @@ const FlowToolbox = () => {
         mapLayer.defaultColor = event.target.value;
         store.updateCurrentMapLayer(mapLayer);
     }
-
+    console.log(properties);
     console.log(store.currentMapLayer);
     return (
         <div className="flow-toolbox">
@@ -92,7 +92,7 @@ const FlowToolbox = () => {
                 <Tab label="Data" />
                 <Tab label="Settings" />
             </Tabs>
-
+        
             {selectedTab === 0 && (
                 <div>
                     <IconButton onClick={handleDataSettings} aria-label="toggle" sx={{width: '100%'}}>
