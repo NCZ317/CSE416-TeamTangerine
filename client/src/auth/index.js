@@ -154,9 +154,9 @@ function AuthContextProvider(props) {
         }
     }
 
-    auth.editUser = async function (email, username, password) {
+    auth.editUser = async function (email, username, bio, password) {
         try{
-            const response = await api.editUser(auth.user.id, email, username, password);
+            const response = await api.editUser(auth.user.id, email, username, bio, password);
             if (response.status === 200) {
                 authReducer({
                     type: AuthActionType.LOGIN_USER,
@@ -281,6 +281,12 @@ function AuthContextProvider(props) {
     auth.getUserLastName = function(){
         if(auth.user){
             return auth.user.lastName;
+        }
+    }
+
+    auth.getUserBio = function(){
+        if(auth.user){
+            return auth.user.bio;
         }
     }
 

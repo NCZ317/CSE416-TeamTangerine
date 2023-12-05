@@ -2,7 +2,10 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Popup, useMap, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { GlobalStoreContext } from '../store/index.js';
+import arrow from './ArrowImage.png';
+import testArrow from './ArrowImage2.png'
 import L from 'leaflet';
+import 'leaflet-imageoverlay-rotated';
 
 const MapWrapper = ({ style }) => {
     const { store } = useContext(GlobalStoreContext);
@@ -33,7 +36,7 @@ const MapWrapper = ({ style }) => {
     
 
     const FitBounds = () => {
-        const map = useMap();
+        setMap(useMap());
     
         if (mapData) {
             // Calculate bounds from GeoJSON
@@ -196,7 +199,6 @@ const MapWrapper = ({ style }) => {
 
     //THIS FUNCTION IS CALLED EVERY TIME THE MAP IS RENDERED --> RENDERS UPDATED STYLES
     const getMapStyle = (feature) => {
-
         if (store.mapTemplate === 'choroplethMap') {
             return {
                 ...mapDataStyle,
@@ -346,8 +348,26 @@ const MapWrapper = ({ style }) => {
     }
     
     //--------------------------------------------------------------------------------------------------------------//
-
-
+    //--------------------------------------------------------------------------------------------------------------//
+    // Flow MAPS
+    const FlowArrow=({position})=> {//position -> [[bottomx,bottomy], [topx,topy]]
+        const map = useMap();
+        console.log('arrow');
+        useEffect(()=>{
+            var imageUrl = arrow;
+            var altText = 'arrow';
+            var bottomAdj    = L.latLng(position[0][0],position[0][1]+.1)
+            var top   = L.latLng(position[1][0],position[1][1]+.1);
+            var bottomDia = L.latLng(position[0][0],position[0][1]-.1);
+            var imageOverlay = L.imageOverlay.rotated(imageUrl, /* latLngBounds */ bottomAdj, top, bottomDia, {
+                opacity: 0.1,
+                alt: altText,
+                interactive: true
+            });
+            imageOverlay.addTo(map);
+        },[map,position])
+    }
+    //-------------------------------------------------------------------------------------------------------------//
     return (
         <MapContainer
             center={[0, 0]}
@@ -372,6 +392,7 @@ const MapWrapper = ({ style }) => {
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
+            {store.mapTemplate === 'flowMap' && <FlowArrow position={[[40.71277, -74.00597], [39.95258, -75.16522]]}/>}
             {/* Render dots only if mapType is "dotDensityMap" */}
             {store.mapTemplate === 'dotDensityMap' && renderDots()}
         </MapContainer>

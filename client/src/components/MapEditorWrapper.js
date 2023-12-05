@@ -14,6 +14,7 @@ import ChoroplethToolbox from './ChoroplethToolbox';
 import HeatmapToolbox from './HeatmapToolbox';
 import DotDensityToolbox from './DotDensityToolbox';
 import GraduatedSymbolToolbox from './GraduatedSymbolToolbox';
+import FlowToolbox from './FlowToolbox';
 
 import { GlobalStoreContext } from '../store';
 
@@ -52,6 +53,7 @@ const MapEditorWrapper = () => {
             //     return(<FlowMapToolbox/>);
         }
     } */
+    console.log(store.mapTemplate);
     return (
         <div style={{ height: '100%' }}>
             {/* <AppBanner /> */}            
@@ -98,6 +100,7 @@ const MapEditorWrapper = () => {
                     {store.mapTemplate === "heatMap" && <HeatmapToolbox/>}
                     {store.mapTemplate === "dotDensityMap" && <DotDensityToolbox/>}
                     {store.mapTemplate === "graduatedSymbolMap" && <GraduatedSymbolToolbox/>}
+                    {store.mapTemplate === "flowMap" && <FlowToolbox/>}
                 </Drawer>
             </>
             <>

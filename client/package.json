@@ -15,6 +15,7 @@
     "axios": "^1.6.0",
     "jszip": "^3.10.1",
     "leaflet": "^1.9.4",
+    "leaflet-imageoverlay-rotated": "^0.2.1",
     "mapbox": "^1.0.0-beta10",
     "nodemailer": "^6.9.7",
     "react": "^18.2.0",
