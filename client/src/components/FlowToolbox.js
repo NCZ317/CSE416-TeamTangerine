@@ -43,12 +43,19 @@ const FlowToolbox = () => {
     const handleStartClick = (event) => {
         
     }
+    const deleteArrow = (event, index) => {
+        //when clicked to remove
+        let mapLayer = store.currentMapLayer
+        mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
+        console.log(mapLayer);
+    }
     const handleArrowData = (event,type) => {
         if (event.key === "Enter") {
             console.log("VALUE:\n" + arrowDataslat +", "+arrowDataslng +"\n"+arrowDataelat +", "+arrowDataelng);
             let mapLayer = store.currentMapLayer;
             console.log(mapLayer)
-            
+            console.log(mapLayer.dataValues.length);
+            let oldData = mapLayer.dataValues;
             //mapLayer.dataValues = [parseFloat(arrowDataslat),parseFloat(arrowDataslng),parseFloat(arrowDataelat),parseFloat(arrowDataelng)];
             mapLayer.dataValues = [{
                 originLatitude: parseFloat(arrowDataslat),
@@ -57,6 +64,11 @@ const FlowToolbox = () => {
                 destinationLongitude: parseFloat(arrowDataelng),
                 value: 0//index
             }]
+            for(let coordinate of oldData){
+                console.log(coordinate);
+                mapLayer.dataValues.push(coordinate);
+            }
+            
             store.updateCurrentMapLayer(mapLayer);
             console.log(store.currentMapLayer);
             setChanged(true);
@@ -80,6 +92,49 @@ const FlowToolbox = () => {
     }
     console.log(properties);
     console.log(store.currentMapLayer);
+    const otherArrows = store.currentMapLayer.dataValues;
+    const inputCoordinates = [];
+    for(let coordinate of otherArrows){
+        console.log(coordinate);
+        inputCoordinates.push(
+        <div style={{display: 'flex'}}>
+            <div style={{width: '50%', paddingTop: '5%'}}>{'startLat\nstartLng'}</div>
+            <div>
+                <TextField
+                    // label={property.value}
+                    defaultValue={coordinate.originLatitude}
+                    // onChange = {(e) => (property.value =  e.target.value)}
+                    onChange={(e) => setArrowDataslat(e.target.value)}
+                    onKeyDown={(e) => handleArrowData(e)}
+                />
+                <TextField
+                    // label={property.value}
+                    defaultValue={coordinate.originLongitude}
+                    // onChange = {(e) => (property.value =  e.target.value)}
+                    onChange={(e) => setArrowDataslng(e.target.value)}
+                    onKeyDown={(e) => handleArrowData(e)}
+                />
+            </div>
+            <div style={{width: '50%', paddingTop: '5%'}}>{'endLat\nendLng'}</div>
+            <div>
+                <TextField
+                    // label={property.value}
+                    defaultValue={coordinate.destinationLatitude}
+                    // onChange = {(e) => (property.value =  e.target.value)}
+                    onChange={(e) => setArrowDataelat(e.target.value)}
+                    onKeyDown={(e) => handleArrowData(e)}
+                />
+                <TextField
+                    // label={property.value}
+                    defaultValue={coordinate.destinationLongitude}
+                    // onChange = {(e) => (property.value =  e.target.value)}
+                    onChange={(e) => setArrowDataelng(e.target.value)}
+                    onKeyDown={(e) => handleArrowData(e)}
+                />
+            </div>
+            <br></br>
+        </div>)
+    }
     return (
         <div className="flow-toolbox">
             <Tabs
@@ -105,6 +160,7 @@ const FlowToolbox = () => {
                         <Typography style={{fontSize: '16px'}}>Click the button below, then type the latitude and longitudes to create arrow(Doesn't exist yet)</Typography>
                         <Typography style={{fontSize: '16px'}}>Press Enter after entering in each text box; clicking out of the textbox will cause errors</Typography>
                         {
+                            <div>
                             <div style={{display: 'flex'}}>
                                 <div style={{width: '50%', paddingTop: '5%'}}>{'startLat\nstartLng'}</div>
                                 <div>
@@ -139,9 +195,14 @@ const FlowToolbox = () => {
                                         onChange={(e) => setArrowDataelng(e.target.value)}
                                         onKeyDown={(e) => handleArrowData(e)}
                                     />
+                                    <IconButton variant="outlined" onClick={() => deleteArrow(0)}>
+                                        <DeleteIcon/>
+                                    </IconButton>
                                 </div>
+                                
                             </div>
-                            
+                            {inputCoordinates}
+                            </div>
                         }
                         {/* {properties.map((property, index) => (
                             <div style={{display: 'flex'}} value = {property.name}>

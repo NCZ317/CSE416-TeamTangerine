@@ -378,6 +378,15 @@ const MapWrapper = ({ style }) => {
     }
     //have an array in store holding flow arrow coordinates, lineSize, and color as [[startlat,startlng],[endlat,endlng], linesize, color]
     //console.log(store.currentMapLayer);
+    const flowArrows = [];
+    if(store.mapTemplate === 'flowMap'){
+        console.log(store.currentMapLayer);
+        for(let coordinate of store.currentMapLayer.dataValues){
+            flowArrows.push(
+            <FlowArrow position={[[coordinate.originLatitude,coordinate.originLongitude], [coordinate.destinationLatitude,coordinate.destinationLongitude]]} lineSize={1} color={'red'}/>
+            );
+        }
+    }
     //const flowArrows = [<FlowArrow position={[[50.71277, -74.00597], [49.95258, -75.16522]]} lineSize={1} color={'orange'}/>,<FlowArrow position={[[40.71277, -74.00597], [39.95258, -75.16522]]} lineSize={1} color={'orange'}/>];
     //-------------------------------------------------------------------------------------------------------------//
     return (
@@ -405,7 +414,7 @@ const MapWrapper = ({ style }) => {
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
-            {store.mapTemplate === 'flowMap' && <FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>}
+            {store.mapTemplate === 'flowMap' && flowArrows/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
             {/* Render dots only if mapType is "dotDensityMap" */}
             {store.mapTemplate === 'dotDensityMap' && renderDots()}
 
