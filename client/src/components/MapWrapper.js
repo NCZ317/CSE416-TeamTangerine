@@ -372,7 +372,7 @@ const MapWrapper = ({ style }) => {
             });
             imageOverlay.addTo(map); */
             console.log(position);
-            var arrow = L.polyline([[position[0][0],position[0][1]],[position[1][0],position[1][1]]], {color:color,weight:3*lineSize}).arrowheads();
+            var arrow = L.polyline(position, {color:color,weight:3*lineSize}).arrowheads();
             arrow.addTo(map);
         },[map,position,lineSize,color])
     }
@@ -405,7 +405,6 @@ const MapWrapper = ({ style }) => {
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
-            {console.log(store.currentMapLayer)}
             {store.mapTemplate === 'flowMap' && <FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>}
             {/* Render dots only if mapType is "dotDensityMap" */}
             {store.mapTemplate === 'dotDensityMap' && renderDots()}

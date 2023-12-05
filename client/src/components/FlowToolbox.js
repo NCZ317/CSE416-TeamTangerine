@@ -27,7 +27,7 @@ const FlowToolbox = () => {
     const [arrowDataelat, setArrowDataelat] = useState("");
     const [arrowDataelng, setArrowDataelng] = useState("");
     const [valueField, setValueField] = useState("");
-
+    const [storeChanged, setChanged] = useState(false);
 
     const currentMap = store.currentMap.jsonData; 
     const properties = currentMap.features.map(x => x.properties);
@@ -47,6 +47,8 @@ const FlowToolbox = () => {
         if (event.key === "Enter") {
             console.log("VALUE:\n" + arrowDataslat +", "+arrowDataslng +"\n"+arrowDataelat +", "+arrowDataelng);
             let mapLayer = store.currentMapLayer;
+            console.log(mapLayer)
+            
             //mapLayer.dataValues = [parseFloat(arrowDataslat),parseFloat(arrowDataslng),parseFloat(arrowDataelat),parseFloat(arrowDataelng)];
             mapLayer.dataValues = [{
                 originLatitude: parseFloat(arrowDataslat),
@@ -57,6 +59,7 @@ const FlowToolbox = () => {
             }]
             store.updateCurrentMapLayer(mapLayer);
             console.log(store.currentMapLayer);
+            setChanged(true);
             //updateMapLayer
         }
     }
@@ -76,7 +79,7 @@ const FlowToolbox = () => {
         store.updateCurrentMapLayer(mapLayer);
     }
 
-    console.log(properties);
+    console.log(store.currentMapLayer);
     return (
         <div className="flow-toolbox">
             <Tabs
