@@ -36,6 +36,7 @@ const MapEditorWrapper = () => {
     const handleSave = async () => {
         
         await store.updateCurrentMap();
+        await console.log(store.currentMapLayer);
         store.setScreen("USER");
     }
     /* const Toolbox = () => {

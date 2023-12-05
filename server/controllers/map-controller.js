@@ -488,6 +488,7 @@ updateMapLayer = async (req, res) => {
         } else if (mapType === "flowMap") {
             mapLayer = await FlowmapLayer.findOne({ _id: req.params.id });
             if (mapLayer) {
+                console.log(mapLayer);
                 mapLayer.dataValues = body.mapLayer.dataValues;
                 mapLayer.lineSizeScale = body.mapLayer.lineSizeScale;
                 mapLayer.colorScale = body.mapLayer.colorScale;

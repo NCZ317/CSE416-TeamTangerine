@@ -6,6 +6,8 @@ import arrow from './ArrowImage.png';
 import testArrow from './ArrowImage2.png'
 import L from 'leaflet';
 import 'leaflet-imageoverlay-rotated';
+import 'leaflet-polylinedecorator';
+import 'leaflet-arrowheads';
 
 const MapWrapper = ({ style }) => {
     const { store } = useContext(GlobalStoreContext);
@@ -95,7 +97,10 @@ const MapWrapper = ({ style }) => {
  
     };
 
-
+    const getLatLang = (event) => {
+        console.log("clicked");
+        console.log(event);
+    }
 
     const CustomTitleControl = ({ position, title }) => {
         const map = useMap();
@@ -310,23 +315,30 @@ const MapWrapper = ({ style }) => {
     //--------------------------------------------------------------------------------------------------------------//
     //--------------------------------------------------------------------------------------------------------------//
     // Flow MAPS
-    const FlowArrow=({position})=> {//position -> [[bottomx,bottomy], [topx,topy]]
+    const FlowArrow=({position, lineSize,color})=> {//position -> [[bottomx,bottomy], [topx,topy]]
         const map = useMap();
-        console.log('arrow');
+        console.log(map);
         useEffect(()=>{
-            var imageUrl = arrow;
+            /* var imageUrl = arrow;
             var altText = 'arrow';
-            var bottomAdj    = L.latLng(position[0][0],position[0][1]+.1)
-            var top   = L.latLng(position[1][0],position[1][1]+.1);
-            var bottomDia = L.latLng(position[0][0],position[0][1]-.1);
-            var imageOverlay = L.imageOverlay.rotated(imageUrl, /* latLngBounds */ bottomAdj, top, bottomDia, {
-                opacity: 0.1,
+            var size = 0.01*lineSize;
+            var bottomAdj    = L.latLng(position[0][0],position[0][1]+size)
+            var top   = L.latLng(position[1][0],position[1][1]+size);
+            var bottomDia = L.latLng(position[0][0],position[0][1]-size);
+            var imageOverlay = L.imageOverlay.rotated(imageUrl, bottomAdj, top, bottomDia, {
+                opacity: 0.25*(Math.max(2/lineSize,.4)),
                 alt: altText,
                 interactive: true
             });
-            imageOverlay.addTo(map);
-        },[map,position])
+            imageOverlay.addTo(map); */
+            console.log(position);
+            var arrow = L.polyline([[position[0][0],position[0][1]],[position[1][0],position[1][1]]], {color:color,weight:3*lineSize}).arrowheads();
+            arrow.addTo(map);
+        },[map,position,lineSize,color])
     }
+    //have an array in store holding flow arrow coordinates, lineSize, and color as [[startlat,startlng],[endlat,endlng], linesize, color]
+    //console.log(store.currentMapLayer);
+    //const flowArrows = [<FlowArrow position={[[50.71277, -74.00597], [49.95258, -75.16522]]} lineSize={1} color={'orange'}/>,<FlowArrow position={[[40.71277, -74.00597], [39.95258, -75.16522]]} lineSize={1} color={'orange'}/>];
     //-------------------------------------------------------------------------------------------------------------//
     return (
         <MapContainer
@@ -336,6 +348,7 @@ const MapWrapper = ({ style }) => {
             scrollWheelZoom={true}
             style={style ? style : { height: '83vh'}}
             ref={setMap}
+            onClick={getLatLang}
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -352,7 +365,8 @@ const MapWrapper = ({ style }) => {
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
-            {store.mapTemplate === 'flowMap' && <FlowArrow position={[[40.71277, -74.00597], [39.95258, -75.16522]]}/>}
+            {console.log(store.currentMapLayer)}
+            {store.mapTemplate === 'flowMap' && <FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>}
         </MapContainer>
 
     );

@@ -13,6 +13,7 @@ import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
 import L from 'leaflet';
 
+
 import { GlobalStoreContext } from '../store';
 
 const FlowToolbox = () => {
@@ -21,14 +22,17 @@ const FlowToolbox = () => {
     const [selectedTab, setSelectedTab] = useState(0);
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
 
-    const [regionData, setRegionData] = useState("");
+    const [arrowDataslat, setArrowDataslat] = useState("");
+    const [arrowDataslng, setArrowDataslng] = useState("");
+    const [arrowDataelat, setArrowDataelat] = useState("");
+    const [arrowDataelng, setArrowDataelng] = useState("");
     const [valueField, setValueField] = useState("");
 
 
     const currentMap = store.currentMap.jsonData; 
     const properties = currentMap.features.map(x => x.properties);
-
     const handleTabChange = (event, newValue) => {
+        console.log(store.currentMapLayer)
         setSelectedTab(newValue);
     };
 
@@ -36,16 +40,27 @@ const FlowToolbox = () => {
         setDataSettingsOpen(!dataSettingsOpen);
     };
 
-
-    const handleRegionData = (event, index) => {
+    const handleStartClick = (event) => {
+        
+    }
+    const handleArrowData = (event,type) => {
         if (event.key === "Enter") {
-            console.log("VALUE: " + regionData);
-            let map = store.currentMap;
-            map.jsonData.features[index].properties.value = regionData;
-            store.updateMapData(map);
+            console.log("VALUE:\n" + arrowDataslat +", "+arrowDataslng +"\n"+arrowDataelat +", "+arrowDataelng);
+            let mapLayer = store.currentMapLayer;
+            //mapLayer.dataValues = [parseFloat(arrowDataslat),parseFloat(arrowDataslng),parseFloat(arrowDataelat),parseFloat(arrowDataelng)];
+            mapLayer.dataValues = [{
+                originLatitude: parseFloat(arrowDataslat),
+                originLongitude: parseFloat(arrowDataslng),
+                destinationLatitude: parseFloat(arrowDataelat),
+                destinationLongitude: parseFloat(arrowDataelng),
+                value: 0//index
+            }]
+            store.updateCurrentMapLayer(mapLayer);
+            console.log(store.currentMapLayer);
+            //updateMapLayer
         }
     }
-
+    
     const handleValueField = (event) => {
         if (event.key === "Enter") {
             let mapLayer = store.currentMapLayer;
@@ -61,7 +76,7 @@ const FlowToolbox = () => {
         store.updateCurrentMapLayer(mapLayer);
     }
 
-
+    console.log(properties);
     return (
         <div className="flow-toolbox">
             <Tabs
@@ -84,8 +99,47 @@ const FlowToolbox = () => {
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-                        <Typography style={{fontSize: '16px'}}>Click the button below, then click twice on map to create arrow(Doesn't exist yet)</Typography>
-                        <Typography style={{fontSize: '16px'}}>First click to select starting point, second click to select ending point</Typography>
+                        <Typography style={{fontSize: '16px'}}>Click the button below, then type the latitude and longitudes to create arrow(Doesn't exist yet)</Typography>
+                        <Typography style={{fontSize: '16px'}}>Press Enter after entering in each text box; clicking out of the textbox will cause errors</Typography>
+                        {
+                            <div style={{display: 'flex'}}>
+                                <div style={{width: '50%', paddingTop: '5%'}}>{'startLat\nstartLng'}</div>
+                                <div>
+                                    <TextField
+                                        // label={property.value}
+                                        defaultValue={null}
+                                        // onChange = {(e) => (property.value =  e.target.value)}
+                                        onChange={(e) => setArrowDataslat(e.target.value)}
+                                        onKeyDown={(e) => handleArrowData(e)}
+                                    />
+                                    <TextField
+                                        // label={property.value}
+                                        defaultValue={null}
+                                        // onChange = {(e) => (property.value =  e.target.value)}
+                                        onChange={(e) => setArrowDataslng(e.target.value)}
+                                        onKeyDown={(e) => handleArrowData(e)}
+                                    />
+                                </div>
+                                <div style={{width: '50%', paddingTop: '5%'}}>{'endLat\nendLng'}</div>
+                                <div>
+                                    <TextField
+                                        // label={property.value}
+                                        defaultValue={null}
+                                        // onChange = {(e) => (property.value =  e.target.value)}
+                                        onChange={(e) => setArrowDataelat(e.target.value)}
+                                        onKeyDown={(e) => handleArrowData(e)}
+                                    />
+                                    <TextField
+                                        // label={property.value}
+                                        defaultValue={null}
+                                        // onChange = {(e) => (property.value =  e.target.value)}
+                                        onChange={(e) => setArrowDataelng(e.target.value)}
+                                        onKeyDown={(e) => handleArrowData(e)}
+                                    />
+                                </div>
+                            </div>
+                            
+                        }
                         {/* {properties.map((property, index) => (
                             <div style={{display: 'flex'}} value = {property.name}>
                                 <div style={{width: '50%', paddingTop: '5%'}}>{property.name || `Region ${index}`}</div>
