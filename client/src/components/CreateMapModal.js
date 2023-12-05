@@ -18,6 +18,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import JSZip from 'jszip';
 import * as shapefile from 'shapefile';
 import togeojson from '@mapbox/togeojson';
+const turf = require('@turf/turf');
 
 export default function CreateMapModal({open,onClose}) {
     const { auth } = useContext(AuthContext);
@@ -69,7 +70,7 @@ export default function CreateMapModal({open,onClose}) {
                     dbfBuffer,
                     { type: 'buffer' } // Specify the type of data source
                 );
-
+                
                 console.log(geojson);
                 await store.createNewMap(geojson, template);
 
@@ -101,6 +102,7 @@ export default function CreateMapModal({open,onClose}) {
                 const jsonData = JSON.parse(event.target.result);
 
                 // Call the store.createNewMap function with the GeoJSON data
+                
                 console.log(jsonData);
                 await store.createNewMap(jsonData, template);
 

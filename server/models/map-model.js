@@ -63,13 +63,18 @@ const dotdensityLayerSchema = new Schema({
     style: { type: Object },
     geographicRegion: [{
         name: String,
-        geometry: Object,
-        value: Object,
-        category: String
+        dots: [{
+            coordinates: {
+                type: [Number], // [longitude, latitude]
+                index: '2dsphere', // for geospatial indexing
+            },
+            // additional properties for each dot if needed
+        }],
     }],
     dotSize: { type: Number },
     dotValue: { type: Number },
-    colorScale: { type: Object }
+    colorScale: { type: Object },
+    defaultColor: { type: String }
 }, {minimize: false});
 
 const DotDensityLayer = mongoose.model('DotDensityLayer', dotdensityLayerSchema);

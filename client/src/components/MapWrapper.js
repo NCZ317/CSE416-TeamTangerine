@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { MapContainer, TileLayer, GeoJSON, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, Popup, useMap, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { GlobalStoreContext } from '../store/index.js';
 import L from 'leaflet';
@@ -8,6 +8,7 @@ const MapWrapper = ({ style }) => {
     const { store } = useContext(GlobalStoreContext);
     const [mapData, setMapData] = useState(null);
     const [map, setMap] = useState(null);
+    const [dotsData, setDotsData] = useState([]);
 
 
     //USED FOR RENDERING THE INFO POPUP FOR CHOROPLETH MAPS
@@ -20,10 +21,16 @@ const MapWrapper = ({ style }) => {
         // console.log(store.currentMap);
         if (store.currentMap && store.currentMap.jsonData) {
             setMapData(store.currentMap.jsonData);
+            if (store.currentMap.mapType === 'dotDensityMap') {
+                setDotsData(generateDots(store.currentMapLayer.geographicRegion));
+                console.log(dotsData);
+            } else setDotsData([]);
         } else {
             setMapData(null);
+            setDotsData([]);
         }
     }, [store.currentMap]); // Listen for changes in store.currentMap
+    
 
     const FitBounds = () => {
         const map = useMap();
@@ -199,8 +206,7 @@ const MapWrapper = ({ style }) => {
         return mapDataStyle
     }
 
-    //--------------------------------------------------------------------------------------------------------------//
-    // CHOROPLETH MAPS
+    //-----------------------------------------CHOROPLETH MAPS---------------------------------------------------//
 
     //THIS FUNCTION ASSUMES THAT THE VALUES ARE ARRANGED IN DECREASING ORDER IN THE COLORSCALE (LEGEND)
     const getChoroplethColor = (value) => {
@@ -233,6 +239,40 @@ const MapWrapper = ({ style }) => {
         // Default color if no condition is met
         return store.currentMapLayer.defaultColor;
     }
+
+    //----------------------------------------DOT DENSITY MAPS--------------------------------------------------//
+    const generateDots = (geographicRegion) => {
+        console.log("GENERATING DOTS");
+        console.log(store.mapTemplate);
+        const dots = [];
+
+        geographicRegion.forEach((region) => {
+            region.dots.forEach((dot) => {
+                dots.push({
+                    coordinates: dot.coordinates,
+                    name: region.name,
+                });
+            });
+        });
+
+        return dots;
+    };
+
+    const renderDots = () => {
+        console.log("RENDERING DOTS");
+        map.eachLayer((layer) => {
+            if (layer instanceof L.Marker) {
+                layer.remove();
+            }
+        });
+    
+        dotsData.forEach((dot, index) => {
+            console.log("ADDING", L.latLng(dot.coordinates[0], dot.coordinates[1]));
+            L.circleMarker(L.latLng(dot.coordinates[0], dot.coordinates[1]), { radius: 1, weight: 1, color: 'black' }).addTo(
+            map
+          )
+        });
+    };
 
     //POPUP THAT SHOWS THE REGION NAME AND VALUE WHEN HOVERED OVER
     const InfoPopup = ({ position, name, value }) => {
@@ -332,6 +372,8 @@ const MapWrapper = ({ style }) => {
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
+            {/* Render dots only if mapType is "dotDensityMap" */}
+            {store.mapTemplate === 'dotDensityMap' && renderDots()}
         </MapContainer>
 
     );
