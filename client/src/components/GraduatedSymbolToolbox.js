@@ -21,8 +21,8 @@ const GraduatedSymbolToolbox = () => {
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
     const [mapSettingsOpen, setMapSettingsOpen] = useState(true);
 
-    const [data, setData] = useState(store.currentMapLayer.dataValues ? store.currentMapLayer.dataValues :[{latitude: 0, longitude: 0, value: 0}])
-    const [legend, setLegend] = useState(store.currentMapLayer.sizeScale ? store.currentMapLayer.sizeScale :[{ value: 0, radius: 0 }]);
+    const [data, setData] = useState([{latitude: 0, longitude: 0, value: 0}])
+    const [legend, setLegend] = useState([{ value: 0, radius: 0 }]);
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
