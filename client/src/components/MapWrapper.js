@@ -9,6 +9,8 @@ import 'leaflet-imageoverlay-rotated';
 import 'leaflet-polylinedecorator';
 import 'leaflet-arrowheads';
 
+var markerGroup = L.layerGroup();
+
 const MapWrapper = ({ style }) => {
     const { store } = useContext(GlobalStoreContext);
     const [mapData, setMapData] = useState(null);
@@ -192,7 +194,7 @@ const MapWrapper = ({ style }) => {
         color: store.currentMapLayer && store.currentMapLayer.style.borderColor ? store.currentMapLayer.style.borderColor : '#79C200',
         weight: store.currentMapLayer && store.currentMapLayer.style.borderWeight ? store.currentMapLayer.style.borderWeight : 2,
         stroke: store.currentMapLayer && store.currentMapLayer.style.border, 
-        // fillOpacity: 0.7,
+        fillOpacity: 0.7,
         dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : '',
     }
 
@@ -417,7 +419,34 @@ const MapWrapper = ({ style }) => {
         }, [position, legend])
     }
     
-    //--------------------------------------------------------------------------------------------------------------//
+    //------------------------------------------Graduated Symbol Map------------------------------------------------// 
+    const ProportionalSymbol = ({data, scale, symbolColor}) =>{
+        markerGroup.clearLayers();
+        function scaleRadius(value) {
+            var radius = 1;
+            for (var i = 0; i< scale.length; i++){
+                if (value >= scale[i].value)
+                    radius = scale[i].radius
+            }
+            return radius;
+        };
+        if (data){ 
+            data.forEach(({lat,long, value}, index) => {
+                L.circleMarker(L.latLng(lat, long), { radius: scaleRadius(value), weight: 1, color: symbolColor }).addTo(markerGroup)
+            });
+        }
+        // function calcRadius(val, zoom) {
+        //     return 1.00083 * Math.pow(val/20,0.5716) * (zoom / 2);      
+        // }
+        // map.on('zoomend', function() {
+        //     markerGroup.eachLayer(function(layer){
+        //         if (layer instanceof L.CircleMarker){
+        //             layer.setRadius(calcRadius(layer._orgRadius,map.getZoom()))
+        //         }
+        //     });
+        // });
+        markerGroup.addTo(map);
+    }
     //--------------------------------------------------------------------------------------------------------------//
     // Flow MAPS
     const FlowArrow=({position, lineSize,color})=> {//position -> [[bottomx,bottomy], [topx,topy]]
@@ -480,8 +509,8 @@ const MapWrapper = ({ style }) => {
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
             {store.mapTemplate === 'flowMap' && flowArrows/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
-
-
+            {/* Render dots only if mapType is "dotDensityMap" */}
+            {store.mapTemplate === 'graduatedSymbolMap' && <ProportionalSymbol data = {store.currentMapLayer.dataValues} scale = {store.currentMapLayer.sizeScale} symbolColor = {store.currentMapLayer.symbolColor} />}
         </MapContainer>
 
     );
