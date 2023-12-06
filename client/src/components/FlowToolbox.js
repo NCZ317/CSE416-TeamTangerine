@@ -26,6 +26,8 @@ const FlowToolbox = () => {
     const [arrowDataslng, setArrowDataslng] = useState("");
     const [arrowDataelat, setArrowDataelat] = useState("");
     const [arrowDataelng, setArrowDataelng] = useState("");
+    const [lineSize, setLineSize] = useState(1);
+    const [color, setColor] = useState("red");
     const [valueField, setValueField] = useState("");
     const [storeChanged, setChanged] = useState(false);
 
@@ -64,7 +66,9 @@ const FlowToolbox = () => {
                 originLongitude: parseFloat(arrowDataslng),
                 destinationLatitude: parseFloat(arrowDataelat),
                 destinationLongitude: parseFloat(arrowDataelng),
-                value: 0//index
+                value: 0,//index
+                lineSizeScale: lineSize,
+                colorScale: color
             }]
             for(let coordinate of oldData){
                 console.log(coordinate);
@@ -92,6 +96,9 @@ const FlowToolbox = () => {
         mapLayer.defaultColor = event.target.value;
         store.updateCurrentMapLayer(mapLayer);
     }
+    const handleLegendColor = (color) => {
+        setColor(color);
+    };
     console.log(properties);
     console.log(store.currentMapLayer);
     const otherArrows = store.currentMapLayer.dataValues;
@@ -165,7 +172,7 @@ const FlowToolbox = () => {
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
-                        <Typography style={{fontSize: '16px'}}>Click the button below, then type the latitude and longitudes to create arrow(Doesn't exist yet)</Typography>
+                        <Typography style={{fontSize: '16px'}}>Type the latitude and longitudes to create arrow</Typography>
                         <Typography style={{fontSize: '16px'}}>Press Enter after entering in each text box; clicking out of the textbox will cause errors</Typography>
                         {
                             <div>
@@ -204,7 +211,25 @@ const FlowToolbox = () => {
                                         onKeyDown={(e) => handleArrowData(e)}
                                     />
                                 </div>
-                                
+                                <div style={{width: '50%', paddingTop: '5%'}}>{'Line Size'}</div>
+                                <div>
+                                    <TextField
+                                        // label={property.value}
+                                        defaultValue={null}
+                                        // onChange = {(e) => (property.value =  e.target.value)}
+                                        onChange={(e) => setLineSize(e.target.value)}
+                                        onKeyDown={(e) => handleArrowData(e)}
+                                    />
+                                </div>
+                                <div>
+                                    <TextField
+                                        label="Color"
+                                        type="color"
+                                        value={color}
+                                        fullWidth
+                                        onChange={(e) => handleLegendColor(e.target.value)}
+                                    />
+                                </div>
                             </div>
                             {inputCoordinates}
                             </div>

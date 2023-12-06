@@ -123,8 +123,6 @@ const PostWrapper = () => {
         console.log(store.currentMap.mapType);
         alert('forking');
         await store.duplicateMap(store.currentMap._id);
-        /* await store.createNewMap(store.currentMap.jsonData,store.currentMap.mapType);
-        console.log(store);*/
         await store.setScreen("MAP_EDITOR"); 
     }
 

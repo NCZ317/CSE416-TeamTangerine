@@ -108,10 +108,11 @@ const flowmapLayerSchema = new Schema({
         destinationLatitude: Number,
         destinationLongitude: Number,
         value: Number,
-        category: String
+        category: String,
+        lineSizeScale: Number,
+        colorScale: String,
     }],
-    lineSizeScale: { type: Object },
-    colorScale: { type: Object },
+    
     currentRegions: {type: [Object], default: []}
 }, {minimize: false});
 

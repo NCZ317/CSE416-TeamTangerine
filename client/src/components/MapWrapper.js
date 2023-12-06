@@ -428,7 +428,7 @@ const MapWrapper = ({ style }) => {
         console.log(store.currentMapLayer);
         for(let coordinate of store.currentMapLayer.dataValues){
             flowArrows.push(
-            <FlowArrow position={[[coordinate.originLatitude,coordinate.originLongitude], [coordinate.destinationLatitude,coordinate.destinationLongitude]]} lineSize={1} color={'red'}/>
+            <FlowArrow position={[[coordinate.originLatitude,coordinate.originLongitude], [coordinate.destinationLatitude,coordinate.destinationLongitude]]} lineSize={coordinate.lineSizeScale} color={coordinate.colorScale}/>
             );
         }
     }
