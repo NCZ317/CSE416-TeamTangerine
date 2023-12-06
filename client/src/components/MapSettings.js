@@ -212,7 +212,7 @@ const MapSettings = () => {
                 {globalSettingsOpen ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
             <Collapse in={globalSettingsOpen} timeout="auto" unmountOnExit
-                sx={{width: '100%', p: 1 }}
+                sx={{width: '95%', p: 1 }}
             >
                 
                 <TextField
