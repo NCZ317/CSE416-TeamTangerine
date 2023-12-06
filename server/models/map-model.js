@@ -19,7 +19,7 @@ const mapSchema = new Schema({
     }],
     published: { type: Boolean, required: true },
     publishedDate: { type: Date, required: true },
-    currentRegions: {type: [Object], default: []}
+    // currentRegions: {type: [Object], default: []}
 });
 const Map = mongoose.model('Map', mapSchema);
 
@@ -37,7 +37,8 @@ const choroplethLayerSchema = new Schema({
         value: String,
         color: String
     }],
-    defaultColor: {type: String}
+    defaultColor: {type: String},
+    currentRegions: {type: [Object], default: []}
 }, {minimize: false});
 
 const ChoroplethLayer = mongoose.model('ChoroplethLayer', choroplethLayerSchema);
@@ -52,7 +53,8 @@ const heatmapLayerSchema = new Schema({
         intensity: Number
     }],
     radius: { type: Number },
-    colorScale: { type: Object }
+    colorScale: { type: Object },
+    currentRegions: {type: [Object], default: []}
 }, {minimize: false});
 
 const HeatmapLayer = mongoose.model('HeatmapLayer', heatmapLayerSchema);
@@ -74,7 +76,8 @@ const dotdensityLayerSchema = new Schema({
     dotSize: { type: Number },
     dotValue: { type: Number },
     colorScale: { type: Object },
-    defaultColor: { type: String }
+    defaultColor: { type: String },
+    currentRegions: {type: [Object], default: []}
 }, {minimize: false});
 
 const DotDensityLayer = mongoose.model('DotDensityLayer', dotdensityLayerSchema);
@@ -89,7 +92,8 @@ const graduatedSymbolLayerSchema = new Schema({
         value: Number
     }],
     symbolColor: { type: String },
-    sizeScale: { type: Object }
+    sizeScale: { type: Object },
+    currentRegions: {type: [Object], default: []}
 }, {minimize: false});
 
 const GraduatedSymbolLayer = mongoose.model('GraduatedSymbolLayer', graduatedSymbolLayerSchema);
@@ -107,7 +111,8 @@ const flowmapLayerSchema = new Schema({
         category: String
     }],
     lineSizeScale: { type: Object },
-    colorScale: { type: Object }
+    colorScale: { type: Object },
+    currentRegions: {type: [Object], default: []}
 }, {minimize: false});
 
 const FlowmapLayer = mongoose.model('FlowmapLayer', flowmapLayerSchema);

@@ -94,7 +94,8 @@ function GlobalStoreContextProvider(props) {
         mapMarkedForDeletion: null,
         currentSearchResult: "",
         currentSortMethod: "",
-        currentRegion: {}
+        currentRegion: {},
+        currentFeatureIndex: null
     });
 
     const navigate = useNavigate();
@@ -125,7 +126,8 @@ function GlobalStoreContextProvider(props) {
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
-                    currentRegion: null
+                    currentRegion: null,
+                    currentFeatureIndex: null
                 });
             }
             case GlobalStoreActionType.CREATE_NEW_MAP: {
@@ -142,7 +144,8 @@ function GlobalStoreContextProvider(props) {
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
-                    currentRegion: null
+                    currentRegion: null,
+                    currentFeatureIndex: null
                 });
             }
             //THIS SHOULD BE CALLED WHEN USER FORKS MAP AND IT WILL REDIRECT TO THEIR PROFILE WITH THE MAP DUPED
@@ -160,7 +163,8 @@ function GlobalStoreContextProvider(props) {
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
-                    currentRegion: null
+                    currentRegion: null,
+                    currentFeatureIndex: null
                 });
             }
 
@@ -178,7 +182,8 @@ function GlobalStoreContextProvider(props) {
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
-                    currentRegion: null
+                    currentRegion: null,
+                    currentFeatureIndex: null
                 })
             }
 
@@ -196,7 +201,8 @@ function GlobalStoreContextProvider(props) {
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
-                    currentRegion: null
+                    currentRegion: null,
+                    currentFeatureIndex: null
                 })
             }
 
@@ -214,7 +220,8 @@ function GlobalStoreContextProvider(props) {
                     mapMarkedForDeletion: payload,
                     currentSearchResult: "",
                     currentSortMethod: "",
-                    currentRegion: null
+                    currentRegion: null,
+                    currentFeatureIndex: null
                 })
             }
 
@@ -233,7 +240,8 @@ function GlobalStoreContextProvider(props) {
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
-                    currentRegion: null
+                    currentRegion: null,
+                    currentFeatureIndex: null
                 })
             }
 
@@ -251,7 +259,8 @@ function GlobalStoreContextProvider(props) {
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
-                    currentRegion: payload
+                    currentRegion: payload.region,
+                    currentFeatureIndex: payload.featureIndex
                 })
             }
 
@@ -269,7 +278,8 @@ function GlobalStoreContextProvider(props) {
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
-                    currentRegion: store.currentRegion
+                    currentRegion: store.currentRegion,
+                    currentFeatureIndex: store.currentFeatureIndex
                 })
             }
 
@@ -287,7 +297,8 @@ function GlobalStoreContextProvider(props) {
                     mapMarkedForDeletion: null,
                     currentSearchResult: "",
                     currentSortMethod: "",
-                    currentRegion: store.currentRegion
+                    currentRegion: store.currentRegion,
+                    currentFeatureIndex: store.currentFeatureIndex
                 })
             }
 
@@ -648,10 +659,13 @@ function GlobalStoreContextProvider(props) {
         });
     }
 
-    store.setCurrentRegion = function(region) {
+    store.setCurrentRegion = function(region, featureIndex) {
         storeReducer({
             type: GlobalStoreActionType.SET_CURRENT_REGION,
-            payload: region
+            payload: {
+                region: region,
+                featureIndex: featureIndex
+            }
         });
     }
 
