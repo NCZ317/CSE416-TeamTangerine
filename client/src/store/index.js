@@ -347,9 +347,12 @@ function GlobalStoreContextProvider(props) {
         if(response.status == 201) {
             tps.clearAllTransactions();
             let newMap = response.data.map;
+            console.log(newMap);
             response = await api.getMapLayerById(newMap.mapLayers, newMap.mapType);
                 if (response.data.success) {
                     let mapLayer = response.data.mapLayer;
+                    console.log("MAPLAYER----------------------------------------------------");
+                    console.log(mapLayer);
                     storeReducer({
                         type: GlobalStoreActionType.CREATE_NEW_MAP,
                         payload: {
@@ -378,7 +381,12 @@ function GlobalStoreContextProvider(props) {
                 let mapToCopy = response.data.map;
                 let mapTitle = "Copy of " + mapToCopy.title;
                 let response2 = await api.createMap(mapTitle, mapToCopy.jsonData, mapToCopy.mapType, auth.user.email, auth.user.username );
-                if (response2.data.success) {
+                //UPDATE THE MAP LAYER AS WELL
+                console.log(store.currentMap.mapLayers)
+                console.log(response2.data);
+                console.log(store);
+                let response3 = await api.updateMapLayerById(response2.data.map.mapLayers, mapToCopy.mapType, store.currentMapLayer);
+                if (response2.data.success && response3.data.success) {
                     tps.clearAllTransactions();
                     storeReducer({
                         type: GlobalStoreActionType.DUPLICATE_MAP,

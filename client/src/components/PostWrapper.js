@@ -117,6 +117,17 @@ const PostWrapper = () => {
         }
     };
 
+    const handleFork = async () => {
+        console.log(store);
+        console.log(store.currentMap.jsonData);
+        console.log(store.currentMap.mapType);
+        alert('forking');
+        await store.duplicateMap(store.currentMap._id);
+        /* await store.createNewMap(store.currentMap.jsonData,store.currentMap.mapType);
+        console.log(store);*/
+        await store.setScreen("MAP_EDITOR"); 
+    }
+
     return (
         <div className='post-height'>
             <Grid container spacing={2} className='post-height'>
@@ -133,7 +144,7 @@ const PostWrapper = () => {
                                 <MenuItem>PNG</MenuItem>
                                 <MenuItem>JSON</MenuItem>
                             </Menu>
-                            <Button id='post-button-2' variant='contained'>Fork</Button>
+                            <Button id='post-button-2' variant='contained' onClick={handleFork}>Fork</Button>
                         </Box>
                         <MapWrapper style={{ height: '63vh' }} />
                         <CardContent className='post-card-content'>

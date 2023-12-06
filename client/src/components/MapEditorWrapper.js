@@ -54,7 +54,7 @@ const MapEditorWrapper = () => {
             //     return(<FlowMapToolbox/>);
         }
     } */
-    console.log(store.mapTemplate);
+    console.log(store);
     return (
         <div style={{ height: '100%' }}>
             {/* <AppBanner /> */}            
