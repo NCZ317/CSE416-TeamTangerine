@@ -44,7 +44,7 @@ const FlowToolbox = () => {
         //when clicked to remove
         let mapLayer = store.currentMapLayer
         mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
-
+        store.updateCurrentMapLayer(mapLayer);
     }
     const handleArrowData = (event,index,defaultVal) => {
         if (event.key === "Enter") {
