@@ -1,5 +1,5 @@
 
-import React, { useState,useContext } from 'react';
+import React, { useState,useContext, useEffect } from 'react';
 import { Box } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -12,6 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
 import GlobalStoreContext from '../store';
+import * as turf from '@turf/turf';
 
 const DotDensityToolbox = () => {
     const { store } = useContext(GlobalStoreContext);
@@ -22,15 +23,20 @@ const DotDensityToolbox = () => {
 
     const [legend, setLegend] = useState([{ value: '', description: '', color: '' }]);
 
-    const currentMap = store.currentMap.jsonData; 
-    const properties = currentMap.features.map((feature, index) => ({
-        id: index,
-        name: feature.properties.name,
-    }));
-    const [dotCounts, setDotCounts] = useState(properties.reduce((acc, property) => {
-        acc[property.name] = 10;
-        return acc;
-    }, {}));
+    
+    const [properties, setProperties] = useState([]);
+
+    useEffect(() => {
+        console.log("DOT DENSITY TOOLBOX LISTENER");
+        if (store.currentMapLayer) {
+            if (store.currentMapLayer.geographicRegion) {
+                console.log(store.currentMapLayer.geographicRegion);
+                setProperties(store.currentMapLayer.geographicRegion);
+            }
+        }
+    }, [store.currentMapLayer]);
+
+    
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -72,6 +78,66 @@ const DotDensityToolbox = () => {
         setLegend(newLegend);
     };
 
+    const updateDotCount = (regionName, newDotCount) => {
+        if (store.currentMapLayer && store.currentMapLayer.geographicRegion) {
+            let region;
+            for (let i = 0; i < store.currentMapLayer.geographicRegion.length; i++) {
+                if (regionName === store.currentMapLayer.geographicRegion[i].name) {
+                    console.log("FOUND REGION")
+                    region = store.currentMapLayer.geographicRegion[i];
+                }
+            }
+            console.log(region);
+            console.log(newDotCount);
+            let diff = newDotCount - region.dots.length;
+            console.log(diff);
+            if (diff < 0) {
+                region.dots.splice(newDotCount);
+                console.log(region);
+                store.updateCurrentMapLayer(store.currentMapLayer);
+            }
+            else if (diff > 0) {
+                store.currentMap.jsonData.features.forEach((feature) => {
+                    const name = feature.properties.name || `Region ${feature.index}`;
+            
+                    // Check if the current feature's name matches the specified regionName
+                    if (name === regionName) {
+                        // Get the polygon geometry of the region
+                        const regionPolygon = feature.geometry;
+            
+                        // Generate random dots for the specified region using Turf.js
+                        const dots = Array.from({ length: diff }, () => {
+                            let randomPoint;
+            
+                            // Ensure that the generated point is within the region's polygon
+                            do {
+                                // Get the bounding box of the region geometry
+                                const bbox = turf.bbox(regionPolygon);
+            
+                                // Generate random coordinates within the bounding box
+                                const randomLng = bbox[0] + Math.random() * (bbox[2] - bbox[0]);
+                                const randomLat = bbox[1] + Math.random() * (bbox[3] - bbox[1]);
+            
+                                // Create a Turf.js point geometry
+                                randomPoint = turf.point([randomLng, randomLat]);
+                                if (turf.booleanPointInPolygon(randomPoint, regionPolygon)) break;
+            
+                                // Check if the point is inside the region's polygon
+                            } while (!turf.booleanPointInPolygon(randomPoint, regionPolygon));
+            
+                            return {
+                                coordinates: turf.getCoord(randomPoint).reverse(),
+                            };
+                        });
+                        region.dots.push(...dots);
+                    }
+                });
+                console.log(region);
+                store.updateCurrentMapLayer(store.currentMapLayer);
+            }
+        }
+    };
+
 
     return (
         <div className="dotdensity-toolbox">
@@ -97,7 +163,7 @@ const DotDensityToolbox = () => {
                     >
                         {properties.map((property) => (
                             <div style={{display: 'flex', marginTop: '12px'}} value = {property.name}>
-                                <div style={{width: '50%', paddingTop: '5%'}}>{property.name || `Region ${property.index}`}</div>
+                                <div style={{width: '50%', paddingTop: '5%'}}>{property.name }</div>
                                 <TextField
                                     label="Dot Count"
                                     type="number"
@@ -106,9 +172,10 @@ const DotDensityToolbox = () => {
                                           min: 0,
                                           step: 1
                                         },
+                                        
                                     }}
-                                    value={dotCounts[property.name]}
-                                    onChange={(e) => setDotCounts({ ...dotCounts, [property.name]: e.target.value })}
+                                    value={property.dots.length}
+                                    onChange={(e) => updateDotCount(property.name, e.target.value)}
                                 />
                             </div>
                         ))}

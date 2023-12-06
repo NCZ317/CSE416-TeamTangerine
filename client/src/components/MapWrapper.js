@@ -28,13 +28,24 @@ const MapWrapper = ({ style }) => {
             setMapData(store.currentMap.jsonData);
             if (store.currentMap.mapType === 'dotDensityMap') {
                 setDotsData(generateDots(store.currentMapLayer.geographicRegion));
-                console.log(dotsData);
+                //console.log(dotsData);
             } else setDotsData([]);
         } else {
             setMapData(null);
             setDotsData([]);
         }
     }, [store.currentMap]); // Listen for changes in store.currentMap
+
+    useEffect(() => {
+        console.log("CHANGE IN DOTS");
+        if (store.currentMap && store.currentMapLayer) {
+            if (store.currentMap.mapType === 'dotDensityMap') {
+                
+                setDotsData(generateDots(store.currentMapLayer.geographicRegion));
+            }
+        }
+
+    }, [store.currentMapLayer])
     
 
     const FitBounds = () => {
@@ -249,8 +260,8 @@ const MapWrapper = ({ style }) => {
 
     //----------------------------------------DOT DENSITY MAPS--------------------------------------------------//
     const generateDots = (geographicRegion) => {
-        console.log("GENERATING DOTS");
-        console.log(store.mapTemplate);
+        //console.log("GENERATING DOTS");
+        //console.log(store.mapTemplate);
         const dots = [];
 
         geographicRegion.forEach((region) => {
@@ -266,15 +277,10 @@ const MapWrapper = ({ style }) => {
     };
 
     const renderDots = () => {
-        console.log("RENDERING DOTS");
-        map.eachLayer((layer) => {
-            if (layer instanceof L.Marker) {
-                layer.remove();
-            }
-        });
+        //console.log("RENDERING DOTS");
     
         dotsData.forEach((dot, index) => {
-            console.log("ADDING", L.latLng(dot.coordinates[0], dot.coordinates[1]));
+            //console.log("ADDING", L.latLng(dot.coordinates[0], dot.coordinates[1]));
             L.circleMarker(L.latLng(dot.coordinates[0], dot.coordinates[1]), { radius: 1, weight: 1, color: 'black' }).addTo(
             map
           )
