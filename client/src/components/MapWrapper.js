@@ -401,6 +401,7 @@ const MapWrapper = ({ style }) => {
     
     //------------------------------------------Graduated Symbol Map------------------------------------------------// 
     const ProportionalSymbol = ({data, scale, symbolColor}) =>{
+        const map = useMap();
         markerGroup.clearLayers();
         function scaleRadius(value) {
             var radius = 1;
@@ -411,8 +412,8 @@ const MapWrapper = ({ style }) => {
             return radius;
         };
         if (data){ 
-            data.forEach(({lat,long, value}, index) => {
-                L.circleMarker(L.latLng(lat, long), { radius: scaleRadius(value), weight: 1, color: symbolColor }).addTo(markerGroup)
+            data.forEach(({latitude,longitude, value}, index) => {
+                L.circleMarker(L.latLng(latitude, longitude), { radius: scaleRadius(value), weight: 1, color: symbolColor }).addTo(markerGroup)
             });
         }
         // function calcRadius(val, zoom) {

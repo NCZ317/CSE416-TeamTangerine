@@ -21,7 +21,7 @@ const GraduatedSymbolToolbox = () => {
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
     const [mapSettingsOpen, setMapSettingsOpen] = useState(true);
 
-    const [data, setData] = useState([{lat: 0, long: 0, value: 0}])
+    const [data, setData] = useState([{latitude: 0, longitude: 0, value: 0}])
     const [legend, setLegend] = useState([{ value: 0, radius: 0 }]);
 
     const handleTabChange = (event, newValue) => {
@@ -33,17 +33,17 @@ const GraduatedSymbolToolbox = () => {
     };
 
     const addDataRow = () => {
-        setData([...data, { lat: 0, long: 0, intensity: '' }]);
+        setData([...data, { latitude: 0, longitude: 0, intensity: '' }]);
     };
 
     const handleLatData = (index, latitude) => {
         const newData = [...data];
-        newData[index].lat = latitude;
+        newData[index].latitude = latitude;
         setData(newData);
     };
     const handleLongData = (index, longitude) => {
         const newData = [...data];
-        newData[index].long = longitude;
+        newData[index].longitude = longitude;
         setData(newData);
     };
     const handleDataValue = (index, value) => {
@@ -131,13 +131,13 @@ const GraduatedSymbolToolbox = () => {
                             <div key={index} style={{display: 'flex'}}>
                                 <TextField
                                     label="Latitude"
-                                    value={row.lat}
+                                    value={row.latitude}
                                     fullWidth
                                     onChange={(e) => handleLatData(index, e.target.value)}
                                 />
                                 <TextField
                                     label="Longitude"
-                                    value={row.long}
+                                    value={row.longitude}
                                     fullWidth
                                     onChange={(e) => handleLongData(index, e.target.value)}
                                 />
