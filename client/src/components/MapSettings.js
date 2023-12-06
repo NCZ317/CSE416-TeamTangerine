@@ -162,9 +162,9 @@ const MapSettings = () => {
     }
 
     const handleStyleUpdate = (property, value) => {
-        console.log(store.currentRegion);
-        console.log(store.currentFeatureIndex);
-        if (store.currentRegion && store.currentFeatureIndex>=0) {
+        //console.log("STYLE UPDATE");
+        //console.log(store.currentFeatureIndex);
+        if (store.currentRegion && store.currentFeatureIndex >= 0) {
             let mapLayer = store.currentMapLayer;
             
             const regionIndex = store.currentMapLayer.currentRegions.findIndex(region => region.featureIndex === store.currentFeatureIndex);

@@ -15,7 +15,6 @@ const MapWrapper = ({ style }) => {
     const { store } = useContext(GlobalStoreContext);
     const [mapData, setMapData] = useState(null);
     const [map, setMap] = useState(null);
-    const [dotsData, setDotsData] = useState([]);
 
 
     //USED FOR RENDERING THE INFO POPUP FOR CHOROPLETH MAPS
@@ -31,26 +30,10 @@ const MapWrapper = ({ style }) => {
         // console.log(store.currentMap);
         if (store.currentMap && store.currentMap.jsonData) {
             setMapData(store.currentMap.jsonData);
-            if (store.currentMap.mapType === 'dotDensityMap') {
-                setDotsData(generateDots(store.currentMapLayer.geographicRegion));
-                //console.log(dotsData);
-            } else setDotsData([]);
         } else {
             setMapData(null);
-            setDotsData([]);
         }
     }, [store.currentMap]); // Listen for changes in store.currentMap
-
-    useEffect(() => {
-        console.log("CHANGE IN DOTS");
-        if (store.currentMap && store.currentMapLayer) {
-            if (store.currentMap.mapType === 'dotDensityMap') {
-                
-                setDotsData(generateDots(store.currentMapLayer.geographicRegion));
-            }
-        }
-
-    }, [store.currentMapLayer])
     
 
     const FitBounds = () => {
@@ -220,6 +203,43 @@ const MapWrapper = ({ style }) => {
         const featureIndex = store.currentMap.jsonData.features.indexOf(feature);
         const featureFound = store.currentMapLayer.currentRegions.findIndex(region => region.featureIndex === featureIndex);
 
+        //console.log(store.mapTemplate);
+        if (store.mapTemplate === 'dotDensityMap') {
+            let dots = [];
+            for (let i = 0; i < store.currentMapLayer.geographicRegion.length; i++) {
+                if (store.currentMapLayer.geographicRegion[i].name === feature.properties.name) {
+                    dots = store.currentMapLayer.geographicRegion[i].dots;
+                    break;
+                }
+            }
+            //console.log("dots for " + feature.properties.name);
+            //console.log(dots);
+
+            if (store.mapTemplate === 'dotDensityMap') {
+                let dots = [];
+                for (let i = 0; i < store.currentMapLayer.geographicRegion.length; i++) {
+                    if (store.currentMapLayer.geographicRegion[i].name === feature.properties.name) {
+                        dots = store.currentMapLayer.geographicRegion[i].dots;
+                        break;
+                    }
+                }
+                
+                if(featureIndex == 0) {
+                    map.eachLayer((layer) => {
+                        if (layer instanceof L.CircleMarker) {
+                            map.removeLayer(layer);
+                        }
+                    });
+                }
+
+                // Draw the dots of this region onto the map
+                dots.forEach((dot) => {
+                    L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), { radius: 1, weight: 1, color: 'black' }).addTo(map);
+                });
+
+            }
+        }
+
         if (featureFound !== -1) {
 
             if (labelRef.current) {
@@ -300,33 +320,33 @@ const MapWrapper = ({ style }) => {
     }
 
     //----------------------------------------DOT DENSITY MAPS--------------------------------------------------//
-    const generateDots = (geographicRegion) => {
-        //console.log("GENERATING DOTS");
-        //console.log(store.mapTemplate);
-        const dots = [];
+    // const generateDots = (geographicRegion) => {
+    //     //console.log("GENERATING DOTS");
+    //     //console.log(store.mapTemplate);
+    //     const dots = [];
 
-        geographicRegion.forEach((region) => {
-            region.dots.forEach((dot) => {
-                dots.push({
-                    coordinates: dot.coordinates,
-                    name: region.name,
-                });
-            });
-        });
+    //     geographicRegion.forEach((region) => {
+    //         region.dots.forEach((dot) => {
+    //             dots.push({
+    //                 coordinates: dot.coordinates,
+    //                 name: region.name,
+    //             });
+    //         });
+    //     });
 
-        return dots;
-    };
+    //     return dots;
+    // };
 
-    const renderDots = () => {
-        //console.log("RENDERING DOTS");
+    // const renderDots = () => {
+    //     //console.log("RENDERING DOTS");
     
-        dotsData.forEach((dot, index) => {
-            //console.log("ADDING", L.latLng(dot.coordinates[0], dot.coordinates[1]));
-            L.circleMarker(L.latLng(dot.coordinates[0], dot.coordinates[1]), { radius: 1, weight: 1, color: 'black' }).addTo(
-            map
-          )
-        });
-    };
+    //     dotsData.forEach((dot, index) => {
+    //         //console.log("ADDING", L.latLng(dot.coordinates[0], dot.coordinates[1]));
+    //         L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), { radius: 1, weight: 1, color: 'black' }).addTo(
+    //         map
+    //       )
+    //     });
+    // };
 
     //POPUP THAT SHOWS THE REGION NAME AND VALUE WHEN HOVERED OVER
     const InfoPopup = ({ position, name, value }) => {
@@ -491,7 +511,6 @@ const MapWrapper = ({ style }) => {
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
             {store.mapTemplate === 'flowMap' && flowArrows/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
             {/* Render dots only if mapType is "dotDensityMap" */}
-            {store.mapTemplate === 'dotDensityMap' && renderDots()}
             {store.mapTemplate === 'graduatedSymbolMap' && <ProportionalSymbol data = {store.currentMapLayer.dataValues} scale = {store.currentMapLayer.sizeScale} symbolColor = {store.currentMapLayer.symbolColor} />}
         </MapContainer>
 
