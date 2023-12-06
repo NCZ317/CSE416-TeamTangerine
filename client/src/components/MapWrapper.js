@@ -8,13 +8,16 @@ import L from 'leaflet';
 import 'leaflet-imageoverlay-rotated';
 import 'leaflet-polylinedecorator';
 import 'leaflet-arrowheads';
-
+import { destination } from '@turf/turf';
 var markerGroup = L.layerGroup();
-
-const MapWrapper = ({ style }) => {
+var arrowGroup = L.layerGroup();
+const MapWrapper = ({ style}) => {
     const { store } = useContext(GlobalStoreContext);
     const [mapData, setMapData] = useState(null);
     const [map, setMap] = useState(null);
+    const [dotsData, setDotsData] = useState([]);
+
+
 
 
     //USED FOR RENDERING THE INFO POPUP FOR CHOROPLETH MAPS
@@ -103,6 +106,7 @@ const MapWrapper = ({ style }) => {
     const getLatLang = (event) => {
         console.log("clicked");
         console.log(event);
+        alert('clicked');
     }
 
     const CustomTitleControl = ({ position, title }) => {
@@ -454,33 +458,34 @@ const MapWrapper = ({ style }) => {
         const map = useMap();
         console.log(map);
         useEffect(()=>{
-            /* var imageUrl = arrow;
-            var altText = 'arrow';
-            var size = 0.01*lineSize;
-            var bottomAdj    = L.latLng(position[0][0],position[0][1]+size)
-            var top   = L.latLng(position[1][0],position[1][1]+size);
-            var bottomDia = L.latLng(position[0][0],position[0][1]-size);
-            var imageOverlay = L.imageOverlay.rotated(imageUrl, bottomAdj, top, bottomDia, {
-                opacity: 0.25*(Math.max(2/lineSize,.4)),
-                alt: altText,
-                interactive: true
-            });
-            imageOverlay.addTo(map); */
-            console.log(position);
             var arrow = L.polyline(position, {color:color,weight:3*lineSize}).arrowheads();
             arrow.addTo(map);
         },[map,position,lineSize,color])
     }
     //have an array in store holding flow arrow coordinates, lineSize, and color as [[startlat,startlng],[endlat,endlng], linesize, color]
     //console.log(store.currentMapLayer);
-    const flowArrows = [];
-    if(store.mapTemplate === 'flowMap'){
+    //const flowArrows = [];
+    /* if(store.mapTemplate === 'flowMap'){
         console.log(store.currentMapLayer);
         for(let coordinate of store.currentMapLayer.dataValues){
             flowArrows.push(
             <FlowArrow position={[[coordinate.originLatitude,coordinate.originLongitude], [coordinate.destinationLatitude,coordinate.destinationLongitude]]} lineSize={coordinate.lineSizeScale} color={coordinate.colorScale}/>
             );
         }
+    } */
+    const FlowArrows = ({data}) =>{
+        arrowGroup.clearLayers();
+        if (data){ 
+            for(let coordinate of data){
+                console.log(coordinate.colorScale)
+                let originPosition = [coordinate.originLatitude,coordinate.originLongitude];
+                let destinationPosition = [coordinate.destinationLatitude,coordinate.destinationLongitude];
+                (
+                    L.polyline([originPosition,destinationPosition],{color:coordinate.colorScale, weight: 3*coordinate.lineSizeScale}).arrowheads()
+                ).addTo(arrowGroup);
+            }
+        }
+        arrowGroup.addTo(map);
     }
     //const flowArrows = [<FlowArrow position={[[50.71277, -74.00597], [49.95258, -75.16522]]} lineSize={1} color={'orange'}/>,<FlowArrow position={[[40.71277, -74.00597], [39.95258, -75.16522]]} lineSize={1} color={'orange'}/>];
     //-------------------------------------------------------------------------------------------------------------//
@@ -509,7 +514,7 @@ const MapWrapper = ({ style }) => {
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
-            {store.mapTemplate === 'flowMap' && flowArrows/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
+            {store.mapTemplate === 'flowMap' && <FlowArrows data={store.currentMapLayer.dataValues}/>/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
             {/* Render dots only if mapType is "dotDensityMap" */}
             {store.mapTemplate === 'graduatedSymbolMap' && <ProportionalSymbol data = {store.currentMapLayer.dataValues} scale = {store.currentMapLayer.sizeScale} symbolColor = {store.currentMapLayer.symbolColor} />}
         </MapContainer>

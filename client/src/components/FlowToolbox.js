@@ -29,7 +29,6 @@ const FlowToolbox = () => {
     const [lineSize, setLineSize] = useState(1);
     const [color, setColor] = useState("");
     const [valueField, setValueField] = useState("");
-    const [storeChanged, setChanged] = useState(false);
 
     const currentMap = store.currentMap.jsonData; 
     const properties = currentMap.features.map(x => x.properties);
@@ -41,13 +40,11 @@ const FlowToolbox = () => {
         setDataSettingsOpen(!dataSettingsOpen);
     };
 
-    const handleStartClick = (event) => {
-        
-    }
     const deleteArrow = (index) => {
         //when clicked to remove
         let mapLayer = store.currentMapLayer
         mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
+        store.updateCurrentMapLayer(mapLayer);
     }
     const handleArrowData = (event,index,defaultVal) => {
         if (event.key === "Enter") {
@@ -99,7 +96,6 @@ const FlowToolbox = () => {
             console.log(mapLayer);
             store.updateCurrentMapLayer(mapLayer);
             console.log(store.currentMapLayer);
-            setChanged(true);
             //updateMapLayer
         }
     }
@@ -216,8 +212,8 @@ const FlowToolbox = () => {
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
                         <Typography style={{fontSize: '16px'}}>Type the latitude and longitudes to create arrow</Typography>
-                        <Typography style={{fontSize: '16px'}}>Press Enter after entering in each text box; </Typography>
-                        <Typography style={{fontSize: '16px'}}>clicking out of the textbox will cause errors </Typography>
+                        <Typography style={{fontSize: '16px'}}>Press Enter after entering in all text boxes; </Typography>
+                        <Typography style={{fontSize: '16px'}}>Pressing Enter early may cause errors;</Typography>
                         {
                             <div>
                                 <div>
