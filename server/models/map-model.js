@@ -76,7 +76,6 @@ const dotdensityLayerSchema = new Schema({
     dotSize: { type: Number },
     dotValue: { type: Number },
     colorScale: { type: Object },
-    defaultColor: { type: String },
     currentRegions: {type: [Object], default: []}
 }, {minimize: false});
 

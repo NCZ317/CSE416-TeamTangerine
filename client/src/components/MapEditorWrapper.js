@@ -25,10 +25,7 @@ const MapEditorWrapper = () => {
     const { store } = useContext(GlobalStoreContext);
     console.log(store);
     const [open, setOpen] = React.useState(false);
-    const [changed, setChanged] = useState(false);
-    if(changed){
-        setChanged(false);
-    }
+
     const handleDrawerOpen = (event) => {
         setOpen(true);
     };
@@ -62,7 +59,7 @@ const MapEditorWrapper = () => {
     return (
         <div style={{ height: '100%' }}>
             {/* <AppBanner /> */}            
-            <MapWrapper id='editor-map' changed={changed} setChanged={setChanged}/>
+            <MapWrapper id='editor-map' />
             <>
                 <IconButton
                 color="inherit"
@@ -80,12 +77,15 @@ const MapEditorWrapper = () => {
                     flexShrink: 0,
                     '& .MuiDrawer-paper': {
                         width: drawerWidth,
-                        mt: '7%',
+                        top: 0,
+                        // mt: '7%',
                         bottom: 0,
                         backgroundColor: '#79c200',
                         color: '#000',
-                        borderRadius: "25px",
-                        height: '80%',
+                        borderTopLeftRadius: "25px",
+                        borderBottomLeftRadius: "25px",
+                        height: '100%',
+                        overflowX: "hidden"
                     },
                     }}
                     variant="persistent"
@@ -105,7 +105,7 @@ const MapEditorWrapper = () => {
                     {store.mapTemplate === "heatMap" && <HeatmapToolbox/>}
                     {store.mapTemplate === "dotDensityMap" && <DotDensityToolbox/>}
                     {store.mapTemplate === "graduatedSymbolMap" && <GraduatedSymbolToolbox/>}
-                    {store.mapTemplate === "flowMap" && <FlowToolbox changed={changed} setChanged={setChanged}/>}
+                    {store.mapTemplate === "flowMap" && <FlowToolbox />}
                 </Drawer>
             </>
             <>

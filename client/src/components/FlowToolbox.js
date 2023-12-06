@@ -16,8 +16,7 @@ import L from 'leaflet';
 
 import { GlobalStoreContext } from '../store';
 
-const FlowToolbox = ({changed, setChanged}) => {
-    console.log(setChanged);
+const FlowToolbox = () => {
     const { store } = useContext(GlobalStoreContext);
 
     const [selectedTab, setSelectedTab] = useState(0);
@@ -45,7 +44,6 @@ const FlowToolbox = ({changed, setChanged}) => {
         //when clicked to remove
         let mapLayer = store.currentMapLayer
         mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
-        setChanged(true);
 
     }
     const handleArrowData = (event,index,defaultVal) => {
@@ -98,7 +96,6 @@ const FlowToolbox = ({changed, setChanged}) => {
             console.log(mapLayer);
             store.updateCurrentMapLayer(mapLayer);
             console.log(store.currentMapLayer);
-            setChanged(true);
             //updateMapLayer
         }
     }

@@ -8,13 +8,16 @@ import L from 'leaflet';
 import 'leaflet-imageoverlay-rotated';
 import 'leaflet-polylinedecorator';
 import 'leaflet-arrowheads';
-
-const MapWrapper = ({ style,changed, setChanged }) => {
+import { destination } from '@turf/turf';
+var markerGroup = L.layerGroup();
+var arrowGroup = L.layerGroup();
+const MapWrapper = ({ style}) => {
     const { store } = useContext(GlobalStoreContext);
     const [mapData, setMapData] = useState(null);
     const [map, setMap] = useState(null);
     const [dotsData, setDotsData] = useState([]);
-    console.log(changed);
+
+
 
 
     //USED FOR RENDERING THE INFO POPUP FOR CHOROPLETH MAPS
@@ -30,26 +33,10 @@ const MapWrapper = ({ style,changed, setChanged }) => {
         // console.log(store.currentMap);
         if (store.currentMap && store.currentMap.jsonData) {
             setMapData(store.currentMap.jsonData);
-            if (store.currentMap.mapType === 'dotDensityMap') {
-                setDotsData(generateDots(store.currentMapLayer.geographicRegion));
-                //console.log(dotsData);
-            } else setDotsData([]);
         } else {
             setMapData(null);
-            setDotsData([]);
         }
     }, [store.currentMap]); // Listen for changes in store.currentMap
-
-    useEffect(() => {
-        console.log("CHANGE IN DOTS");
-        if (store.currentMap && store.currentMapLayer) {
-            if (store.currentMap.mapType === 'dotDensityMap') {
-                
-                setDotsData(generateDots(store.currentMapLayer.geographicRegion));
-            }
-        }
-
-    }, [store.currentMapLayer])
     
 
     const FitBounds = () => {
@@ -211,7 +198,7 @@ const MapWrapper = ({ style,changed, setChanged }) => {
         color: store.currentMapLayer && store.currentMapLayer.style.borderColor ? store.currentMapLayer.style.borderColor : '#79C200',
         weight: store.currentMapLayer && store.currentMapLayer.style.borderWeight ? store.currentMapLayer.style.borderWeight : 2,
         stroke: store.currentMapLayer && store.currentMapLayer.style.border, 
-        // fillOpacity: 0.7,
+        fillOpacity: 0.7,
         dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : '',
     }
 
@@ -219,6 +206,43 @@ const MapWrapper = ({ style,changed, setChanged }) => {
     const getMapStyle = (feature) => {
         const featureIndex = store.currentMap.jsonData.features.indexOf(feature);
         const featureFound = store.currentMapLayer.currentRegions.findIndex(region => region.featureIndex === featureIndex);
+
+        //console.log(store.mapTemplate);
+        if (store.mapTemplate === 'dotDensityMap') {
+            let dots = [];
+            for (let i = 0; i < store.currentMapLayer.geographicRegion.length; i++) {
+                if (store.currentMapLayer.geographicRegion[i].name === feature.properties.name) {
+                    dots = store.currentMapLayer.geographicRegion[i].dots;
+                    break;
+                }
+            }
+            //console.log("dots for " + feature.properties.name);
+            //console.log(dots);
+
+            if (store.mapTemplate === 'dotDensityMap') {
+                let dots = [];
+                for (let i = 0; i < store.currentMapLayer.geographicRegion.length; i++) {
+                    if (store.currentMapLayer.geographicRegion[i].name === feature.properties.name) {
+                        dots = store.currentMapLayer.geographicRegion[i].dots;
+                        break;
+                    }
+                }
+                
+                if(featureIndex == 0) {
+                    map.eachLayer((layer) => {
+                        if (layer instanceof L.CircleMarker) {
+                            map.removeLayer(layer);
+                        }
+                    });
+                }
+
+                // Draw the dots of this region onto the map
+                dots.forEach((dot) => {
+                    L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), { radius: 1, weight: 1, color: 'black' }).addTo(map);
+                });
+
+            }
+        }
 
         if (featureFound !== -1) {
 
@@ -300,33 +324,33 @@ const MapWrapper = ({ style,changed, setChanged }) => {
     }
 
     //----------------------------------------DOT DENSITY MAPS--------------------------------------------------//
-    const generateDots = (geographicRegion) => {
-        //console.log("GENERATING DOTS");
-        //console.log(store.mapTemplate);
-        const dots = [];
+    // const generateDots = (geographicRegion) => {
+    //     //console.log("GENERATING DOTS");
+    //     //console.log(store.mapTemplate);
+    //     const dots = [];
 
-        geographicRegion.forEach((region) => {
-            region.dots.forEach((dot) => {
-                dots.push({
-                    coordinates: dot.coordinates,
-                    name: region.name,
-                });
-            });
-        });
+    //     geographicRegion.forEach((region) => {
+    //         region.dots.forEach((dot) => {
+    //             dots.push({
+    //                 coordinates: dot.coordinates,
+    //                 name: region.name,
+    //             });
+    //         });
+    //     });
 
-        return dots;
-    };
+    //     return dots;
+    // };
 
-    const renderDots = () => {
-        //console.log("RENDERING DOTS");
+    // const renderDots = () => {
+    //     //console.log("RENDERING DOTS");
     
-        dotsData.forEach((dot, index) => {
-            //console.log("ADDING", L.latLng(dot.coordinates[0], dot.coordinates[1]));
-            L.circleMarker(L.latLng(dot.coordinates[0], dot.coordinates[1]), { radius: 1, weight: 1, color: 'black' }).addTo(
-            map
-          )
-        });
-    };
+    //     dotsData.forEach((dot, index) => {
+    //         //console.log("ADDING", L.latLng(dot.coordinates[0], dot.coordinates[1]));
+    //         L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), { radius: 1, weight: 1, color: 'black' }).addTo(
+    //         map
+    //       )
+    //     });
+    // };
 
     //POPUP THAT SHOWS THE REGION NAME AND VALUE WHEN HOVERED OVER
     const InfoPopup = ({ position, name, value }) => {
@@ -399,40 +423,68 @@ const MapWrapper = ({ style,changed, setChanged }) => {
         }, [position, legend])
     }
     
-    //--------------------------------------------------------------------------------------------------------------//
+    //------------------------------------------Graduated Symbol Map------------------------------------------------// 
+    const ProportionalSymbol = ({data, scale, symbolColor}) =>{
+        markerGroup.clearLayers();
+        function scaleRadius(value) {
+            var radius = 1;
+            for (var i = 0; i< scale.length; i++){
+                if (value >= scale[i].value)
+                    radius = scale[i].radius
+            }
+            return radius;
+        };
+        if (data){ 
+            data.forEach(({lat,long, value}, index) => {
+                L.circleMarker(L.latLng(lat, long), { radius: scaleRadius(value), weight: 1, color: symbolColor }).addTo(markerGroup)
+            });
+        }
+        // function calcRadius(val, zoom) {
+        //     return 1.00083 * Math.pow(val/20,0.5716) * (zoom / 2);      
+        // }
+        // map.on('zoomend', function() {
+        //     markerGroup.eachLayer(function(layer){
+        //         if (layer instanceof L.CircleMarker){
+        //             layer.setRadius(calcRadius(layer._orgRadius,map.getZoom()))
+        //         }
+        //     });
+        // });
+        markerGroup.addTo(map);
+    }
     //--------------------------------------------------------------------------------------------------------------//
     // Flow MAPS
     const FlowArrow=({position, lineSize,color})=> {//position -> [[bottomx,bottomy], [topx,topy]]
         const map = useMap();
         console.log(map);
         useEffect(()=>{
-            /* var imageUrl = arrow;
-            var altText = 'arrow';
-            var size = 0.01*lineSize;
-            var bottomAdj    = L.latLng(position[0][0],position[0][1]+size)
-            var top   = L.latLng(position[1][0],position[1][1]+size);
-            var bottomDia = L.latLng(position[0][0],position[0][1]-size);
-            var imageOverlay = L.imageOverlay.rotated(imageUrl, bottomAdj, top, bottomDia, {
-                opacity: 0.25*(Math.max(2/lineSize,.4)),
-                alt: altText,
-                interactive: true
-            });
-            imageOverlay.addTo(map); */
-            console.log(position);
             var arrow = L.polyline(position, {color:color,weight:3*lineSize}).arrowheads();
             arrow.addTo(map);
         },[map,position,lineSize,color])
     }
     //have an array in store holding flow arrow coordinates, lineSize, and color as [[startlat,startlng],[endlat,endlng], linesize, color]
     //console.log(store.currentMapLayer);
-    const flowArrows = [];
-    if(store.mapTemplate === 'flowMap'){
+    //const flowArrows = [];
+    /* if(store.mapTemplate === 'flowMap'){
         console.log(store.currentMapLayer);
         for(let coordinate of store.currentMapLayer.dataValues){
             flowArrows.push(
             <FlowArrow position={[[coordinate.originLatitude,coordinate.originLongitude], [coordinate.destinationLatitude,coordinate.destinationLongitude]]} lineSize={coordinate.lineSizeScale} color={coordinate.colorScale}/>
             );
         }
+    } */
+    const FlowArrows = ({data}) =>{
+        arrowGroup.clearLayers();
+        if (data){ 
+            for(let coordinate of data){
+                console.log(coordinate.colorScale)
+                let originPosition = [coordinate.originLatitude,coordinate.originLongitude];
+                let destinationPosition = [coordinate.destinationLatitude,coordinate.destinationLongitude];
+                (
+                    L.polyline([originPosition,destinationPosition],{color:coordinate.colorScale, weight: 3*coordinate.lineSizeScale}).arrowheads()
+                ).addTo(arrowGroup);
+            }
+        }
+        arrowGroup.addTo(map);
     }
     //const flowArrows = [<FlowArrow position={[[50.71277, -74.00597], [49.95258, -75.16522]]} lineSize={1} color={'orange'}/>,<FlowArrow position={[[40.71277, -74.00597], [39.95258, -75.16522]]} lineSize={1} color={'orange'}/>];
     //-------------------------------------------------------------------------------------------------------------//
@@ -461,10 +513,9 @@ const MapWrapper = ({ style,changed, setChanged }) => {
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
-            {store.mapTemplate === 'flowMap' && flowArrows/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
+            {store.mapTemplate === 'flowMap' && <FlowArrows data={store.currentMapLayer.dataValues}/>/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
             {/* Render dots only if mapType is "dotDensityMap" */}
-            {store.mapTemplate === 'dotDensityMap' && renderDots()}
-
+            {store.mapTemplate === 'graduatedSymbolMap' && <ProportionalSymbol data = {store.currentMapLayer.dataValues} scale = {store.currentMapLayer.sizeScale} symbolColor = {store.currentMapLayer.symbolColor} />}
         </MapContainer>
 
     );
