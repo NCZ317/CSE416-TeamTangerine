@@ -27,14 +27,13 @@ const FlowToolbox = () => {
     const [arrowDataelat, setArrowDataelat] = useState("");
     const [arrowDataelng, setArrowDataelng] = useState("");
     const [lineSize, setLineSize] = useState(1);
-    const [color, setColor] = useState("red");
+    const [color, setColor] = useState("");
     const [valueField, setValueField] = useState("");
     const [storeChanged, setChanged] = useState(false);
 
     const currentMap = store.currentMap.jsonData; 
     const properties = currentMap.features.map(x => x.properties);
     const handleTabChange = (event, newValue) => {
-        console.log(store.currentMapLayer)
         setSelectedTab(newValue);
     };
 
@@ -47,34 +46,57 @@ const FlowToolbox = () => {
     }
     const deleteArrow = (index) => {
         //when clicked to remove
-        console.log(index);
         let mapLayer = store.currentMapLayer
-        console.log(mapLayer);
         mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
-        console.log(mapLayer);
     }
-    const handleArrowData = (event,type) => {
+    const handleArrowData = (event,index,defaultVal) => {
         if (event.key === "Enter") {
-            console.log("VALUE:\n" + arrowDataslat +", "+arrowDataslng +"\n"+arrowDataelat +", "+arrowDataelng);
             let mapLayer = store.currentMapLayer;
-            console.log(mapLayer)
-            console.log(mapLayer.dataValues.length);
             let oldData = mapLayer.dataValues;
+            if(index>=0){
+                oldData.splice(index,1);//removes arrows so it can be replaced
+            }
+            console.log(defaultVal);
+            let slat = parseFloat(arrowDataslat);
+            let slng = parseFloat(arrowDataslng);
+            let elat = parseFloat(arrowDataelat);
+            let elng = parseFloat(arrowDataelng);
+            let size = lineSize;
+            let colour = color;
+            if(isNaN(parseFloat(arrowDataslat))){
+                slat = defaultVal[0];
+            }
+            if(isNaN(parseFloat(arrowDataslng))){
+                slng = defaultVal[1];
+            }
+            if(isNaN(parseFloat(arrowDataelat))){
+                elat = defaultVal[2];
+            }
+            if(isNaN(parseFloat(arrowDataelng))){
+                elng = defaultVal[3]
+            }
+            if(isNaN(lineSize)||lineSize<=0){
+                size = defaultVal[4];
+            }
+            if(color===""){
+                colour = defaultVal[5];
+            }
+            console.log("VALUE:\n" + arrowDataslat +", "+arrowDataslng +"\n"+arrowDataelat +", "+arrowDataelng);
             //mapLayer.dataValues = [parseFloat(arrowDataslat),parseFloat(arrowDataslng),parseFloat(arrowDataelat),parseFloat(arrowDataelng)];
             mapLayer.dataValues = [{
-                originLatitude: parseFloat(arrowDataslat),
-                originLongitude: parseFloat(arrowDataslng),
-                destinationLatitude: parseFloat(arrowDataelat),
-                destinationLongitude: parseFloat(arrowDataelng),
+                originLatitude: slat,
+                originLongitude: slng,
+                destinationLatitude: elat,
+                destinationLongitude: elng,
                 value: 0,//index
-                lineSizeScale: lineSize,
-                colorScale: color
+                lineSizeScale: size,
+                colorScale: colour
             }]
             for(let coordinate of oldData){
                 console.log(coordinate);
                 mapLayer.dataValues.push(coordinate);
             }
-            
+            console.log(mapLayer);
             store.updateCurrentMapLayer(mapLayer);
             console.log(store.currentMapLayer);
             setChanged(true);
@@ -96,57 +118,78 @@ const FlowToolbox = () => {
         mapLayer.defaultColor = event.target.value;
         store.updateCurrentMapLayer(mapLayer);
     }
-    const handleLegendColor = (color) => {
+    const setArrowColor = (color, defaultVal) => {
+        console.log(color);
         setColor(color);
-    };
-    console.log(properties);
-    console.log(store.currentMapLayer);
+    }
     const otherArrows = store.currentMapLayer.dataValues;
     const inputCoordinates = [];
     var coordinateIndex = 0;
     for(let coordinate of otherArrows){
         coordinate.value=coordinateIndex;
-        console.log(coordinate);
         inputCoordinates.push(
-        <div style={{display: 'flex'}}>
-            <div style={{width: '50%', paddingTop: '5%'}}>{'startLat\nstartLng'}</div>
-            <div>
-                <TextField
-                    // label={property.value}
-                    defaultValue={coordinate.originLatitude}
-                    // onChange = {(e) => (property.value =  e.target.value)}
-                    onChange={(e) => setArrowDataslat(e.target.value)}
-                    onKeyDown={(e) => handleArrowData(e)}
-                />
-                <TextField
-                    // label={property.value}
-                    defaultValue={coordinate.originLongitude}
-                    // onChange = {(e) => (property.value =  e.target.value)}
-                    onChange={(e) => setArrowDataslng(e.target.value)}
-                    onKeyDown={(e) => handleArrowData(e)}
-                />
+        <div>
+            <div style={{display: 'flex'}}>
+                <div style={{width: '50%', paddingTop: '5%'}}>{'startLat\nstartLng'}</div>
+                <div>
+                    <TextField
+                        // label={property.value}
+                        defaultValue={coordinate.originLatitude}
+                        // onChange = {(e) => (property.value =  e.target.value)}
+                        onChange={(e) => setArrowDataslat(e.target.value)}
+                        onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale])}
+                    />
+                    <TextField
+                        // label={property.value}
+                        defaultValue={coordinate.originLongitude}
+                        // onChange = {(e) => (property.value =  e.target.value)}
+                        onChange={(e) => setArrowDataslng(e.target.value)}
+                        onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale])}
+                    />
+                </div>
+                <div style={{width: '50%', paddingTop: '5%'}}>{'endLat\nendLng'}</div>
+                <div>
+                    <TextField
+                        // label={property.value}
+                        defaultValue={coordinate.destinationLatitude}
+                        // onChange = {(e) => (property.value =  e.target.value)}
+                        onChange={(e) => setArrowDataelat(e.target.value)}
+                        onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale])}
+                    />
+                    <TextField
+                        // label={property.value}
+                        defaultValue={coordinate.destinationLongitude}
+                        // onChange = {(e) => (property.value =  e.target.value)}
+                        onChange={(e) => setArrowDataelng(e.target.value)}
+                        onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale])}
+                    />
+                </div>
+                <IconButton variant="outlined" onClick={() => deleteArrow(coordinate.value)}>
+                    <DeleteIcon/>
+                </IconButton>
+                <br></br>
             </div>
-            <div style={{width: '50%', paddingTop: '5%'}}>{'endLat\nendLng'}</div>
             <div>
-                <TextField
-                    // label={property.value}
-                    defaultValue={coordinate.destinationLatitude}
-                    // onChange = {(e) => (property.value =  e.target.value)}
-                    onChange={(e) => setArrowDataelat(e.target.value)}
-                    onKeyDown={(e) => handleArrowData(e)}
-                />
-                <TextField
-                    // label={property.value}
-                    defaultValue={coordinate.destinationLongitude}
-                    // onChange = {(e) => (property.value =  e.target.value)}
-                    onChange={(e) => setArrowDataelng(e.target.value)}
-                    onKeyDown={(e) => handleArrowData(e)}
-                />
-            </div>
-            <IconButton variant="outlined" onClick={() => deleteArrow(coordinate.value)}>
-                <DeleteIcon/>
-            </IconButton>
-            <br></br>
+                <div style={{width: '50%', paddingTop: '5%'}}>{'Line Size'}</div>
+                <div>
+                    <TextField
+                        // label={property.value}
+                        defaultValue={coordinate.lineSizeScale}
+                        // onChange = {(e) => (property.value =  e.target.value)}
+                        onChange={(e) => setLineSize(e.target.value)}
+                        onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale])}
+                    />
+                </div>
+                <div>
+                    <TextField
+                        label="Color"
+                        type="color"
+                        value={color}
+                        fullWidth
+                        onChange={(e) => setArrowColor(e.target.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale])}
+                    />
+                </div>
+            </div>    
         </div>)
         coordinateIndex++;
     }
@@ -173,65 +216,70 @@ const FlowToolbox = () => {
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
                         <Typography style={{fontSize: '16px'}}>Type the latitude and longitudes to create arrow</Typography>
-                        <Typography style={{fontSize: '16px'}}>Press Enter after entering in each text box; clicking out of the textbox will cause errors</Typography>
+                        <Typography style={{fontSize: '16px'}}>Press Enter after entering in each text box; </Typography>
+                        <Typography style={{fontSize: '16px'}}>clicking out of the textbox will cause errors </Typography>
                         {
                             <div>
-                            <div style={{display: 'flex'}}>
-                                <div style={{width: '50%', paddingTop: '5%'}}>{'startLat\nstartLng'}</div>
                                 <div>
-                                    <TextField
-                                        // label={property.value}
-                                        defaultValue={null}
-                                        // onChange = {(e) => (property.value =  e.target.value)}
-                                        onChange={(e) => setArrowDataslat(e.target.value)}
-                                        onKeyDown={(e) => handleArrowData(e)}
-                                    />
-                                    <TextField
-                                        // label={property.value}
-                                        defaultValue={null}
-                                        // onChange = {(e) => (property.value =  e.target.value)}
-                                        onChange={(e) => setArrowDataslng(e.target.value)}
-                                        onKeyDown={(e) => handleArrowData(e)}
-                                    />
+                                    <div style={{display: 'flex'}}>
+                                        <div style={{width: '50%', paddingTop: '5%'}}>{'startLat\nstartLng'}</div>
+                                        <div>
+                                            <TextField
+                                                // label={property.value}
+                                                defaultValue={null}
+                                                // onChange = {(e) => (property.value =  e.target.value)}
+                                                onChange={(e) => setArrowDataslat(e.target.value)}
+                                                onKeyDown={(e) => handleArrowData(e,-1,[0,0,0,0,1,'red'])}
+                                            />
+                                            <TextField
+                                                // label={property.value}
+                                                defaultValue={null}
+                                                // onChange = {(e) => (property.value =  e.target.value)}
+                                                onChange={(e) => setArrowDataslng(e.target.value)}
+                                                onKeyDown={(e) => handleArrowData(e,-1,[0,0,0,0,1,'red'])}
+                                            />
+                                        </div>
+                                        <div style={{width: '50%', paddingTop: '5%'}}>{'endLat\nendLng'}</div>
+                                        <div>
+                                            <TextField
+                                                // label={property.value}
+                                                defaultValue={null}
+                                                // onChange = {(e) => (property.value =  e.target.value)}
+                                                onChange={(e) => setArrowDataelat(e.target.value)}
+                                                onKeyDown={(e) => handleArrowData(e,-1,[0,0,0,0,1,'red'])}
+                                            />
+                                            <TextField
+                                                // label={property.value}
+                                                defaultValue={null}
+                                                // onChange = {(e) => (property.value =  e.target.value)}
+                                                onChange={(e) => setArrowDataelng(e.target.value)}
+                                                onKeyDown={(e) => handleArrowData(e,-1,[0,0,0,0,1,'red'])}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div style={{width: '50%', paddingTop: '5%'}}>{'Line Size'}</div>
+                                        <div>
+                                            <TextField
+                                                // label={property.value}
+                                                defaultValue={null}
+                                                // onChange = {(e) => (property.value =  e.target.value)}
+                                                onChange={(e) => setLineSize(e.target.value)}
+                                                onKeyDown={(e) => handleArrowData(e,-1,[0,0,0,0,1,'red'])}
+                                            />
+                                        </div>
+                                        <div>
+                                            <TextField
+                                                label="Color"
+                                                type="color"
+                                                value={color}
+                                                fullWidth
+                                                onChange={(e) => setArrowColor(e.target.value,[0,0,0,0,1,'red'])}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div style={{width: '50%', paddingTop: '5%'}}>{'endLat\nendLng'}</div>
-                                <div>
-                                    <TextField
-                                        // label={property.value}
-                                        defaultValue={null}
-                                        // onChange = {(e) => (property.value =  e.target.value)}
-                                        onChange={(e) => setArrowDataelat(e.target.value)}
-                                        onKeyDown={(e) => handleArrowData(e)}
-                                    />
-                                    <TextField
-                                        // label={property.value}
-                                        defaultValue={null}
-                                        // onChange = {(e) => (property.value =  e.target.value)}
-                                        onChange={(e) => setArrowDataelng(e.target.value)}
-                                        onKeyDown={(e) => handleArrowData(e)}
-                                    />
-                                </div>
-                                <div style={{width: '50%', paddingTop: '5%'}}>{'Line Size'}</div>
-                                <div>
-                                    <TextField
-                                        // label={property.value}
-                                        defaultValue={null}
-                                        // onChange = {(e) => (property.value =  e.target.value)}
-                                        onChange={(e) => setLineSize(e.target.value)}
-                                        onKeyDown={(e) => handleArrowData(e)}
-                                    />
-                                </div>
-                                <div>
-                                    <TextField
-                                        label="Color"
-                                        type="color"
-                                        value={color}
-                                        fullWidth
-                                        onChange={(e) => handleLegendColor(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            {inputCoordinates}
+                                {inputCoordinates}
                             </div>
                         }
                         {/* {properties.map((property, index) => (

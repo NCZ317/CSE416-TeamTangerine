@@ -11,6 +11,9 @@ const PostWrapper = () => {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [liked, setLiked] = useState(false);
+    const [jsonURL, setJSONurl] = useState("");
+    const [jsonFilename, setJSONfilename] = useState("");
+    
 
 
     const CssTextField = styled(TextField)({
@@ -50,7 +53,7 @@ const PostWrapper = () => {
         views: 0,
         likes: 0,
     });
-
+    
     useEffect(() => {
         console.log(store.currentMap);
         if (store.currentMap) {
@@ -62,6 +65,15 @@ const PostWrapper = () => {
                 views: store.currentMap.views,
                 likes: store.currentMap.likes,
             });
+            console.log(store);
+            const jsonBlob = new Blob(
+                [JSON.stringify({"type":store.currentMap.jsonData.type,"features":store.currentMap.jsonData.features})],
+                { type: 'application/json' }
+              );
+            console.log(jsonBlob);  
+            // Create a download link for the blob content
+            setJSONurl(URL.createObjectURL(jsonBlob));
+            setJSONfilename(store.currentMap.title + '.json');
         }
     }, [store.currentMap]);
 
@@ -96,7 +108,7 @@ const PostWrapper = () => {
     const handleExportMenuClose = () => {
         setAnchorEl(null);
     };
-
+    
     const handleCommentKeyDown = (event) => {
         if (event.keyCode === 13) {
             // Prevent the default behavior of the Enter key
@@ -118,9 +130,6 @@ const PostWrapper = () => {
     };
 
     const handleFork = async () => {
-        console.log(store);
-        console.log(store.currentMap.jsonData);
-        console.log(store.currentMap.mapType);
         alert('forking');
         await store.duplicateMap(store.currentMap._id);
         await store.setScreen("MAP_EDITOR"); 
@@ -140,7 +149,7 @@ const PostWrapper = () => {
                             >
                                 <MenuItem>JPEG</MenuItem>
                                 <MenuItem>PNG</MenuItem>
-                                <MenuItem>JSON</MenuItem>
+                                <MenuItem><a href={jsonURL} download={jsonFilename}>JSON</a></MenuItem>
                             </Menu>
                             <Button id='post-button-2' variant='contained' onClick={handleFork}>Fork</Button>
                         </Box>
