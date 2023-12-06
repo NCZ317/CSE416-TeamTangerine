@@ -126,7 +126,7 @@ const DotDensityToolbox = () => {
                             } while (!turf.booleanPointInPolygon(randomPoint, regionPolygon));
             
                             return {
-                                coordinates: turf.getCoord(randomPoint).reverse(),
+                                coordinates: turf.getCoord(randomPoint),
                             };
                         });
                         region.dots.push(...dots);

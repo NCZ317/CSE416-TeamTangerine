@@ -98,7 +98,7 @@ createMap = async (req, res) => {
                     } while (!turf.booleanPointInPolygon(randomPoint, regionPolygon));
         
                     return {
-                        coordinates: turf.getCoord(randomPoint).reverse(),
+                        coordinates: turf.getCoord(randomPoint),
                     };
                 });
         
@@ -108,7 +108,7 @@ createMap = async (req, res) => {
                     dots: dots,
                 });
             });
-            console.log(mapLayer.geographicRegion);
+            //console.log(mapLayer.geographicRegion);
 
         } else if (body.mapType === "graduatedSymbolMap") {
             let symbolColor = "";
@@ -136,8 +136,12 @@ createMap = async (req, res) => {
         }
 
         map.mapLayers = mapLayer._id;
+
+        console.log(map.mapLayers);
         
         const user = await User.findOne({ _id: req.userId });
+
+        console.log("User found ", user);
 
         if (!user) {
             return res.status(404).json({ success: false, error: 'User not found' });
