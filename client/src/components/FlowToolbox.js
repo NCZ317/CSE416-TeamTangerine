@@ -43,9 +43,11 @@ const FlowToolbox = () => {
     const handleStartClick = (event) => {
         
     }
-    const deleteArrow = (event, index) => {
+    const deleteArrow = (index) => {
         //when clicked to remove
+        console.log(index);
         let mapLayer = store.currentMapLayer
+        console.log(mapLayer);
         mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
         console.log(mapLayer);
     }
@@ -94,7 +96,9 @@ const FlowToolbox = () => {
     console.log(store.currentMapLayer);
     const otherArrows = store.currentMapLayer.dataValues;
     const inputCoordinates = [];
+    var coordinateIndex = 0;
     for(let coordinate of otherArrows){
+        coordinate.value=coordinateIndex;
         console.log(coordinate);
         inputCoordinates.push(
         <div style={{display: 'flex'}}>
@@ -132,8 +136,12 @@ const FlowToolbox = () => {
                     onKeyDown={(e) => handleArrowData(e)}
                 />
             </div>
+            <IconButton variant="outlined" onClick={() => deleteArrow(coordinate.value)}>
+                <DeleteIcon/>
+            </IconButton>
             <br></br>
         </div>)
+        coordinateIndex++;
     }
     return (
         <div className="flow-toolbox">
@@ -195,9 +203,6 @@ const FlowToolbox = () => {
                                         onChange={(e) => setArrowDataelng(e.target.value)}
                                         onKeyDown={(e) => handleArrowData(e)}
                                     />
-                                    <IconButton variant="outlined" onClick={() => deleteArrow(0)}>
-                                        <DeleteIcon/>
-                                    </IconButton>
                                 </div>
                                 
                             </div>
