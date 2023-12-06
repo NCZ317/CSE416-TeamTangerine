@@ -149,47 +149,57 @@ const MapSettings = () => {
     }
 
 
-    const handleFillColor = (event) => {
-        if (store.currentRegion) {
-            //console.log(store.currentRegion);
-            store.currentRegion.setStyle({
-                fillColor: event.target.value
-            });
-            var inRegions = false;
-            //console.log(store.currentMap);
-            for(let region of store.currentMap.currentRegions){
-                //console.log(region);
-                if(region.feature.properties.name===store.currentRegion.feature.properties.name){
-                    console.log("Updating region " + region);
-                    inRegions = true;
-                    region.options.fillColor=event.target.value
-                    break;
-                }
-            }
-            //console.log(store.currentRegion);
-            if(!inRegions){
-                let newRegion = {
-                    feature: store.currentRegion.feature,      //store.currentRegion.feature?????
-                    options: {
-                        fillColor : event.target.value,
-                        fillOpacity : store.currentRegion.options.fillOpacity
-                    }
-                }
-                store.currentMap.currentRegions.push(newRegion); 
-            }
-            var allRegions = store.currentMap.currentRegions;
-            //console.log(allRegions);
-            //console.log(store.currentMap);
+    const createNewRegion = () => {
+        return {
+            featureIndex: store.currentFeatureIndex,
+            style: {
+                fillColor: "",
+                fillOpacity: 0.7,
+                labelColor: ""
+            },
+            label: ""
         }
     }
 
-    const handleFillOpacity = (event) => {
-        if (store.currentRegion) {
-            console.log(store.currentRegion);
-            store.currentRegion.setStyle({
-                fillOpacity: event.target.value
-            });
+    const handleStyleUpdate = (property, value) => {
+        if (store.currentRegion && store.currentFeatureIndex) {
+            let mapLayer = store.currentMapLayer;
+            
+            const regionIndex = store.currentMapLayer.currentRegions.findIndex(region => region.featureIndex === store.currentFeatureIndex);
+            if (regionIndex !== -1) {
+                // Region found --> update values
+                mapLayer.currentRegions[regionIndex].style[property] = value;
+            } else {
+                // Add new region to current regions
+                let newRegion = createNewRegion();
+                newRegion.style[property] = value;
+                mapLayer.currentRegions.push(newRegion);
+            }
+    
+            store.updateCurrentMapLayer(mapLayer);
         }
+    }
+
+    const handleRegionLabel = (event) => {
+        if (event.key === "Enter") {
+            if (store.currentRegion && store.currentFeatureIndex) {
+                let mapLayer = store.currentMapLayer;
+
+                const regionIndex = store.currentMapLayer.currentRegions.findIndex(region => region.featureIndex === store.currentFeatureIndex);
+                if (regionIndex !== -1) {
+                    // Region found --> update values
+                    mapLayer.currentRegions[regionIndex].label = regionLabel;
+                } else {
+                    // Add new region to current regions
+                    let newRegion = createNewRegion();
+                    newRegion.label = regionLabel;
+                    mapLayer.currentRegions.push(newRegion);
+                }
+        
+                store.updateCurrentMapLayer(mapLayer);
+            }
+        }
+
     }
 
 
@@ -381,54 +391,60 @@ const MapSettings = () => {
             <Collapse in={regionSettingsOpen} timeout="auto" unmountOnExit
                 sx={{width: '100%', p: 1, textAlign: 'center' }}
             >
-                <Typography>{store.currentRegion ? store.currentRegion.feature.properties.name : "Please Select a Region"}</Typography>
+                <Typography variant='h5'>{store.currentRegion ? store.currentRegion.feature.properties.name : "Please Select a Region"}</Typography>
 
                 {/* The components below should render only when the user clicks on a valid map region?? */}
+                {store.currentRegion && (
 
-                <Box style={{display: 'flex', alignItems: 'center'}}>
-                    <TextField
-                        label="Region Label"
-                        value={regionLabel}
-                        onChange={e => setRegionLabel(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Label Color"
-                        type="color"
-                        fullWidth
-                        margin="normal"
-                    />
-                    <FormGroup>
-                        <FormControlLabel control={<Switch defaultChecked />} label="Label" />
-                    </FormGroup>
-                </Box>
+                    <Box>      
+                        <Box style={{display: 'flex', alignItems: 'center'}}>
+                            <TextField
+                                label="Region Label"
+                                value={regionLabel}
+                                onChange={e => setRegionLabel(e.target.value)}
+                                onKeyDown={handleRegionLabel}
+                                fullWidth
+                                margin="normal"
+                            />
+                            <TextField
+                                label="Label Color"
+                                type="color"
+                                fullWidth
+                                margin="normal"
+                                onChange={(e) => handleStyleUpdate('labelColor', e.target.value)}
+                            />
+                        </Box>
 
-                <Box style={{display: 'flex', alignItems: 'center'}}>
-                    <TextField
-                        label="Fill Color"
-                        type="color"
-                        fullWidth
-                        margin="normal"
-                        onChange={handleFillColor}
-                    />
-                    <TextField
-                        label="Fill Opacity"
-                        type='Number'
-                        fullWidth
-                        margin='normal'
-                        InputProps={{
-                            inputProps: {
-                              min: 0, // Set the minimum value
-                              max: 1, // Set the maximum value
-                              step: 0.1
-                            },
-                        }}
-                        onChange={handleFillOpacity}
-                    />
+                        {store.mapTemplate !== 'choroplethMap' && (
 
-                </Box>
-                
+                        <Box style={{display: 'flex', alignItems: 'center'}}>
+                            <TextField
+                                label="Fill Color"
+                                type="color"
+                                fullWidth
+                                margin="normal"
+                                onChange={(e) => handleStyleUpdate('fillColor', e.target.value)}
+                            />
+                            <TextField
+                                label="Fill Opacity"
+                                type='Number'
+                                fullWidth
+                                margin='normal'
+                                InputProps={{
+                                    inputProps: {
+                                    min: 0, // Set the minimum value
+                                    max: 1, // Set the maximum value
+                                    step: 0.1
+                                    },
+                                }}
+                                onChange={(e) => handleStyleUpdate('fillOpacity', e.target.value)}
+                            />
+                        </Box>
+                        )}
+
+                    </Box>
+
+                )}
 
             </Collapse>
 

@@ -27,6 +27,7 @@ createMap = async (req, res) => {
         let graphicTitle = "";
         let graphicDescription = "";
         let style = {};
+        let currentRegions = [];
         if (body.mapType === "choroplethMap") {
             let valueField = "";
             let colorScale = [];
@@ -37,7 +38,8 @@ createMap = async (req, res) => {
                 geographicRegion: [],
                 valueField: valueField,
                 colorScale: colorScale,
-                defaultColor: "#79C200"
+                defaultColor: "#79C200",
+                currentRegions: currentRegions
             });
             // mapLayer = new ChoroplethLayer();
         } else if (body.mapType === "heatMap") {
@@ -48,7 +50,8 @@ createMap = async (req, res) => {
                 graphicDescription: graphicDescription, 
                 style: style, 
                 radius: radius, 
-                colorScale: colorScale
+                colorScale: colorScale,
+                currentRegions: currentRegions
             });
 
         } else if (body.mapType === "dotDensityMap") {
@@ -63,7 +66,8 @@ createMap = async (req, res) => {
                 dotSize: dotSize, 
                 dotValue: dotValue, 
                 colorScale: colorScale,
-                defaultColor: "#79C200"
+                defaultColor: "#79C200",
+                currentRegions: currentRegions
             });
             map.jsonData.features.forEach((feature) => {
                 const regionName = feature.properties.name || `Region ${feature.index}`;
@@ -114,7 +118,8 @@ createMap = async (req, res) => {
                 graphicDescription: graphicDescription, 
                 style: style, 
                 symbolColor: symbolColor, 
-                sizeScale: sizeScale
+                sizeScale: sizeScale,
+                currentRegions: currentRegions
             });
 
         } else if (body.mapType === "flowMap") {
@@ -125,7 +130,8 @@ createMap = async (req, res) => {
                 graphicDescription: graphicDescription, 
                 style: style, 
                 lineSizeScale: lineSizeScale, 
-                colorScale: colorScale
+                colorScale: colorScale,
+                currentRegions: currentRegions
             });
         }
 
@@ -375,7 +381,7 @@ updateMap = async (req, res) => {
         map.comments = body.map.comments;
         map.published = body.map.published;
         map.publishedDate = body.map.publishedDate;
-        map.currentRegions = body.map.currentRegions;
+        // map.currentRegions = body.map.currentRegions;
 
         await map.save();
 
@@ -547,6 +553,7 @@ updateMapLayer = async (req, res) => {
         mapLayer.graphicTitle = body.mapLayer.graphicTitle;
         mapLayer.graphicDescription = body.mapLayer.graphicDescription;
         mapLayer.style = body.mapLayer.style;
+        mapLayer.currentRegions = body.mapLayer.currentRegions;
 
         await mapLayer.save();
 

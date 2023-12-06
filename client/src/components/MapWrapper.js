@@ -22,6 +22,9 @@ const MapWrapper = ({ style }) => {
         value: ""
     });
 
+    //Reference to the region label --> removed and added when region label changes
+    const labelRef = useRef(null);
+
     useEffect(() => {
         // console.log(store.currentMap);
         if (store.currentMap && store.currentMap.jsonData) {
@@ -80,7 +83,7 @@ const MapWrapper = ({ style }) => {
 
         // Add click event listener
         layer.on({
-            click: handleFeatureClick,
+            click: (event) => handleFeatureClick(event, feature),
             mouseover: (e) => {
                 
                 if (store.mapTemplate === 'choroplethMap') {
@@ -106,13 +109,10 @@ const MapWrapper = ({ style }) => {
 
     };
 
-    const handleFeatureClick = (event) => {
+    const handleFeatureClick = (event, feature) => {
         const clickedLayer = event.target;
-        console.log(clickedLayer);
-        store.setCurrentRegion(clickedLayer);
-        // console.log("FEATURE: " + JSON.stringify(clickedLayer.feature));
-        console.log("GEOMETRY: " + JSON.stringify(clickedLayer.feature.properties.name));
- 
+        const featureIndex = store.currentMap.jsonData.features.indexOf(feature);
+        store.setCurrentRegion(clickedLayer, featureIndex);
     };
 
     const getLatLang = (event) => {
@@ -209,18 +209,57 @@ const MapWrapper = ({ style }) => {
         color: store.currentMapLayer && store.currentMapLayer.style.borderColor ? store.currentMapLayer.style.borderColor : '#79C200',
         weight: store.currentMapLayer && store.currentMapLayer.style.borderWeight ? store.currentMapLayer.style.borderWeight : 2,
         stroke: store.currentMapLayer && store.currentMapLayer.style.border, 
-        fillOpacity: 0.7,
+        // fillOpacity: 0.7,
         dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : '',
     }
 
     //THIS FUNCTION IS CALLED EVERY TIME THE MAP IS RENDERED --> RENDERS UPDATED STYLES
     const getMapStyle = (feature) => {
+        const featureIndex = store.currentMap.jsonData.features.indexOf(feature);
+        const featureFound = store.currentMapLayer.currentRegions.findIndex(region => region.featureIndex === featureIndex);
+
+        if (featureFound !== -1) {
+
+            if (labelRef.current) {
+                labelRef.current.removeFrom(map);
+            }
+
+            const labelColor = store.currentMapLayer.currentRegions[featureFound].style.labelColor;
+            const customIcon = L.divIcon({
+                className: 'region-label',
+                html: `<div style="color: ${labelColor || 'black'}">${store.currentMapLayer.currentRegions[featureFound].label}</div>`,
+            });
+
+            const bounds = L.geoJSON(feature).getBounds(); // Get bounds of the current feature
+            const center = bounds.getCenter(); // Get the center of the bounds
+
+            // Create a marker using the custom div element
+            const marker = L.marker(center, {
+                icon: customIcon,
+            });
+
+            // Add the marker to the GeoJSON layer
+            marker.addTo(map);
+            labelRef.current = marker;
+        }
+
         if (store.mapTemplate === 'choroplethMap') {
             return {
                 ...mapDataStyle,
                 fillColor: getChoroplethColor(feature.properties.value)
             }
+        } else {
+            //UPDATE FILL COLOR AND FILL OPACITY FOR ALL OTHER TYPES OF MAPS IF USER HAS CHANGED IT
+
+            if (featureFound !== -1) {
+                return {
+                    ...mapDataStyle,
+                    fillColor: store.currentMapLayer.currentRegions[featureFound].style.fillColor,
+                    fillOpacity: store.currentMapLayer.currentRegions[featureFound].style.fillOpacity
+                }
+            }
         }
+
         return mapDataStyle
     }
 
