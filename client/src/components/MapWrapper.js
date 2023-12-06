@@ -9,11 +9,12 @@ import 'leaflet-imageoverlay-rotated';
 import 'leaflet-polylinedecorator';
 import 'leaflet-arrowheads';
 
-const MapWrapper = ({ style }) => {
+const MapWrapper = ({ style,changed, setChanged }) => {
     const { store } = useContext(GlobalStoreContext);
     const [mapData, setMapData] = useState(null);
     const [map, setMap] = useState(null);
     const [dotsData, setDotsData] = useState([]);
+    console.log(changed);
 
 
     //USED FOR RENDERING THE INFO POPUP FOR CHOROPLETH MAPS
@@ -118,6 +119,7 @@ const MapWrapper = ({ style }) => {
     const getLatLang = (event) => {
         console.log("clicked");
         console.log(event);
+        alert('clicked');
     }
 
     const CustomTitleControl = ({ position, title }) => {

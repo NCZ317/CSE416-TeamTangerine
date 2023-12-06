@@ -25,6 +25,10 @@ const MapEditorWrapper = () => {
     const { store } = useContext(GlobalStoreContext);
     console.log(store);
     const [open, setOpen] = React.useState(false);
+    const [changed, setChanged] = useState(false);
+    if(changed){
+        setChanged(false);
+    }
     const handleDrawerOpen = (event) => {
         setOpen(true);
     };
@@ -58,7 +62,7 @@ const MapEditorWrapper = () => {
     return (
         <div style={{ height: '100%' }}>
             {/* <AppBanner /> */}            
-            <MapWrapper id='editor-map'/>
+            <MapWrapper id='editor-map' changed={changed} setChanged={setChanged}/>
             <>
                 <IconButton
                 color="inherit"
@@ -101,7 +105,7 @@ const MapEditorWrapper = () => {
                     {store.mapTemplate === "heatMap" && <HeatmapToolbox/>}
                     {store.mapTemplate === "dotDensityMap" && <DotDensityToolbox/>}
                     {store.mapTemplate === "graduatedSymbolMap" && <GraduatedSymbolToolbox/>}
-                    {store.mapTemplate === "flowMap" && <FlowToolbox/>}
+                    {store.mapTemplate === "flowMap" && <FlowToolbox changed={changed} setChanged={setChanged}/>}
                 </Drawer>
             </>
             <>
