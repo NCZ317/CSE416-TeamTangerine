@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Box } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -12,7 +12,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
 
+import { GlobalStoreContext } from '../store';
+
 const GraduatedSymbolToolbox = () => {
+    const { store } = useContext(GlobalStoreContext);
+
     const [selectedTab, setSelectedTab] = useState(0);
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
     const [mapSettingsOpen, setMapSettingsOpen] = useState(true);
@@ -50,6 +54,9 @@ const GraduatedSymbolToolbox = () => {
     const deleteDataRow = (index) => {
         const newData = [...data];
         newData.splice(index, 1);
+        let mapLayer = store.currentMapLayer;
+        mapLayer.dataValues = newData;
+        store.updateCurrentMapLayer(mapLayer);
         setData(newData);
     };
 
@@ -79,6 +86,23 @@ const GraduatedSymbolToolbox = () => {
         setLegend(newLegend);
     };
 
+    const handleSymbolColor = (color) => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.symbolColor = color;
+        store.updateCurrentMapLayer(mapLayer);
+    }
+
+    const saveData = () =>{
+        let mapLayer = store.currentMapLayer;
+        mapLayer.dataValues = data;
+        store.updateCurrentMapLayer(mapLayer);
+    }
+
+    const saveLegend = () => {
+        let mapLayer = store.currentMapLayer;
+        mapLayer.sizeScale = legend;
+        store.updateCurrentMapLayer(mapLayer);
+    }
 
     return (
         <div className="dotdensity-toolbox">
@@ -100,7 +124,7 @@ const GraduatedSymbolToolbox = () => {
                         {dataSettingsOpen ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
-                        sx={{width: '100%', p: 1, textAlign: 'center' }}
+                        sx={{width: '95%', p: 1, textAlign: 'center' }}
                     >
 
                         {data.map((row, index) => (
@@ -128,6 +152,9 @@ const GraduatedSymbolToolbox = () => {
                                 </IconButton>
                             </div>
                         ))}
+                        <Button variant="outlined" onClick={saveData}>
+                            Save Data
+                        </Button>
                         <Button variant="outlined" onClick={addDataRow}>
                             Add Data Point
                         </Button>
@@ -139,13 +166,14 @@ const GraduatedSymbolToolbox = () => {
                         {mapSettingsOpen ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                     <Collapse in={mapSettingsOpen} timeout="auto" unmountOnExit
-                        sx={{width: '100%', p: 1, textAlign: 'center' }}
+                        sx={{width: '95%', p: 1, textAlign: 'center' }}
                     >
                         
                         <TextField 
                             label="Symbol Color"
                             type='color'
                             fullWidth
+                            onChange = {(e) => handleSymbolColor(e.target.value)}
                         />
 
                         <Divider style={{borderBottom: '2px solid black', margin: 10}} />
@@ -174,10 +202,12 @@ const GraduatedSymbolToolbox = () => {
                                 </IconButton>
                             </div>
                         ))}
+                        <Button variant="outlined" onClick={saveLegend}>
+                            Save Scale
+                        </Button>
                         <Button variant="outlined" onClick={addLegendRow}>
                             Add Scale Value
                         </Button>
-
                     </Collapse>
 
                 </div>
