@@ -76,12 +76,15 @@ const MapEditorWrapper = () => {
                     flexShrink: 0,
                     '& .MuiDrawer-paper': {
                         width: drawerWidth,
-                        mt: '7%',
+                        top: 0,
+                        // mt: '7%',
                         bottom: 0,
                         backgroundColor: '#79c200',
                         color: '#000',
-                        borderRadius: "25px",
-                        height: '80%',
+                        borderTopLeftRadius: "25px",
+                        borderBottomLeftRadius: "25px",
+                        height: '100%',
+                        overflowX: "hidden"
                     },
                     }}
                     variant="persistent"
