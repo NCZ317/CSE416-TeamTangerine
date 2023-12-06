@@ -214,7 +214,6 @@ const FlowToolbox = () => {
                         <Typography style={{fontSize: '16px'}}>Type the latitude and longitudes to create arrow</Typography>
                         <Typography style={{fontSize: '16px'}}>Press Enter after entering in all text boxes; </Typography>
                         <Typography style={{fontSize: '16px'}}>Pressing Enter early may cause errors;</Typography>
-                        <Typography style={{fontSize: '16px'}}>To see updated changes, save and exit then reenter</Typography>
                         {
                             <div>
                                 <div>
