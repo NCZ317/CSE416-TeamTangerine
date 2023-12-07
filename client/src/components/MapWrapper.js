@@ -235,10 +235,19 @@ const MapWrapper = ({ style}) => {
                         }
                     });
                 }
+                let dotColor = '#000000';
+                let dotSize = 1;
+                if (store.currentMapLayer) {
+                    dotColor = store.currentMapLayer.dotColor;
+                    dotSize = store.currentMapLayer.dotSize;
+                }
 
                 // Draw the dots of this region onto the map
                 dots.forEach((dot) => {
-                    L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), { radius: 1, weight: 1, color: 'black' }).addTo(map);
+                    L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), { radius: dotSize, 
+                        weight: 0,  // Set weight to 0 to remove the border
+                        fillColor: dotColor,  // Set the fill color
+                        fillOpacity: 1 }).addTo(map);
                 });
 
             }

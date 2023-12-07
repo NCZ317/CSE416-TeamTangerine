@@ -154,34 +154,6 @@ const DotDensityToolbox = () => {
 
             {selectedTab === 0 && (
                 <div>
-                    <IconButton onClick={handleDataSettings} aria-label="toggle" sx={{width: '100%'}}>
-                        Data Settings
-                        {dataSettingsOpen ? <ExpandLess /> : <ExpandMore />}
-                    </IconButton>
-                    <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
-                        sx={{width: '100%', p: 1, textAlign: 'center' }}
-                    >
-                        {properties.map((property) => (
-                            <div style={{display: 'flex', marginTop: '12px'}} value = {property.name}>
-                                <div style={{width: '50%', paddingTop: '5%'}}>{property.name }</div>
-                                <TextField
-                                    label="Dot Count"
-                                    type="number"
-                                    InputProps={{
-                                        inputProps: {
-                                          min: 0,
-                                          step: 1
-                                        },
-                                        
-                                    }}
-                                    value={property.dots.length}
-                                    onChange={(e) => updateDotCount(property.name, e.target.value)}
-                                />
-                            </div>
-                        ))}
-
-                    </Collapse>
-
                     <IconButton onClick={handleMapSettings} aria-label="toggle" sx={{width: '100%'}}>
                         Map Settings
                         {mapSettingsOpen ? <ExpandLess /> : <ExpandMore />}
@@ -192,20 +164,56 @@ const DotDensityToolbox = () => {
                         <Box style={{display: 'flex'}}>
                             <TextField 
                                 label="Dot Size"
-                                type='Number'
+                                type='number'
+                                InputProps={{
+                                    inputProps: {
+                                      min: 1,
+                                      step: 1
+                                    },
+                                    
+                                }}
+                                value={store.currentMapLayer ? store.currentMapLayer.dotSize : 1}
+                                onChange={(e) => {
+                                    const newDotSize = e.target.value;
+                                    if (store.currentMapLayer) {
+                                        store.currentMapLayer.dotSize = newDotSize;
+                                        store.updateCurrentMapLayer(store.currentMapLayer);
+                                    }
+                                }}
                             />
                             <TextField 
                                 label="Value per Dot"
-                                type='Number'
+                                type='number'
+                                InputProps={{
+                                    inputProps: {
+                                      min: 0,
+                                      step: 1
+                                    },
+                                    
+                                }}
+                                value = {store.currentMapLayer ? store.currentMapLayer.dotValue : 0}
                             />
 
                         </Box>
-
+                        <TextField
+                            label="Dot Color"
+                            type="color"
+                            value={store.currentMapLayer ? store.currentMapLayer.dotColor : '#000000'}
+                            fullWidth
+                            style={{marginTop: '12px'}}
+                            onChange={(e) => {
+                                const newDotColor = e.target.value;
+                                if (store.currentMapLayer) {
+                                    store.currentMapLayer.dotColor = newDotColor;
+                                    store.updateCurrentMapLayer(store.currentMapLayer);
+                                }
+                            }}
+                        />
                         <FormGroup>
                             <FormControlLabel control={<Switch defaultChecked />} label="Show Legend" />
                         </FormGroup>
 
-                        <Divider style={{borderBottom: '2px solid black', margin: 10}} />
+                        {/*<Divider style={{borderBottom: '2px solid black', margin: 10}} />
 
 
                         <Typography variant='h6'>Category Color Scale</Typography>
@@ -237,9 +245,38 @@ const DotDensityToolbox = () => {
                         ))}
                         <Button variant="outlined" onClick={addLegendRow}>
                             Add Category
-                        </Button>
+                        </Button> */}
 
                     </Collapse>
+                    <IconButton onClick={handleDataSettings} aria-label="toggle" sx={{width: '100%'}}>
+                        Data Settings
+                        {dataSettingsOpen ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
+                    <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
+                        sx={{width: '100%', p: 1, textAlign: 'center' }}
+                    >
+                        {properties.map((property) => (
+                            <div style={{display: 'flex', marginTop: '12px'}} value = {property.name}>
+                                <div style={{width: '50%', paddingTop: '5%'}}>{property.name }</div>
+                                <TextField
+                                    label="Dot Count"
+                                    type="number"
+                                    InputProps={{
+                                        inputProps: {
+                                          min: 0,
+                                          step: 1
+                                        },
+                                        
+                                    }}
+                                    value={property.dots.length}
+                                    onChange={(e) => updateDotCount(property.name, e.target.value)}
+                                />
+                            </div>
+                        ))}
+
+                    </Collapse>
+
+                    
 
                 </div>
             )}
