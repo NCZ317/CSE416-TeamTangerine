@@ -192,6 +192,13 @@ const DotDensityToolbox = () => {
                                     
                                 }}
                                 value = {store.currentMapLayer ? store.currentMapLayer.dotValue : 0}
+                                onChange={(e) => {
+                                    const newDotValue = e.target.value;
+                                    if (store.currentMapLayer) {
+                                        store.currentMapLayer.dotValue = newDotValue;
+                                        store.updateCurrentMapLayer(store.currentMapLayer);
+                                    }
+                                }}
                             />
 
                         </Box>
@@ -209,9 +216,21 @@ const DotDensityToolbox = () => {
                                 }
                             }}
                         />
-                        <FormGroup>
-                            <FormControlLabel control={<Switch defaultChecked />} label="Show Legend" />
-                        </FormGroup>
+
+                        <TextField
+                            label="What are we measuring?"
+                            type="text"
+                            defaultValue={store.currentMapLayer ? store.currentMapLayer.valueField : 'Value'}
+                            fullWidth
+                            style={{marginTop: '12px'}}
+                            onChange={(e) => {
+                                const newValueField = e.target.value;
+                                if (store.currentMapLayer) {
+                                    store.currentMapLayer.valueField = newValueField;
+                                    store.updateCurrentMapLayer(store.currentMapLayer);
+                                }
+                            }}
+                        />
 
                         {/*<Divider style={{borderBottom: '2px solid black', margin: 10}} />
 

@@ -416,7 +416,14 @@ const MapWrapper = ({ style}) => {
 
                     }
                 }
-    
+                
+                if (store.mapTemplate === 'dotDensityMap') {
+                    const dotLegendValue = store.currentLayer.dotValue;
+                    container.innerHTML +=
+                        '<i class="dot-legend" style="background:' + store.currentMapLayer.dotColor + '"></i> ' +
+                        dotLegendValue + '<br>';
+                }
+
                 L.DomEvent.disableClickPropagation(container);
         
                 const control = L.control({ position });
@@ -431,6 +438,30 @@ const MapWrapper = ({ style}) => {
 
         }, [position, legend])
     }
+
+    const DotLegend = ({ position, dotColor, dotSize, dotValue, valueField }) => {
+        const map = useMap();
+    
+        useEffect(() => {
+            const container = L.DomUtil.create('div', 'legend info-popup');
+    
+            container.innerHTML += `<h4>${valueField} per Dot</h4>`;
+            container.innerHTML += `<svg height="9px" width="12px"><circle cx="4" cy="4" r="4" fill="${dotColor}" /></svg> ${dotValue}<br>`;
+    
+            L.DomEvent.disableClickPropagation(container);
+    
+            const control = L.control({ position });
+            control.onAdd = () => container;
+            control.addTo(map);
+    
+            return () => {
+                // Cleanup on component unmount
+                control.remove();
+            };
+        }, [position, dotColor, dotSize, dotValue]);
+    
+        return null;
+    };
     
     //------------------------------------------Graduated Symbol Map------------------------------------------------// 
     const ProportionalSymbol = ({data, scale, symbolColor}) =>{
@@ -523,6 +554,15 @@ const MapWrapper = ({ style}) => {
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
+            {store.mapTemplate === 'dotDensityMap' && (
+                <DotLegend
+                    position="topleft"
+                    dotColor={store.currentMapLayer.dotColor}
+                    dotSize={store.currentMapLayer.dotSize}
+                    dotValue={store.currentMapLayer.dotValue}
+                    valueField={store.currentMapLayer.valueField}
+                />
+            )}
             {store.mapTemplate === 'flowMap' && <FlowArrows data={store.currentMapLayer.dataValues}/>/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
             {/* Render dots only if mapType is "dotDensityMap" */}
             {store.mapTemplate === 'graduatedSymbolMap' && <ProportionalSymbol data = {store.currentMapLayer.dataValues} scale = {store.currentMapLayer.sizeScale} symbolColor = {store.currentMapLayer.symbolColor} />}
