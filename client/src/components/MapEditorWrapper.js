@@ -1,6 +1,8 @@
 import React, { useState, Component, useContext } from 'react';
-import { Box, Card, CardContent, Grid, Typography, Button, Drawer, IconButton } from '@mui/material';
+import { Box, Card, CardContent, Grid, Typography, Button, Drawer, IconButton, ButtonGroup  } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import RedoIcon from '@mui/icons-material/Redo';
+import UndoIcon from '@mui/icons-material/Undo';
 import AppBanner from './AppBanner';
 import { styled } from '@mui/material/styles';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
@@ -23,7 +25,6 @@ const drawerWidth = '25%';
 const MapEditorWrapper = () => {
 
     const { store } = useContext(GlobalStoreContext);
-    console.log(store);
     const [open, setOpen] = React.useState(false);
 
     const handleDrawerOpen = (event) => {
@@ -33,6 +34,13 @@ const MapEditorWrapper = () => {
     const handleDrawerClose = () => {
     setOpen(false);
     };
+
+    function handleUndo() {
+        store.undo();
+    }
+    function handleRedo() {
+        store.redo();
+    }
 
     const handleSave = async () => {
         
@@ -93,8 +101,16 @@ const MapEditorWrapper = () => {
                     open={open}
                 >   
                     <div className='map-editor-drawer-header'>
+                        <ButtonGroup id='undo-redo-buttons'>
+                            <Button variant='contained' id='undo-button' disabled={!store.canUndo()} onClick={handleUndo}>
+                                <UndoIcon fontSize='small' />
+                            </Button>
+                            <Button variant='contained' id='redo-button' disabled={!store.canRedo()} onClick={handleRedo}>
+                                <RedoIcon fontSize='small' />
+                            </Button>
+                        </ButtonGroup>
                         <IconButton onClick={handleDrawerClose}>
-                            <CloseIcon fontSize='large'/>
+                            <CloseIcon fontSize='large' />
                         </IconButton>
                     </div>
 

@@ -517,6 +517,19 @@ code {
   left: 3%;
 }
 
+#undo-button {
+  background-color: #79c200;
+
+}
+#redo-button {
+  background-color: #79c200;
+}
+
+#undo-redo-buttons {
+  margin-right: 20%;
+  margin-top: 3%;
+}
+
 .post-card{
   margin: 20px;
   border-radius: 25px !important;

@@ -1,4 +1,3 @@
-
 import React, { useState,useContext, useEffect } from 'react';
 import { Box } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
@@ -13,6 +12,7 @@ import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
 import GlobalStoreContext from '../store';
 import * as turf from '@turf/turf';
+import _ from 'lodash'; 
 
 const DotDensityToolbox = () => {
     const { store } = useContext(GlobalStoreContext);
@@ -80,21 +80,17 @@ const DotDensityToolbox = () => {
 
     const updateDotCount = (regionName, newDotCount) => {
         if (store.currentMapLayer && store.currentMapLayer.geographicRegion) {
+            let prev = _.cloneDeep(store.currentMapLayer);
             let region;
             for (let i = 0; i < store.currentMapLayer.geographicRegion.length; i++) {
                 if (regionName === store.currentMapLayer.geographicRegion[i].name) {
-                    console.log("FOUND REGION")
                     region = store.currentMapLayer.geographicRegion[i];
                 }
             }
-            console.log(region);
-            console.log(newDotCount);
             let diff = newDotCount - region.dots.length;
-            console.log(diff);
             if (diff < 0) {
                 region.dots.splice(newDotCount);
-                console.log(region);
-                store.updateCurrentMapLayer(store.currentMapLayer);
+                store.addUpdateLayerTransaction(prev);
             }
             else if (diff > 0) {
                 store.currentMap.jsonData.features.forEach((feature) => {
@@ -132,8 +128,7 @@ const DotDensityToolbox = () => {
                         region.dots.push(...dots);
                     }
                 });
-                console.log(region);
-                store.updateCurrentMapLayer(store.currentMapLayer);
+                store.addUpdateLayerTransaction(prev);
             }
         }
     };
@@ -174,10 +169,11 @@ const DotDensityToolbox = () => {
                                 }}
                                 value={store.currentMapLayer ? store.currentMapLayer.dotSize : 1}
                                 onChange={(e) => {
+                                    let prev = _.cloneDeep(store.currentMapLayer);
                                     const newDotSize = e.target.value;
                                     if (store.currentMapLayer) {
                                         store.currentMapLayer.dotSize = newDotSize;
-                                        store.updateCurrentMapLayer(store.currentMapLayer);
+                                        store.addUpdateLayerTransaction(prev);
                                     }
                                 }}
                             />
@@ -193,10 +189,11 @@ const DotDensityToolbox = () => {
                                 }}
                                 value = {store.currentMapLayer ? store.currentMapLayer.dotValue : 0}
                                 onChange={(e) => {
+                                    let prev = _.cloneDeep(store.currentMapLayer);
                                     const newDotValue = e.target.value;
                                     if (store.currentMapLayer) {
                                         store.currentMapLayer.dotValue = newDotValue;
-                                        store.updateCurrentMapLayer(store.currentMapLayer);
+                                        store.addUpdateLayerTransaction(prev);
                                     }
                                 }}
                             />
@@ -209,10 +206,11 @@ const DotDensityToolbox = () => {
                             fullWidth
                             style={{marginTop: '12px'}}
                             onChange={(e) => {
+                                let prev = _.cloneDeep(store.currentMapLayer);
                                 const newDotColor = e.target.value;
                                 if (store.currentMapLayer) {
                                     store.currentMapLayer.dotColor = newDotColor;
-                                    store.updateCurrentMapLayer(store.currentMapLayer);
+                                    store.addUpdateLayerTransaction(prev);
                                 }
                             }}
                         />
@@ -224,10 +222,11 @@ const DotDensityToolbox = () => {
                             fullWidth
                             style={{marginTop: '12px'}}
                             onChange={(e) => {
+                                let prev = _.cloneDeep(store.currentMapLayer);
                                 const newValueField = e.target.value;
                                 if (store.currentMapLayer) {
                                     store.currentMapLayer.valueField = newValueField;
-                                    store.updateCurrentMapLayer(store.currentMapLayer);
+                                    store.addUpdateLayerTransaction(prev);
                                 }
                             }}
                         />
