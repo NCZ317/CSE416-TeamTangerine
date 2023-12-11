@@ -234,7 +234,8 @@ const MapSettings = () => {
                 
                 <TextField
                     label="Map Title"
-                    value={mapTitle}
+                    defaultValue={store.currentMapLayer ? store.currentMapLayer.graphicTitle : ''}
+                    //value={mapTitle}
                     onChange={e => setMapTitle(e.target.value)}
                     onKeyDown={handleTitle}
                     fullWidth
@@ -247,6 +248,7 @@ const MapSettings = () => {
                         label="Font Size"
                         type="number"
                         fullWidth
+                        value = {(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.titleFontSize : 10}
                         margin="normal"
                         inputProps={{
                             min: 10
@@ -259,6 +261,7 @@ const MapSettings = () => {
                         label="Font Color"
                         type="color"
                         fullWidth
+                        value={(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.titleFontColor : '#000000'}
                         margin="normal"
                         onChange={handleTitleColor}
                     />
@@ -285,7 +288,7 @@ const MapSettings = () => {
 
                 <TextField
                     label="Map Description"
-                    value={mapDescription}
+                    defaultValue={store.currentMapLayer ? store.currentMapLayer.graphicDescription : ''}
                     onChange={e => setMapDescription(e.target.value)}
                     onKeyDown={handleDescription}
                     fullWidth
@@ -297,6 +300,7 @@ const MapSettings = () => {
                     <TextField
                         label="Font Size"
                         type="number"
+                        value = {(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.descriptionFontSize : 10}
                         fullWidth
                         margin="normal"
                         inputProps={{
@@ -309,6 +313,7 @@ const MapSettings = () => {
                     <TextField
                         label="Font Color"
                         type="color"
+                        value={(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.descriptionFontColor : '#000000'}
                         fullWidth
                         margin="normal"
                         onChange={handleDescriptionColor}
@@ -347,7 +352,7 @@ const MapSettings = () => {
                     <FormGroup>
                         <FormControlLabel 
                             control={<Switch 
-                                defaultChecked={store.currentMapLayer.style.border} 
+                                checked={(store.currentMapLayer && store.currentMapLayer.style.border) ? store.currentMapLayer.style.border : false}
                                 onChange={handleBorderToggle}
                             />} 
                             label="Borders" 
@@ -357,6 +362,7 @@ const MapSettings = () => {
                     <TextField
                         label="Border Color"
                         type="color"
+                        value={(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.borderColor : '#000000'}
                         fullWidth
                         margin="normal"
                         onChange={handleBorderColor}
@@ -365,6 +371,7 @@ const MapSettings = () => {
                     <TextField
                         label="Border Weight"
                         type="number"
+                        value={(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.borderWeight : 0}
                         fullWidth
                         margin="normal"
                         inputProps={{
