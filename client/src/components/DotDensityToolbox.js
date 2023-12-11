@@ -30,7 +30,7 @@ const DotDensityToolbox = () => {
         console.log("DOT DENSITY TOOLBOX LISTENER");
         if (store.currentMapLayer) {
             if (store.currentMapLayer.geographicRegion) {
-                console.log(store.currentMapLayer.geographicRegion);
+                //console.log(store.currentMapLayer.geographicRegion);
                 setProperties(store.currentMapLayer.geographicRegion);
             }
         }
@@ -267,12 +267,14 @@ const DotDensityToolbox = () => {
 
                     </Collapse>
                     <IconButton onClick={handleDataSettings} aria-label="toggle" sx={{width: '100%'}}>
-                        Data Settings
+                        Dot Settings
                         {dataSettingsOpen ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
+                        <Typography variant='body1'>To edit a specific dot's coordinates, click on one!</Typography>
+                        <Typography variant='body2'><i>(Coordinates must be inside bounding region. Invalid coordinates will not be applied)</i></Typography>
                         {properties.map((property) => (
                             <div style={{display: 'flex', marginTop: '12px'}} value = {property.name}>
                                 <div style={{width: '50%', paddingTop: '5%'}}>{property.name }</div>

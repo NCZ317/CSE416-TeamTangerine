@@ -8,7 +8,9 @@ import L from 'leaflet';
 import 'leaflet-imageoverlay-rotated';
 import 'leaflet-polylinedecorator';
 import 'leaflet-arrowheads';
-import { destination } from '@turf/turf';
+import * as turf from '@turf/turf';
+import _ from 'lodash'; 
+
 var markerGroup = L.layerGroup();
 var arrowGroup = L.layerGroup();
 const MapWrapper = ({ style}) => {
@@ -202,6 +204,16 @@ const MapWrapper = ({ style}) => {
         dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : '',
     }
 
+    window.updateCoordinates = function(currentLat, currentLng) {
+        const newLat = document.getElementById('newLat').value;
+        const newLng = document.getElementById('newLng').value;
+    
+        // Validate newLat and newLng if needed
+    
+        // Update the coordinates
+        console.log(`Update coordinates from (${currentLat}, ${currentLng}) to (${newLat}, ${newLng})`);
+    };
+
     //THIS FUNCTION IS CALLED EVERY TIME THE MAP IS RENDERED --> RENDERS UPDATED STYLES
     const getMapStyle = (feature) => {
         const featureIndex = store.currentMap.jsonData.features.indexOf(feature);
@@ -244,10 +256,45 @@ const MapWrapper = ({ style}) => {
 
                 // Draw the dots of this region onto the map
                 dots.forEach((dot) => {
-                    L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), { radius: dotSize, 
-                        weight: 0,  // Set weight to 0 to remove the border
-                        fillColor: dotColor,  // Set the fill color
-                        fillOpacity: 1 }).addTo(map);
+                    const marker = L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), {
+                        radius: dotSize,
+                        weight: 0,
+                        fillColor: dotColor,
+                        fillOpacity: 1
+                    }).addTo(map);
+                
+                    // Use a custom property to associate the feature with the marker
+                    marker.myFeature = feature;
+                
+                    marker.bindPopup(`
+                        <div>Latitude: ${dot.coordinates[1]}</div>
+                        <div>Longitude: ${dot.coordinates[0]}</div>
+                        <input type="text" id="newLat" placeholder="New Latitude"/>
+                        <input type="text" id="newLng" placeholder="New Longitude"/>
+                        <button onclick="updateCoordinates(${dot.coordinates[1]}, ${dot.coordinates[0]})">Update</button>`);
+                
+                    marker.on('popupopen', function() {
+                        window.updateCoordinates = function(currentLat, currentLng) {
+                            console.log(marker.myFeature);
+                            console.log(dot.coordinates);
+                            const newLat = document.getElementById('newLat').value;
+                            const newLng = document.getElementById('newLng').value;
+                            console.log(`Update coordinates from (${currentLat}, ${currentLng}) to (${newLat}, ${newLng})`);
+                
+                            let regionPolygon = marker.myFeature.geometry; // Assuming the correct structure
+                            console.log(regionPolygon);
+                            let newPoint = turf.point([newLng, newLat]);
+                
+                            if (turf.booleanPointInPolygon(newPoint, regionPolygon)) {
+                                let prev = _.cloneDeep(store.currentMapLayer);
+                                dot.coordinates = turf.getCoord(newPoint);
+                                store.addUpdateLayerTransaction(prev);
+                            } else {
+                                console.log("Dot is outside region");
+                                map.closePopup();
+                            }
+                        };
+                    });
                 });
 
             }
