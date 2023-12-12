@@ -16,6 +16,7 @@ import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import _ from 'lodash'; 
 
 import { GlobalStoreContext } from '../store/index.js';
+import { center } from '@turf/turf';
 
 const MapSettings = () => {
 
@@ -231,7 +232,7 @@ const MapSettings = () => {
             <Collapse in={globalSettingsOpen} timeout="auto" unmountOnExit
                 sx={{width: '95%', p: 1 }}
             >
-                
+                <Typography style={{width: '100%', alignContent: 'center', color: '#2e2e2e'}} variant='body2'><i>Press "Enter" to apply title or description text changes</i></Typography>
                 <TextField
                     label="Map Title"
                     defaultValue={store.currentMapLayer ? store.currentMapLayer.graphicTitle : ''}
