@@ -135,6 +135,12 @@ const PostWrapper = () => {
         await store.setScreen("MAP_EDITOR"); 
     }
 
+    const handleClickAuthor = async () => {
+        alert("click");
+        await auth.getAuthorInfo(mapDetails.author);
+        store.setScreen("USER");
+    }
+
     return (
         <div className='post-height'>
             <Grid container spacing={2} className='post-height'>
@@ -160,7 +166,7 @@ const PostWrapper = () => {
                                     <Typography variant="h4" component="div">
                                         {mapDetails.title}
                                     </Typography>
-                                    <Typography variant="h6">
+                                    <Typography variant="h6" onClick = {handleClickAuthor}>
                                         By: {mapDetails.author}
                                     </Typography>
                                     <Typography variant="body1">

@@ -17,7 +17,6 @@ const ProfileWrapper = () => {
   const { auth } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [updateInfo, setUpdateInfo] = useState('NONE'); // change profile to update profile: NONE for default, PROFILE for profile, PASSWORD for password
-  console.log(auth.user);
   const handleSettingsClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -40,6 +39,9 @@ const ProfileWrapper = () => {
 
   const settingsId = openSettings ? 'settings-popover' : undefined;
 
+  const viewUser = (auth.viewAuthor ? (auth.viewAuthor) : auth.user);
+  console.log(viewUser);
+  console.log(auth);
   return (
     <div>
       <Grid container spacing={2} id='profile-grid'>
@@ -73,35 +75,35 @@ const ProfileWrapper = () => {
               <Box align="center">
               <Box alignItems="center" className = 'profile-user-circle'>
                 <Typography variant="h2" id = 'profile-color'>
-                  {auth.loggedIn && auth.getUserInitials()}
+                  {auth.loggedIn && auth.getUserInitialsProfile()}
                   </Typography>
                 </Box>
               </Box>
               <Typography variant="h5" className='profile-typography'>
-                {auth.loggedIn && auth.user.firstName + " " + auth.user.lastName}
+                {auth.loggedIn && viewUser.firstName + " " + viewUser.lastName}
               </Typography>
 
               <Typography variant="h6" id='profile-typography-2'>
-                {auth.loggedIn && "@"+auth.user.username}
+                {auth.loggedIn && "@"+viewUser.username}
               </Typography>
 
               <Box id='profile-box' className = 'profile-followers'>
                 <Box className ='profile-box-2'>
                   <Typography variant="h6">Posts</Typography>
-                  <Typography variant="h5">{auth.loggedIn && auth.user.numPosts}</Typography>
+                  <Typography variant="h5">{auth.loggedIn && viewUser.numPosts}</Typography>
                 </Box>
                 <Box className ='profile-box-2'>
                   <Typography variant="h6">Joined</Typography>
-                  <Typography variant="h5">{auth.loggedIn && intDate(auth.user.dateJoined)}</Typography>
+                  <Typography variant="h5">{auth.loggedIn && intDate(viewUser.dateJoined)}</Typography>
                 </Box>
                 <Box className ='profile-box-2'>
                   <Typography variant="h6">Karma</Typography>
-                  <Typography variant="h5">{auth.loggedIn && auth.user.numLikes}</Typography>
+                  <Typography variant="h5">{auth.loggedIn && viewUser.numLikes}</Typography>
                 </Box>
               </Box>
               <Box id = 'profile-box-3' mt={2} className = 'profile-joined'>
                 <Typography variant="h5" className='profile-margin' id  = 'profile-typography-4'>
-                  { auth.loggedIn && auth.user.bio}
+                  { auth.loggedIn && viewUser.bio}
                 </Typography>
               </Box>
             </CardContent>

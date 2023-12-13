@@ -63,6 +63,7 @@ const AppBanner = () => {
   };
 
   const handleUserProfile = () => {
+    auth.viewAuthor = null;
     store.setScreen("USER");
     handleAccountMenuClose();
   }

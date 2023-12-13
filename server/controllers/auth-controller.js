@@ -526,6 +526,39 @@ resetPassword = async(req,res) =>{
     }
 }
 
+getAuthorInfo = async (req,res) => {
+    try {
+        const {username} = req.body;
+        const author = await User.findOne({ username: username });
+        const dateJoined = new Date(author.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        return res.status(200).json({user: {
+            firstName: author.firstName,
+            lastName: author.lastName,
+            email: author.email,
+            username: author.username,
+            bio: author.bio,
+            numPosts: author.numPosts,
+            dateJoined: dateJoined,
+            id: author._id,
+            numLikes: author.numLikes,
+            maps: author.maps,
+            likedMaps: author.likedMaps,
+        }});
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(400)
+            .json({
+                success: false,
+                errorMessage: "An error has occurred. Pleas try again later."
+            })
+    }
+}
+
 // simple regex function to check whether the given email is a valid email address
 const validateEmail = (email) => {
     return String(email)
@@ -545,5 +578,6 @@ module.exports = {
     editUser,
     changeUserPassword,
     sendEmail,
-    resetPassword
+    resetPassword,
+    getAuthorInfo
 }
