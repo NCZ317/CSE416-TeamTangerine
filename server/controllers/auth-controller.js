@@ -546,7 +546,6 @@ getAuthorInfo = async (req,res) => {
             id: author._id,
             numLikes: author.numLikes,
             maps: author.maps,
-            likedMaps: author.likedMaps,
         }});
     } catch (error) {
         console.log(error);

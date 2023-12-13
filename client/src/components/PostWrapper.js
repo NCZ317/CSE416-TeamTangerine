@@ -136,9 +136,8 @@ const PostWrapper = () => {
     }
 
     const handleClickAuthor = async () => {
-        alert("click");
         await auth.getAuthorInfo(mapDetails.author);
-        store.setScreen("USER");
+        await store.setScreen("USER");
     }
 
     return (

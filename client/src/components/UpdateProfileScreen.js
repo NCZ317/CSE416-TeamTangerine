@@ -20,8 +20,11 @@ const UpdateProfileScreen = ({ state, setState }) => {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
 
+    console.log(store);
     const [selectedMenuItem, setSelectedMenuItem] = useState('Drafts');
     const [likedMapsLoaded, setLikedMapsLoaded] = useState(false);
+    let view = (auth.viewAuthor ? true : false);
+
 
     useEffect(() => {
         store.loadIdNamePairs();
@@ -32,6 +35,8 @@ const UpdateProfileScreen = ({ state, setState }) => {
             // Fetch liked map pairs here
             store.loadLikedMapPairs();
             setLikedMapsLoaded(true);
+        } else if (view){
+            store.loadAllIdNamePairs();
         }
     }, [selectedMenuItem, likedMapsLoaded, store]);
 
@@ -66,6 +71,7 @@ const UpdateProfileScreen = ({ state, setState }) => {
         }
     }
 
+
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
     const [formData, setFormData] = useState({
@@ -80,6 +86,8 @@ const UpdateProfileScreen = ({ state, setState }) => {
         newPass: '',
         confirmNewPass: '',
     })
+
+    
 
     const handleMenuClick = (event) => {
         setMenuAnchorEl(event.currentTarget);
@@ -119,8 +127,30 @@ const UpdateProfileScreen = ({ state, setState }) => {
 
     const openMenu = Boolean(menuAnchorEl);
     const menuId = openMenu ? 'menu-popover' : undefined;
-
-    if (state === "NONE") {
+    if (view){
+        if (auth.viewAuthor){const filteredPairs = store.idNamePairs.filter(pair => {
+            return (pair.username === auth.viewAuthor.username );
+        });
+        mapList = (
+            <List>
+                {filteredPairs.map((pair) => (
+                    <MapCard key={pair._id} myMap={false} idNamePair={pair} />
+                ))}
+            </List>
+        );}
+        return (
+            <Grid item xs={12} sm={8.5} id='profile-grid-2'>
+                <Box>
+                    <Box id='profile-box-4'>
+                        <Typography variant="h3" id='profile-typography-3'>
+                            Posts
+                        </Typography>
+                    </Box>
+                    {mapList}
+                </Box>
+            </Grid>
+        )
+    }else if (state === "NONE") {
 
         return (
             <Grid item xs={12} sm={8.5} id='profile-grid-2'>
@@ -152,9 +182,9 @@ const UpdateProfileScreen = ({ state, setState }) => {
                             }}
                         >
                             <List>
-                                <ListItem onClick={() => handleMenuItemClick("Drafts")}>
+                                {!auth.viewAuthor ? <ListItem onClick={() => handleMenuItemClick("Drafts")}>
                                     <ListItemText primary="Drafts" />
-                                </ListItem>
+                                </ListItem> : <></>}
                                 <ListItem onClick={() => handleMenuItemClick("Published")}>
                                     <ListItemText primary="Published" />
                                 </ListItem>
@@ -329,7 +359,6 @@ const UpdateProfileScreen = ({ state, setState }) => {
         </Grid>
         )
     }
-
 }
 
 export default UpdateProfileScreen;

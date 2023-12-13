@@ -13,7 +13,7 @@ import UpdateProfileScreen from './UpdateProfileScreen'
 import AuthContext from '../auth';
 
 const ProfileWrapper = () => {
-
+  console.log("2");
   const { auth } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [updateInfo, setUpdateInfo] = useState('NONE'); // change profile to update profile: NONE for default, PROFILE for profile, PASSWORD for password
@@ -34,48 +34,53 @@ const ProfileWrapper = () => {
     setUpdateInfo("PASSWORD");
     handleSettingsClose();
   }
-
   const openSettings = Boolean(anchorEl);
 
   const settingsId = openSettings ? 'settings-popover' : undefined;
 
   const viewUser = (auth.viewAuthor ? (auth.viewAuthor) : auth.user);
-  console.log(viewUser);
-  console.log(auth);
+  // if (viewUser != auth.user){
+  //   console.log("3");
+  //   setUpdateInfo("VIEW");
+  // }
+  console.log("4");
   return (
     <div>
       <Grid container spacing={2} id='profile-grid'>
         <Grid item xs={12} sm={3.5} id='post-height'>
           <Card className='profile-card'>
-            <IconButton
-              className='profile-settings-button'
-              aria-label="settings"
-              onClick={handleSettingsClick}
-            >
-              <SettingsIcon fontSize="large" />
-            </IconButton>
-            <Menu
-            id={settingsId}
-            anchorEl={anchorEl}
-            open={openSettings}
-            onClose={handleSettingsClose}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            >
-              <MenuItem onClick={handleEditProfile}>Edit Profile</MenuItem>
-              <MenuItem onClick={handleChangePassword}>Change Password</MenuItem>
-            </Menu>            
+            {viewUser == auth.user ?<>
+              <IconButton
+                className='profile-settings-button'
+                aria-label="settings"
+                onClick={handleSettingsClick}
+              >
+                <SettingsIcon fontSize="large" />
+              </IconButton>
+              <Menu
+              id={settingsId}
+              anchorEl={anchorEl}
+              open={openSettings}
+              onClose={handleSettingsClose}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              >
+                
+                <MenuItem onClick={handleEditProfile}>Edit Profile</MenuItem>
+                <MenuItem onClick={handleChangePassword}>Change Password</MenuItem>
+              </Menu> </>  
+            :<></>}         
             <CardContent style = {{height: '80%'}}>
               <Box align="center">
-              <Box alignItems="center" className = 'profile-user-circle'>
-                <Typography variant="h2" id = 'profile-color'>
-                  {auth.loggedIn && auth.getUserInitialsProfile()}
+                <Box alignItems="center" className = 'profile-user-circle'>
+                  <Typography variant="h2" id = 'profile-color'>
+                    {auth.loggedIn && auth.getUserInitialsProfile()}
                   </Typography>
                 </Box>
               </Box>
