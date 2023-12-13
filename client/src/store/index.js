@@ -4,6 +4,7 @@ import api, { getMapById } from './store-request-api'
 import AuthContext from '../auth'
 import { useNavigate } from 'react-router-dom';
 import jsTPS from '../common/jsTPS'
+import UpdateLayer_Transaction from '../transaction/UpdateLayer_Transaction';
 
 // THIS IS THE CONTEXT WE'LL USE TO SHARE OUR STORE
 export const GlobalStoreContext = createContext({});
@@ -562,6 +563,7 @@ function GlobalStoreContextProvider(props) {
                 //UPDATE THE MAP LAYER AS WELL
                 response = await api.updateMapLayerById(store.currentMap.mapLayers, store.currentMap.mapType, store.currentMapLayer);
                 if (response.data.success) {
+                    tps.clearAllTransactions();
                     storeReducer({
                         type: GlobalStoreActionType.SET_CURRENT_MAP,
                         // payload: store.currentMap,
@@ -653,7 +655,16 @@ function GlobalStoreContextProvider(props) {
         asyncPublish(id);
     }
 
+    store.addUpdateLayerTransaction = function (prevLayer) {
+        console.log("ADDING UPDATE LAYER TRANSACTION")
+        let transaction = new UpdateLayer_Transaction(store, prevLayer, store.currentMapLayer);
+        tps.addTransaction(transaction);
+        console.log(tps);
+        console.log(store.canUndo());
+    }
+
     store.updateCurrentMapLayer = function(mapLayer) {
+        console.log(store.currentMapLayer);
         storeReducer({
             type: GlobalStoreActionType.EDIT_MAP_LAYER,
             payload: mapLayer

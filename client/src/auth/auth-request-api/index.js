@@ -66,6 +66,11 @@ export const resetPassword = (email,  verifyPassword, password,  confirmPassword
         confirmNewPassword : confirmPassword
     })
 }
+export const getAuthorByUsername = (username) => {
+    return api.post('/viewAuthor', {
+        username: username,
+    })
+}
 
 const apis = {
     getLoggedIn,
@@ -75,7 +80,8 @@ const apis = {
     editUser,
     changeUserPassword,
     sendEmail,
-    resetPassword
+    resetPassword,
+    getAuthorByUsername,
 }
 
 export default apis

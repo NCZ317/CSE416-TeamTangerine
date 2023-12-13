@@ -14,6 +14,7 @@ export const AuthActionType = {
     SEND_EMAIL: "SEND_EMAIL",
     ERROR: "ERROR",
     ERROR2: "ERROR2", //for when there is an error but the user stays logged in 
+    VIEW_OTHER_USER: "VIEW_OTHER_USER", //for when looking at profile not belonging to the logged in user
 }
 
 function AuthContextProvider(props) {
@@ -21,6 +22,7 @@ function AuthContextProvider(props) {
         user: null,
         loggedIn: false,
         errorMessage: "",
+        viewAuthor: null,
     });
 
     const navigate = useNavigate();
@@ -37,6 +39,7 @@ function AuthContextProvider(props) {
                     user: payload.user,
                     loggedIn: payload.loggedIn,
                     errorMessage: "",
+                    viewAuthor: null,
                 });
             }
             case AuthActionType.LOGIN_USER: {
@@ -44,6 +47,7 @@ function AuthContextProvider(props) {
                     user: payload.user,
                     loggedIn: true,
                     errorMessage: "",
+                    viewAuthor: null,
                 })
             }
             case AuthActionType.LOGOUT_USER: {
@@ -51,6 +55,7 @@ function AuthContextProvider(props) {
                     user: null,
                     loggedIn: false,
                     errorMessage: "",
+                    viewAuthor: null,
                 })
             }
             case AuthActionType.REGISTER_USER: {
@@ -58,6 +63,15 @@ function AuthContextProvider(props) {
                     user: null,
                     loggedIn: false,
                     errorMessage: "",
+                    viewAuthor: null,
+                })
+            }
+            case AuthActionType.VIEW_OTHER_USER: {
+                return setAuth({
+                    user: auth.user,
+                    loggedIn: auth.loggedIn,
+                    errorMessage: "",
+                    viewAuthor: payload.viewAuthor,
                 })
             }
             case AuthActionType.ERROR: {
@@ -65,6 +79,7 @@ function AuthContextProvider(props) {
                     user: null,
                     loggedIn: false,
                     errorMessage: payload.errorMessage,
+                    viewAuthor: null,
                 })
             }
             case AuthActionType.ERROR2: {
@@ -72,6 +87,7 @@ function AuthContextProvider(props) {
                     user: auth.user,
                     loggedIn: auth.loggedIn,
                     errorMessage: payload.errorMessage,
+                    viewAuthor: null,
                 })
             }
             default:
@@ -238,6 +254,28 @@ function AuthContextProvider(props) {
             });
         }
     }
+    auth.getAuthorInfo =  async function(username) {
+        try{
+            const response = await api.getAuthorByUsername(username);
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.VIEW_OTHER_USER,
+                    payload: {
+                        viewAuthor: response.data.user
+                    }
+                })
+            }
+        }catch (error) {
+            console.log(error.response.data.errorMessage);
+            authReducer({
+                type: AuthActionType.ERROR2,
+                payload: {
+                    errorMessage: error.response.data.errorMessage
+                }
+            });
+        }
+    }
+
     auth.hideModal = () => {
         authReducer({
             type: AuthActionType.ERROR2,
@@ -260,6 +298,17 @@ function AuthContextProvider(props) {
         return initials;
     }
 
+    auth.getUserInitialsProfile = function() {
+        let initials = "";
+        if (auth.viewAuthor){
+            initials += auth.viewAuthor.firstName.charAt(0);
+            initials += auth.viewAuthor.lastName.charAt(0);
+        }else if (auth.user) {
+            initials += auth.user.firstName.charAt(0);
+            initials += auth.user.lastName.charAt(0);
+        }
+        return initials;
+    }
     auth.getUserEmail = function() {
         if (auth.user) {
             return auth.user.email;

@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from 'react';
 import { Box, Typography } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
@@ -14,8 +13,10 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
+import _ from 'lodash'; 
 
 import { GlobalStoreContext } from '../store/index.js';
+import { center } from '@turf/turf';
 
 const MapSettings = () => {
 
@@ -52,9 +53,10 @@ const MapSettings = () => {
 
     const handleTitle = (event) => {
         if (event.key === "Enter") {
+            let prev = _.cloneDeep(store.currentMapLayer);
             let mapLayer = store.currentMapLayer;
             mapLayer.graphicTitle = mapTitle;
-            store.updateCurrentMapLayer(mapLayer);
+            store.addUpdateLayerTransaction(prev);
 
             // NOTE: graphicTitle IS DIFFERENT FROM currentMap.title --> currentMap.title SHOULD BE CHANGED IN EditDetailsModal
 
@@ -65,17 +67,19 @@ const MapSettings = () => {
         }
     }
     const handleTitleFont = (event) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.titleFontSize = event.target.value;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
     }
     const handleTitleColor = (event) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.titleFontColor = event.target.value;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
     }
     const handleTitleOptions = (event, newOption) => {
-
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.titleStyles = {};
 
@@ -83,31 +87,34 @@ const MapSettings = () => {
             mapLayer.style.titleStyles[option] = true;
         }
 
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
         setTitleOptions(newOption);
     }
     
     const handleDescription = (event) => {
         if (event.key === "Enter") {
+            let prev = _.cloneDeep(store.currentMapLayer);
             let mapLayer = store.currentMapLayer;
             mapLayer.graphicDescription = mapDescription;
             // NOTE: graphicDescription IS DIFFERENT FROM currentMap.description --> currentMap.description changed in EditDetailsModal
             // store.currentMap.description = mapDescription;
-            store.updateCurrentMapLayer(mapLayer);
+            store.addUpdateLayerTransaction(prev);
         }
     }
     const handleDescriptionFont = (event) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.descriptionFontSize = event.target.value;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
     }
     const handleDescriptionColor = (event) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.descriptionFontColor = event.target.value;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
     }
     const handleDescriptionOptions = (event, newOption) => {
-
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.descriptionStyles = {};
 
@@ -115,36 +122,42 @@ const MapSettings = () => {
             mapLayer.style.descriptionStyles[option] = true;
         }
 
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
         setDescriptionOptions(newOption);
     }
 
     const handleBorderToggle = (event) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.border = !mapLayer.style.border;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
+        
         // setBorder(!border);
     }
     const handleBorderColor = (event) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.borderColor = event.target.value;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
     }
     const handleBorderWeight = (event) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.borderWeight = event.target.value;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
     }
     const handleBorderSolid = (event) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.borderDashed = false;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
         handleClose();
     }
     const handleBorderDashed = (event) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.style.borderDashed = true;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
         handleClose();
     }
 
@@ -165,6 +178,7 @@ const MapSettings = () => {
         //console.log("STYLE UPDATE");
         //console.log(store.currentFeatureIndex);
         if (store.currentRegion && store.currentFeatureIndex >= 0) {
+            let prev = _.cloneDeep(store.currentMapLayer);
             let mapLayer = store.currentMapLayer;
             
             const regionIndex = store.currentMapLayer.currentRegions.findIndex(region => region.featureIndex === store.currentFeatureIndex);
@@ -179,13 +193,14 @@ const MapSettings = () => {
                 mapLayer.currentRegions.push(newRegion);
             }
     
-            store.updateCurrentMapLayer(mapLayer);
+            store.addUpdateLayerTransaction(prev);
         }
     }
 
     const handleRegionLabel = (event) => {
         if (event.key === "Enter") {
             if (store.currentRegion && store.currentFeatureIndex) {
+                let prev = _.cloneDeep(store.currentMapLayer);
                 let mapLayer = store.currentMapLayer;
 
                 const regionIndex = store.currentMapLayer.currentRegions.findIndex(region => region.featureIndex === store.currentFeatureIndex);
@@ -198,8 +213,8 @@ const MapSettings = () => {
                     newRegion.label = regionLabel;
                     mapLayer.currentRegions.push(newRegion);
                 }
-        
-                store.updateCurrentMapLayer(mapLayer);
+                
+                store.addUpdateLayerTransaction(prev);
             }
         }
 
@@ -217,10 +232,11 @@ const MapSettings = () => {
             <Collapse in={globalSettingsOpen} timeout="auto" unmountOnExit
                 sx={{width: '95%', p: 1 }}
             >
-                
+                <Typography style={{width: '100%', alignContent: 'center', color: '#2e2e2e'}} variant='body2'><i>Press "Enter" to apply title or description text changes</i></Typography>
                 <TextField
                     label="Map Title"
-                    value={mapTitle}
+                    defaultValue={store.currentMapLayer ? store.currentMapLayer.graphicTitle : ''}
+                    //value={mapTitle}
                     onChange={e => setMapTitle(e.target.value)}
                     onKeyDown={handleTitle}
                     fullWidth
@@ -233,6 +249,7 @@ const MapSettings = () => {
                         label="Font Size"
                         type="number"
                         fullWidth
+                        value = {(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.titleFontSize : 10}
                         margin="normal"
                         inputProps={{
                             min: 10
@@ -245,6 +262,7 @@ const MapSettings = () => {
                         label="Font Color"
                         type="color"
                         fullWidth
+                        value={(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.titleFontColor : '#000000'}
                         margin="normal"
                         onChange={handleTitleColor}
                     />
@@ -271,7 +289,7 @@ const MapSettings = () => {
 
                 <TextField
                     label="Map Description"
-                    value={mapDescription}
+                    defaultValue={store.currentMapLayer ? store.currentMapLayer.graphicDescription : ''}
                     onChange={e => setMapDescription(e.target.value)}
                     onKeyDown={handleDescription}
                     fullWidth
@@ -283,6 +301,7 @@ const MapSettings = () => {
                     <TextField
                         label="Font Size"
                         type="number"
+                        value = {(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.descriptionFontSize : 10}
                         fullWidth
                         margin="normal"
                         inputProps={{
@@ -295,6 +314,7 @@ const MapSettings = () => {
                     <TextField
                         label="Font Color"
                         type="color"
+                        value={(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.descriptionFontColor : '#000000'}
                         fullWidth
                         margin="normal"
                         onChange={handleDescriptionColor}
@@ -333,7 +353,7 @@ const MapSettings = () => {
                     <FormGroup>
                         <FormControlLabel 
                             control={<Switch 
-                                defaultChecked={store.currentMapLayer.style.border} 
+                                checked={(store.currentMapLayer && store.currentMapLayer.style.border) ? store.currentMapLayer.style.border : false}
                                 onChange={handleBorderToggle}
                             />} 
                             label="Borders" 
@@ -343,6 +363,7 @@ const MapSettings = () => {
                     <TextField
                         label="Border Color"
                         type="color"
+                        value={(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.borderColor : '#000000'}
                         fullWidth
                         margin="normal"
                         onChange={handleBorderColor}
@@ -351,6 +372,7 @@ const MapSettings = () => {
                     <TextField
                         label="Border Weight"
                         type="number"
+                        value={(store.currentMapLayer && store.currentMapLayer.style) ? store.currentMapLayer.style.borderWeight : 0}
                         fullWidth
                         margin="normal"
                         inputProps={{

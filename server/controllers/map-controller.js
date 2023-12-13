@@ -56,16 +56,16 @@ createMap = async (req, res) => {
 
         } else if (body.mapType === "dotDensityMap") {
             
-            let dotSize = 0;
+            let dotSize = 1;
             let dotValue = 0;
-            let colorScale = {};
             mapLayer = new DotDensityLayer({
                 graphicTitle: graphicTitle, 
                 graphicDescription: graphicDescription, 
                 style: style, 
                 dotSize: dotSize, 
                 dotValue: dotValue, 
-                colorScale: colorScale,
+                dotColor: '#000000',
+                valueField: 'Value',
                 defaultColor: "#79C200",
                 currentRegions: currentRegions
             });
@@ -135,6 +135,7 @@ createMap = async (req, res) => {
             });
         }
 
+        console.log(mapLayer);
         map.mapLayers = mapLayer._id;
 
         console.log(map.mapLayers);
@@ -527,7 +528,8 @@ updateMapLayer = async (req, res) => {
                 mapLayer.geographicRegion = body.mapLayer.geographicRegion;
                 mapLayer.dotSize = body.mapLayer.dotSize;
                 mapLayer.dotValue = body.mapLayer.dotValue;
-                mapLayer.colorScale = body.mapLayer.colorScale;
+                mapLayer.dotColor = body.mapLayer.dotColor;
+                mapLayer.valueField = body.mapLayer.valueField;
             }
 
         } else if (mapType === "graduatedSymbolMap") {

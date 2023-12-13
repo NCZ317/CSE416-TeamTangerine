@@ -10,4 +10,5 @@ router.post('/editProfile', AuthController.editUser)
 router.post('/changePassword', AuthController.changeUserPassword)
 router.post('/sendEmail', AuthController.sendEmail)
 router.post('/resetPassword', AuthController.resetPassword)
+router.post('/viewAuthor', AuthController.getAuthorInfo)
 module.exports = router

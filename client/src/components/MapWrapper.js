@@ -8,7 +8,9 @@ import L from 'leaflet';
 import 'leaflet-imageoverlay-rotated';
 import 'leaflet-polylinedecorator';
 import 'leaflet-arrowheads';
-import { destination } from '@turf/turf';
+import * as turf from '@turf/turf';
+import _ from 'lodash'; 
+
 var markerGroup = L.layerGroup();
 var arrowGroup = L.layerGroup();
 const MapWrapper = ({ style}) => {
@@ -202,6 +204,16 @@ const MapWrapper = ({ style}) => {
         dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : '',
     }
 
+    window.updateCoordinates = function(currentLat, currentLng) {
+        const newLat = document.getElementById('newLat').value;
+        const newLng = document.getElementById('newLng').value;
+    
+        // Validate newLat and newLng if needed
+    
+        // Update the coordinates
+        console.log(`Update coordinates from (${currentLat}, ${currentLng}) to (${newLat}, ${newLng})`);
+    };
+
     //THIS FUNCTION IS CALLED EVERY TIME THE MAP IS RENDERED --> RENDERS UPDATED STYLES
     const getMapStyle = (feature) => {
         const featureIndex = store.currentMap.jsonData.features.indexOf(feature);
@@ -235,10 +247,54 @@ const MapWrapper = ({ style}) => {
                         }
                     });
                 }
+                let dotColor = '#000000';
+                let dotSize = 1;
+                if (store.currentMapLayer) {
+                    dotColor = store.currentMapLayer.dotColor;
+                    dotSize = store.currentMapLayer.dotSize;
+                }
 
                 // Draw the dots of this region onto the map
                 dots.forEach((dot) => {
-                    L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), { radius: 1, weight: 1, color: 'black' }).addTo(map);
+                    const marker = L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), {
+                        radius: dotSize,
+                        weight: 0,
+                        fillColor: dotColor,
+                        fillOpacity: 1
+                    }).addTo(map);
+                
+                    // Use a custom property to associate the feature with the marker
+                    marker.myFeature = feature;
+                
+                    marker.bindPopup(`
+                        <div>Latitude: ${dot.coordinates[1]}</div>
+                        <div>Longitude: ${dot.coordinates[0]}</div>
+                        <input type="text" id="newLat" placeholder="New Latitude"/>
+                        <input type="text" id="newLng" placeholder="New Longitude"/>
+                        <button onclick="updateCoordinates(${dot.coordinates[1]}, ${dot.coordinates[0]})">Update</button>`);
+                
+                    marker.on('popupopen', function() {
+                        window.updateCoordinates = function(currentLat, currentLng) {
+                            console.log(marker.myFeature);
+                            console.log(dot.coordinates);
+                            const newLat = document.getElementById('newLat').value;
+                            const newLng = document.getElementById('newLng').value;
+                            console.log(`Update coordinates from (${currentLat}, ${currentLng}) to (${newLat}, ${newLng})`);
+                
+                            let regionPolygon = marker.myFeature.geometry; // Assuming the correct structure
+                            console.log(regionPolygon);
+                            let newPoint = turf.point([newLng, newLat]);
+                
+                            if (turf.booleanPointInPolygon(newPoint, regionPolygon)) {
+                                let prev = _.cloneDeep(store.currentMapLayer);
+                                dot.coordinates = turf.getCoord(newPoint);
+                                store.addUpdateLayerTransaction(prev);
+                            } else {
+                                console.log("Dot is outside region");
+                                map.closePopup();
+                            }
+                        };
+                    });
                 });
 
             }
@@ -407,7 +463,14 @@ const MapWrapper = ({ style}) => {
 
                     }
                 }
-    
+                
+                if (store.mapTemplate === 'dotDensityMap') {
+                    const dotLegendValue = store.currentLayer.dotValue;
+                    container.innerHTML +=
+                        '<i class="dot-legend" style="background:' + store.currentMapLayer.dotColor + '"></i> ' +
+                        dotLegendValue + '<br>';
+                }
+
                 L.DomEvent.disableClickPropagation(container);
         
                 const control = L.control({ position });
@@ -422,6 +485,30 @@ const MapWrapper = ({ style}) => {
 
         }, [position, legend])
     }
+
+    const DotLegend = ({ position, dotColor, dotSize, dotValue, valueField }) => {
+        const map = useMap();
+    
+        useEffect(() => {
+            const container = L.DomUtil.create('div', 'legend info-popup');
+    
+            container.innerHTML += `<h4>${valueField} per Dot</h4>`;
+            container.innerHTML += `<svg height="9px" width="12px"><circle cx="4" cy="4" r="4" fill="${dotColor}" /></svg> ${dotValue}<br>`;
+    
+            L.DomEvent.disableClickPropagation(container);
+    
+            const control = L.control({ position });
+            control.onAdd = () => container;
+            control.addTo(map);
+    
+            return () => {
+                // Cleanup on component unmount
+                control.remove();
+            };
+        }, [position, dotColor, dotSize, dotValue]);
+    
+        return null;
+    };
     
     //------------------------------------------Graduated Symbol Map------------------------------------------------// 
     const ProportionalSymbol = ({data, scale, symbolColor}) =>{
@@ -514,6 +601,15 @@ const MapWrapper = ({ style}) => {
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
+            {store.mapTemplate === 'dotDensityMap' && (
+                <DotLegend
+                    position="topleft"
+                    dotColor={store.currentMapLayer.dotColor}
+                    dotSize={store.currentMapLayer.dotSize}
+                    dotValue={store.currentMapLayer.dotValue}
+                    valueField={store.currentMapLayer.valueField}
+                />
+            )}
             {store.mapTemplate === 'flowMap' && <FlowArrows data={store.currentMapLayer.dataValues}/>/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
             {/* Render dots only if mapType is "dotDensityMap" */}
             {store.mapTemplate === 'graduatedSymbolMap' && <ProportionalSymbol data = {store.currentMapLayer.dataValues} scale = {store.currentMapLayer.sizeScale} symbolColor = {store.currentMapLayer.symbolColor} />}

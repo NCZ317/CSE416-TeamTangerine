@@ -517,6 +517,19 @@ code {
   left: 3%;
 }
 
+#undo-button {
+  background-color: #79c200;
+
+}
+#redo-button {
+  background-color: #79c200;
+}
+
+#undo-redo-buttons {
+  margin-right: 20%;
+  margin-top: 3%;
+}
+
 .post-card{
   margin: 20px;
   border-radius: 25px !important;
@@ -576,6 +589,10 @@ code {
   height: 100%;
 }
 
+#post-height {
+  height: 100%;
+}
+
 #post-button{
   background-color: #79C200;
   position: absolute;
@@ -626,7 +643,7 @@ code {
   color: #542C11;
   border-radius: 15px;
   padding: 10px 2px 10px 2px;
-  height: 50%;
+  height: 38%;
 }
 
 .profile-user-circle{
@@ -653,7 +670,7 @@ code {
 }
 
 #profile-grid{
-  height: 689px;
+  height: 657px;
   padding: 16px 12px 16px 12px;
 }
 
