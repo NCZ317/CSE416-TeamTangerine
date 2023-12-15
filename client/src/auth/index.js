@@ -14,6 +14,8 @@ export const AuthActionType = {
     SEND_EMAIL: "SEND_EMAIL",
     ERROR: "ERROR",
     ERROR2: "ERROR2", //for when there is an error but the user stays logged in 
+    GET_USER_TO_VIEW: "GET_USER_TO_VIEW",
+    EDIT_USER: "EDIT_USER"
 }
 
 function AuthContextProvider(props) {
@@ -21,6 +23,7 @@ function AuthContextProvider(props) {
         user: null,
         loggedIn: false,
         errorMessage: "",
+        userToView: null
     });
 
     const navigate = useNavigate();
@@ -37,6 +40,7 @@ function AuthContextProvider(props) {
                     user: payload.user,
                     loggedIn: payload.loggedIn,
                     errorMessage: "",
+                    userToView: auth.userToView
                 });
             }
             case AuthActionType.LOGIN_USER: {
@@ -44,6 +48,7 @@ function AuthContextProvider(props) {
                     user: payload.user,
                     loggedIn: true,
                     errorMessage: "",
+                    userToView: auth.userToView
                 })
             }
             case AuthActionType.LOGOUT_USER: {
@@ -51,6 +56,7 @@ function AuthContextProvider(props) {
                     user: null,
                     loggedIn: false,
                     errorMessage: "",
+                    userToView: null
                 })
             }
             case AuthActionType.REGISTER_USER: {
@@ -58,6 +64,7 @@ function AuthContextProvider(props) {
                     user: null,
                     loggedIn: false,
                     errorMessage: "",
+                    userToView: auth.userToView
                 })
             }
             case AuthActionType.ERROR: {
@@ -65,6 +72,7 @@ function AuthContextProvider(props) {
                     user: null,
                     loggedIn: false,
                     errorMessage: payload.errorMessage,
+                    userToView: null
                 })
             }
             case AuthActionType.ERROR2: {
@@ -72,6 +80,23 @@ function AuthContextProvider(props) {
                     user: auth.user,
                     loggedIn: auth.loggedIn,
                     errorMessage: payload.errorMessage,
+                    userToView: auth.userToView
+                })
+            }
+            case AuthActionType.GET_USER_TO_VIEW: {
+                return setAuth({
+                    user: auth.user,
+                    loggedIn: auth.loggedIn,
+                    errorMessage: auth.errorMessage,
+                    userToView: payload.user
+                })
+            }
+            case AuthActionType.EDIT_USER: {
+                return setAuth({
+                    user: payload.user,
+                    loggedIn: true,
+                    errorMessage: "",
+                    userToView: payload.user
                 })
             }
             default:
@@ -159,7 +184,7 @@ function AuthContextProvider(props) {
             const response = await api.editUser(auth.user.id, email, username, bio, password);
             if (response.status === 200) {
                 authReducer({
-                    type: AuthActionType.LOGIN_USER,
+                    type: AuthActionType.EDIT_USER,
                     payload: {
                         user: response.data.user
                     }
@@ -249,6 +274,28 @@ function AuthContextProvider(props) {
 
     auth.isErrorModalOpen = () => {
         return auth.errorMessage !== "";
+    }
+
+    auth.viewUser = function (email)  {
+        async function asyncViewUser(email) {
+            try{
+                let response = await api.getUserByEmail(email);
+                if (response.status == 200) {
+                    authReducer({
+                        type: AuthActionType.GET_USER_TO_VIEW,
+                        payload: response.data
+                    });
+                }
+            } catch (error){
+                authReducer({
+                    type: AuthActionType.ERROR2,
+                    payload: {
+                        errorMessage: error.response.data.errorMessage
+                    }
+                });
+            }
+        }
+        asyncViewUser(email);
     }
 
     auth.getUserInitials = function() {

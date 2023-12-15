@@ -247,6 +247,7 @@ getMapPairs = async (req, res) => {
                 title: map.title,
                 description: map.description,
                 username: map.username,
+                email: map.ownerEmail,
                 mapType: map.mapType,
                 regions: map.regions,
                 likes: map.likes,
@@ -290,6 +291,7 @@ getLikedMapPairs = async (req, res) => {
                 title: map.title,
                 description: map.description,
                 username: map.username,
+                email: map.ownerEmail,
                 mapType: map.mapType,
                 regions: map.regions,
                 likes: map.likes,
@@ -339,6 +341,7 @@ getAllPublishedMapPairs = async (req, res) => {
             title: map.title,
             description: map.description,
             username: map.username,
+            email: map.ownerEmail,
             mapType: map.mapType,
             regions: map.regions,
             likes: map.likes,
@@ -426,16 +429,36 @@ getMapsByKeyword = async (req, res) => {
 
 getMapsByUser = async (req, res) => {
     try {
-        // Extract username from request parameters
-        const { username } = req.params;
+        
+        const { email } = req.params;
+        console.log("Getting maps by userEmail " + email);
+        const maps = await Map.find({ ownerEmail: email });
 
-        const maps = await Map.find({ userName: username });
+        //console.log("found Maps: " + JSON.stringify(maps));
 
-        // Respond with the maps
-        res.status(200).json({
-            status: 200,
-            data: { success: true, maps },
-        });
+        if (!maps) {
+            console.log("!maps");
+            return res.status(404).json({ success: false, error: 'Maps not found' });
+        } else {
+            console.log("Send the Maps pairs");
+            // PUT ALL THE LISTS INTO ID, NAME PAIRS
+            const pairs = maps.map(map => ({
+                _id: map._id,
+                title: map.title,
+                description: map.description,
+                username: map.username,
+                email: map.ownerEmail,
+                mapType: map.mapType,
+                regions: map.regions,
+                likes: map.likes,
+                views: map.views,
+                comments: map.comments,
+                published: map.published
+            }));
+
+            return res.status(200).json({ success: true, idNamePairs: pairs });
+        }
+
     } catch (error) {
         console.log("err: " + err);
         res.json(false);

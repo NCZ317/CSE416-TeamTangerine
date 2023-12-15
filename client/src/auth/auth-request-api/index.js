@@ -67,6 +67,10 @@ export const resetPassword = (email,  verifyPassword, password,  confirmPassword
     })
 }
 
+export const getUserByEmail = (email) => {
+    return api.post(`/findUserByEmail`, {email: email})
+}
+
 const apis = {
     getLoggedIn,
     registerUser,
@@ -75,7 +79,8 @@ const apis = {
     editUser,
     changeUserPassword,
     sendEmail,
-    resetPassword
+    resetPassword,
+    getUserByEmail
 }
 
 export default apis
