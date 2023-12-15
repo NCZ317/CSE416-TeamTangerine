@@ -12,6 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
 import L from 'leaflet';
+import _ from 'lodash'; 
 
 
 import { GlobalStoreContext } from '../store';
@@ -33,6 +34,8 @@ const FlowToolbox = () => {
 
     const currentMap = store.currentMap.jsonData; 
     const properties = currentMap.features.map(x => x.properties);
+    const otherArrows = store.currentMapLayer.dataValues;//delete or add arrow, change this
+
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
     };
@@ -44,15 +47,19 @@ const FlowToolbox = () => {
     const deleteArrow = (index) => {
         //when clicked to remove
         let mapLayer = store.currentMapLayer
+        console.log(mapLayer);
+        console.log(index);
         mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
         store.updateCurrentMapLayer(mapLayer);
+        console.log(otherArrows)
     }
-    const handleArrowData = (event,index,defaultVal) => {
-        if (event.key === "Enter") {
+    const saveData = (index,defaultVal) => {
+            let prev = _.cloneDeep(store.currentMapLayer);
             let mapLayer = store.currentMapLayer;
             let oldData = mapLayer.dataValues;
             if(index>=0){
                 oldData.splice(index,1);//removes arrows so it can be replaced
+                otherArrows.splice(index,1);
             }
             console.log(defaultVal);
             let slat = parseFloat(arrowDataslat);
@@ -91,6 +98,7 @@ const FlowToolbox = () => {
                 destinationLatitude: elat,
                 destinationLongitude: elng,
                 value: 0,//index
+                label: label,
                 lineSizeScale: size,
                 colorScale: colour
             }]
@@ -102,9 +110,7 @@ const FlowToolbox = () => {
             store.updateCurrentMapLayer(mapLayer);
             console.log(store.currentMapLayer);
             //updateMapLayer
-        }
     }
-    
     const handleValueField = (event) => {
         if (event.key === "Enter") {
             let mapLayer = store.currentMapLayer;
@@ -123,11 +129,13 @@ const FlowToolbox = () => {
         console.log(color);
         setColor(color);
     }
-    const otherArrows = store.currentMapLayer.dataValues;
-    const inputCoordinates = [];
+
+    var inputCoordinates = [];
     var coordinateIndex = 0;
-    for(let coordinate of otherArrows){
+    /* for(let coordinate of otherArrows){    
+        console.log(otherArrows);
         coordinate.value=coordinateIndex;
+        console.log(coordinate);
         inputCoordinates.push(
         <div>
             <div style={{display: 'flex'}}>
@@ -138,14 +146,12 @@ const FlowToolbox = () => {
                         defaultValue={coordinate.originLatitude}
                         // onChange = {(e) => (property.value =  e.target.value)}
                         onChange={(e) => setArrowDataslat(e.target.value)}
-                        onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale, coordinate.label])}
                     />
                     <TextField
                         // label={property.value}
                         defaultValue={coordinate.originLongitude}
                         // onChange = {(e) => (property.value =  e.target.value)}
                         onChange={(e) => setArrowDataslng(e.target.value)}
-                        onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale, coordinate.label])}
                     />
                 </div>
                 <div style={{width: '50%', paddingTop: '5%'}}>{'endLat\nendLng'}</div>
@@ -155,14 +161,12 @@ const FlowToolbox = () => {
                         defaultValue={coordinate.destinationLatitude}
                         // onChange = {(e) => (property.value =  e.target.value)}
                         onChange={(e) => setArrowDataelat(e.target.value)}
-                        onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale, coordinate.label])}
                     />
                     <TextField
                         // label={property.value}
                         defaultValue={coordinate.destinationLongitude}
                         // onChange = {(e) => (property.value =  e.target.value)}
                         onChange={(e) => setArrowDataelng(e.target.value)}
-                        onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale, coordinate.label])}
                     />
                 </div>
                 <IconButton variant="outlined" onClick={() => deleteArrow(coordinate.value)}>
@@ -170,13 +174,13 @@ const FlowToolbox = () => {
                 </IconButton>
                 <br></br>
             </div>
+            <div style={{width: '50%', paddingTop: '5%'}}>{'Label'}</div>
             <div>
                 <TextField
                     // label={property.value}
                     defaultValue={coordinate.label}
                     // onChange = {(e) => (property.value =  e.target.value)}
                     onChange={(e) => setLabel(e.target.value)}
-                    onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale, coordinate.label])}
                 />
             </div>
             <div>
@@ -187,7 +191,6 @@ const FlowToolbox = () => {
                         defaultValue={coordinate.lineSizeScale}
                         // onChange = {(e) => (property.value =  e.target.value)}
                         onChange={(e) => setLineSize(e.target.value)}
-                        onKeyDown={(e) => handleArrowData(e,coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale, coordinate.label])}
                     />
                 </div>
                 <div>
@@ -200,9 +203,14 @@ const FlowToolbox = () => {
                     />
                 </div>
             </div>    
+            
+            <Button variant="outlined" onClick={()=>saveData(coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale, coordinate.label])}>
+                Save Data
+            </Button>
         </div>)
+        console.log(inputCoordinates);
         coordinateIndex++;
-    }
+    } */
     return (
         <div className="flow-toolbox">
             <Tabs
@@ -226,8 +234,9 @@ const FlowToolbox = () => {
                         sx={{width: '100%', p: 1, textAlign: 'center' }}
                     >
                         <Typography style={{fontSize: '16px'}}>Type the latitude and longitudes to create arrow</Typography>
-                        <Typography style={{fontSize: '16px'}}>Press Enter after entering in all text boxes; </Typography>
-                        <Typography style={{fontSize: '16px'}}>Pressing Enter early may cause errors;</Typography>
+                        <Typography style={{fontSize: '16px'}}>Press Save Data after entering in all text boxes to create arrow </Typography>
+                        <Typography style={{fontSize: '16px'}}>Click on the arrows to edit them</Typography>
+                        <Typography style={{fontSize: '16px'}}>Enter in all values or a default value will be used</Typography>
                         {
                             <div>
                                 <div>
@@ -239,14 +248,12 @@ const FlowToolbox = () => {
                                                 defaultValue={null}
                                                 // onChange = {(e) => (property.value =  e.target.value)}
                                                 onChange={(e) => setArrowDataslat(e.target.value)}
-                                                onKeyDown={(e) => handleArrowData(e,-1,[0,0,0,0,1,'red',""])}
                                             />
                                             <TextField
                                                 // label={property.value}
                                                 defaultValue={null}
                                                 // onChange = {(e) => (property.value =  e.target.value)}
                                                 onChange={(e) => setArrowDataslng(e.target.value)}
-                                                onKeyDown={(e) => handleArrowData(e,-1,[0,0,0,0,1,'red',""])}
                                             />
                                         </div>
                                         <div style={{width: '50%', paddingTop: '5%'}}>{'endLat\nendLng'}</div>
@@ -256,24 +263,22 @@ const FlowToolbox = () => {
                                                 defaultValue={null}
                                                 // onChange = {(e) => (property.value =  e.target.value)}
                                                 onChange={(e) => setArrowDataelat(e.target.value)}
-                                                onKeyDown={(e) => handleArrowData(e,-1,[0,0,0,0,1,'red',""])}
                                             />
                                             <TextField
                                                 // label={property.value}
                                                 defaultValue={null}
                                                 // onChange = {(e) => (property.value =  e.target.value)}
                                                 onChange={(e) => setArrowDataelng(e.target.value)}
-                                                onKeyDown={(e) => handleArrowData(e,-1,[0,0,0,0,1,'red',""])}
                                             />
                                         </div>
                                     </div>
+                                    <div style={{width: '50%', paddingTop: '5%'}}>{'Label'}</div>
                                     <div>
                                         <TextField
                                             // label={property.value}
                                             defaultValue={""}
                                             // onChange = {(e) => (property.value =  e.target.value)}
                                             onChange={(e) => setLabel(e.target.value)}
-                                            onKeyDown={(e) => handleArrowData(e,-1, [0,0,0,0,1,'red',""])}
                                         />
                                     </div>
                                     <div>
@@ -284,7 +289,6 @@ const FlowToolbox = () => {
                                                 defaultValue={null}
                                                 // onChange = {(e) => (property.value =  e.target.value)}
                                                 onChange={(e) => setLineSize(e.target.value)}
-                                                onKeyDown={(e) => handleArrowData(e,-1,[0,0,0,0,1,'red',""])}
                                             />
                                         </div>
                                         <div>
@@ -297,6 +301,9 @@ const FlowToolbox = () => {
                                             />
                                         </div>
                                     </div>
+                                    <Button variant="outlined" onClick={()=>saveData(-1,[0,0,0,0,1,'black',""])}>
+                                        Save Data
+                                    </Button>
                                 </div>
                                 {inputCoordinates}
                             </div>

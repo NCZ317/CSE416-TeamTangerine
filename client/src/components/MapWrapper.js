@@ -541,35 +541,56 @@ const MapWrapper = ({ style}) => {
     }
     //--------------------------------------------------------------------------------------------------------------//
     // Flow MAPS
-    const FlowArrow=({position, lineSize,color})=> {//position -> [[bottomx,bottomy], [topx,topy]]
-        const map = useMap();
-        console.log(map);
-        useEffect(()=>{
-            var arrow = L.polyline(position, {color:color,weight:3*lineSize}).arrowheads();
-            arrow.addTo(map);
-        },[map,position,lineSize,color])
-    }
-    //have an array in store holding flow arrow coordinates, lineSize, and color as [[startlat,startlng],[endlat,endlng], linesize, color]
-    //console.log(store.currentMapLayer);
-    //const flowArrows = [];
-    /* if(store.mapTemplate === 'flowMap'){
-        console.log(store.currentMapLayer);
-        for(let coordinate of store.currentMapLayer.dataValues){
-            flowArrows.push(
-            <FlowArrow position={[[coordinate.originLatitude,coordinate.originLongitude], [coordinate.destinationLatitude,coordinate.destinationLongitude]]} lineSize={coordinate.lineSizeScale} color={coordinate.colorScale}/>
-            );
-        }
-    } */
     const FlowArrows = ({data}) =>{
         arrowGroup.clearLayers();
         if (data){ 
             for(let coordinate of data){
-                console.log(coordinate.colorScale)
+                console.log(coordinate)
                 let originPosition = [coordinate.originLatitude,coordinate.originLongitude];
                 let destinationPosition = [coordinate.destinationLatitude,coordinate.destinationLongitude];
-                (
+                const arrow = (
                     L.polyline([originPosition,destinationPosition],{color:coordinate.colorScale, weight: 3*coordinate.lineSizeScale}).arrowheads()
-                ).addTo(arrowGroup);
+                )
+                console.log(arrow);
+                arrow.bindTooltip(coordinate.label, {permanent: true})
+                .bindPopup(`
+                        <div>Starting Latitude: ${coordinate.originLatitude}</div>
+                        <div>Starting Longitude: ${coordinate.originLongitude}</div>
+                        <div>Destination Latitude: ${coordinate.destinationLatitude}</div>
+                        <div>Destination Longitude: ${coordinate.destinationLongitude}</div>
+                        <input type="text" id="newOriLat" placeholder="New Starting Latitude"/>
+                        <input type="text" id="newOriLng" placeholder="New Starting Longitude"/>
+                        <input type="text" id="newEndLat" placeholder="New Destination Latitude"/>
+                        <input type="text" id="newEndLng" placeholder="New Destination Longitude"/>
+                        <input type="color" id="newColor" placeholder="New Color"/>
+                        <input type="text" id="newSize" placeholder="New Line Width"/>
+                        <button onclick="updateCoordinates(${coordinate.originLatitude}, ${coordinate.originLongitude}, ${coordinate.destinationLatitude}, ${coordinate.destinationLongitude})">Update</button>`)
+                .on('popupopen', function() {
+                    window.updateCoordinates = function(currentOriLat, currentOriLng, currentEndLat, currentEndLng, currentColor, currentSize) {
+                        const newOriLat = document.getElementById('newOriLat').value;
+                        const newOriLng = document.getElementById('newOriLng').value;
+                        const newEndLat = document.getElementById('newEndLat').value;
+                        const newEndLng = document.getElementById('newEndLng').value;
+                        const newColor = document.getElementById('newColor').value;
+                        const newSize = document.getElementById('newSize').value;
+                        console.log(`Update coordinates from (${currentOriLat}, ${currentOriLng}) and (${currentEndLat}, ${currentEndLng}) to (${newOriLat}, ${newOriLng}) and (${newEndLat}, ${newEndLng})`);
+
+                        let originPosition = [newOriLat,newOriLng];
+                        let destinationPosition = [newEndLat,newEndLng];
+                        arrow.setLatLngs([originPosition, destinationPosition]);
+                        console.log(arrow._latlngs);
+                        coordinate.originLatitude = newOriLat;
+                        coordinate.originLongitude = newOriLng;
+                        coordinate.destinationLatitude = newEndLat;
+                        coordinate.destinationLongitude = newEndLng;
+                        coordinate.colorScale = newColor;
+                        coordinate.lineSizeScale = newSize;
+                        arrowGroup.clearLayers();
+                        let prev = _.cloneDeep(store.currentMapLayer);
+                        store.addUpdateLayerTransaction(prev);
+                    };
+                })
+                .addTo(arrowGroup);
             }
         }
         arrowGroup.addTo(map);
