@@ -18,6 +18,7 @@
     "leaflet-arrowheads": "^1.4.0",
     "leaflet-imageoverlay-rotated": "^0.2.1",
     "leaflet-polylinedecorator": "^1.6.0",
+    "leaflet.heat": "^0.2.0",
     "lodash": "^4.17.21",
     "mapbox": "^1.0.0-beta10",
     "nodemailer": "^6.9.7",

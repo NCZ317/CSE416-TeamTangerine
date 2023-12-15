@@ -27,8 +27,8 @@ const FlowToolbox = () => {
     const [arrowDataslng, setArrowDataslng] = useState("");
     const [arrowDataelat, setArrowDataelat] = useState("");
     const [arrowDataelng, setArrowDataelng] = useState("");
-    const [lineSize, setLineSize] = useState(1);
-    const [arrowLabel, setLabel] = useState("");
+    const [lineSize, setLineSize] = useState(5);
+    const [arrowLabel, setLabel] = useState("label");
     const [color, setColor] = useState("");
     const [valueField, setValueField] = useState("");
 
@@ -66,9 +66,11 @@ const FlowToolbox = () => {
             let slng = parseFloat(arrowDataslng);
             let elat = parseFloat(arrowDataelat);
             let elng = parseFloat(arrowDataelng);
-            let size = lineSize;
+            let size = parseFloat(lineSize);
             let colour = color;
             let label = arrowLabel;
+            console.log(lineSize);
+            console.log(size);
             if(isNaN(parseFloat(arrowDataslat))){
                 slat = defaultVal[0];
             }
@@ -82,7 +84,9 @@ const FlowToolbox = () => {
                 elng = defaultVal[3]
             }
             if(isNaN(lineSize)||lineSize<=0){
-                size = defaultVal[4];
+                alert(defaultVal[4]);
+                console.log(parseFloat(defaultVal[4]));
+                size = parseFloat(defaultVal[4]);
             }
             if(color===""){
                 colour = defaultVal[5];
@@ -297,11 +301,11 @@ const FlowToolbox = () => {
                                                 type="color"
                                                 value={color}
                                                 fullWidth
-                                                onChange={(e) => setArrowColor(e.target.value,[0,0,0,0,1,'red'])}
+                                                onChange={(e) => setArrowColor(e.target.value,[0,0,0,0,5,'red'])}
                                             />
                                         </div>
                                     </div>
-                                    <Button variant="outlined" onClick={()=>saveData(-1,[0,0,0,0,1,'black',""])}>
+                                    <Button variant="outlined" onClick={()=>saveData(-1,[0,0,0,0,5,'black',""])}>
                                         Save Data
                                     </Button>
                                 </div>

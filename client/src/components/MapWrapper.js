@@ -2,8 +2,7 @@ import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Popup, useMap, Marker, HeatLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { GlobalStoreContext } from '../store/index.js';
-import arrow from './ArrowImage.png';
-import testArrow from './ArrowImage2.png'
+import DeleteIcon from '@mui/icons-material/Delete';
 import L from 'leaflet';
 import 'leaflet-imageoverlay-rotated';
 import 'leaflet-polylinedecorator';
@@ -12,6 +11,7 @@ import * as turf from '@turf/turf';
 import _ from 'lodash';
 import 'leaflet.heat';
 
+//add let prev = _.cloneDeep(store.currentMapLayer); before any changes to store
 var markerGroup = L.layerGroup();
 var arrowGroup = L.layerGroup();
 const MapWrapper = ({ style}) => {
@@ -558,19 +558,28 @@ const MapWrapper = ({ style}) => {
     }
     //--------------------------------------------------------------------------------------------------------------//
     // Flow MAPS
+    const deleteArrow = (index) => {
+        //when clicked to remove
+        let mapLayer = store.currentMapLayer
+        console.log(mapLayer);
+        console.log(index);
+        mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
+        store.updateCurrentMapLayer(mapLayer);
+    }
     const FlowArrows = ({data}) =>{
         arrowGroup.clearLayers();
         if (data){ 
             for(let coordinate of data){
-                console.log(coordinate)
                 let originPosition = [coordinate.originLatitude,coordinate.originLongitude];
                 let destinationPosition = [coordinate.destinationLatitude,coordinate.destinationLongitude];
                 const arrow = (
                     L.polyline([originPosition,destinationPosition],{color:coordinate.colorScale, weight: 3*coordinate.lineSizeScale}).arrowheads()
                 )
-                console.log(arrow);
                 arrow.bindTooltip(coordinate.label, {permanent: true})
                 .bindPopup(`
+                        <button variant="outlined" onclick="deleteArrow(${coordinate.value})">
+                            Delete
+                        </button>
                         <div>Starting Latitude: ${coordinate.originLatitude}</div>
                         <div>Starting Longitude: ${coordinate.originLongitude}</div>
                         <div>Destination Latitude: ${coordinate.destinationLatitude}</div>
@@ -580,6 +589,7 @@ const MapWrapper = ({ style}) => {
                         <input type="text" id="newEndLat" placeholder="New Destination Latitude"/>
                         <input type="text" id="newEndLng" placeholder="New Destination Longitude"/>
                         <input type="color" id="newColor" placeholder="New Color"/>
+                        <input type="text" id="newLabel" placeholder="New Label"/>
                         <input type="text" id="newSize" placeholder="New Line Width"/>
                         <button onclick="updateCoordinates(${coordinate.originLatitude}, ${coordinate.originLongitude}, ${coordinate.destinationLatitude}, ${coordinate.destinationLongitude})">Update</button>`)
                 .on('popupopen', function() {
@@ -589,11 +599,13 @@ const MapWrapper = ({ style}) => {
                         const newEndLat = document.getElementById('newEndLat').value;
                         const newEndLng = document.getElementById('newEndLng').value;
                         const newColor = document.getElementById('newColor').value;
+                        const newLabel = document.getElementById('newLabel').value;
                         const newSize = document.getElementById('newSize').value;
                         console.log(`Update coordinates from (${currentOriLat}, ${currentOriLng}) and (${currentEndLat}, ${currentEndLng}) to (${newOriLat}, ${newOriLng}) and (${newEndLat}, ${newEndLng})`);
 
                         let originPosition = [newOriLat,newOriLng];
                         let destinationPosition = [newEndLat,newEndLng];
+                        let prev = _.cloneDeep(store.currentMapLayer);
                         arrow.setLatLngs([originPosition, destinationPosition]);
                         console.log(arrow._latlngs);
                         coordinate.originLatitude = newOriLat;
@@ -601,13 +613,25 @@ const MapWrapper = ({ style}) => {
                         coordinate.destinationLatitude = newEndLat;
                         coordinate.destinationLongitude = newEndLng;
                         coordinate.colorScale = newColor;
+                        coordinate.label = newLabel;
                         coordinate.lineSizeScale = newSize;
                         arrowGroup.clearLayers();
-                        let prev = _.cloneDeep(store.currentMapLayer);
+                        console.log(prev);
                         store.addUpdateLayerTransaction(prev);
                     };
                 })
+                .on('popupopen', function(){
+                    window.deleteArrow = function(index){
+                        //when clicked to remove
+                        let mapLayer = store.currentMapLayer
+                        console.log(mapLayer);
+                        console.log(index);
+                        mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
+                        store.updateCurrentMapLayer(mapLayer);
+                    }
+                }) 
                 .addTo(arrowGroup);
+                console.log(arrow);
             }
         }
         arrowGroup.addTo(map);
@@ -617,7 +641,7 @@ const MapWrapper = ({ style}) => {
 
     //-------------------------------------------------------------------------------------------------------------//
     // HEAT MAP
-
+    let check = 0;
     const HeatMapLayer = ({editActive}) => {
         const map = useMap();
     
@@ -648,10 +672,12 @@ const MapWrapper = ({ style}) => {
         map.on({
             click: function (e) {
                 // let editActive = store.heatmapEditActive;
-                console.log("EDITACTIVE: " + editActive);
+                console.log("EDITACTIVE: " + editActive + check);
+                check++;
                 if (editActive) {
                     let mapLayer = store.currentMapLayer;
                     mapLayer.dataValues.push(e.latlng);
+                    console.log(mapLayer);
                     store.updateCurrentMapLayer(mapLayer);
                 }
             }
