@@ -44,8 +44,7 @@ export const getMaps = () => api.get(`/maps`)
 
 export const getAllMapPairs = () => api.get(`/allmappairs`)
 
-//GET MAP BY KEYWORD AND USER TO BE DONE LATER
-
+export const getMapsByUser = (email) => api.get(`/maps/${email}`, {email: email})
 
 // BACKEND REQUESTS FOR MAPLAYER
 export const getMapLayerById = (id, mapType) => api.get(`/maplayer/${id}`, { params: { mapType } });
@@ -73,6 +72,7 @@ const apis = {
     updateMapById,
     getMaps,
     getAllMapPairs,
+    getMapsByUser,
     getMapLayerById,
     updateMapLayerById,
     likeMapById,

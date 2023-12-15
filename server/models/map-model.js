@@ -47,11 +47,12 @@ const heatmapLayerSchema = new Schema({
     graphicTitle: { type: String },
     graphicDescription: { type: String },
     style: { type: Object },
-    dataValues: [{
-        latitude: Number,
-        longitude: Number,
-        intensity: Number
-    }],
+    // dataValues: [{
+    //     latitude: Number,
+    //     longitude: Number,
+    //     intensity: Number
+    // }],
+    dataValues: [],
     radius: { type: Number },
     colorScale: { type: Object },
     currentRegions: {type: [Object], default: []}

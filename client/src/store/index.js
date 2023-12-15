@@ -32,7 +32,8 @@ export const GlobalStoreActionType = {
     SET_SEARCH_RESULT: "SET_SEARCH_RESULT",
     SET_SORT: "SET_SORT",
     SET_CURRENT_USER: "SET_CURRENT_USER",
-    SET_MAP_TEMPLATE: "SET_MAP_TEMPLATE"
+    SET_MAP_TEMPLATE: "SET_MAP_TEMPLATE",
+    SET_HEATMAP_ACTIVE: "SET_HEATMAP_ACTIVE"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -96,7 +97,8 @@ function GlobalStoreContextProvider(props) {
         currentSearchResult: "",
         currentSortMethod: "",
         currentRegion: {},
-        currentFeatureIndex: null
+        currentFeatureIndex: null,
+        heatmapEditActive: false
     });
 
     const navigate = useNavigate();
@@ -128,7 +130,8 @@ function GlobalStoreContextProvider(props) {
                     currentSearchResult: "",
                     currentSortMethod: "",
                     currentRegion: null,
-                    currentFeatureIndex: null
+                    currentFeatureIndex: null,
+                    heatmapEditActive: false
                 });
             }
             case GlobalStoreActionType.CREATE_NEW_MAP: {
@@ -146,7 +149,8 @@ function GlobalStoreContextProvider(props) {
                     currentSearchResult: "",
                     currentSortMethod: "",
                     currentRegion: null,
-                    currentFeatureIndex: null
+                    currentFeatureIndex: null,
+                    heatmapEditActive: false
                 });
             }
             //THIS SHOULD BE CALLED WHEN USER FORKS MAP AND IT WILL REDIRECT TO THEIR PROFILE WITH THE MAP DUPED
@@ -165,7 +169,8 @@ function GlobalStoreContextProvider(props) {
                     currentSearchResult: "",
                     currentSortMethod: "",
                     currentRegion: null,
-                    currentFeatureIndex: null
+                    currentFeatureIndex: null,
+                    heatmapEditActive: false
                 });
             }
 
@@ -184,7 +189,8 @@ function GlobalStoreContextProvider(props) {
                     currentSearchResult: "",
                     currentSortMethod: "",
                     currentRegion: null,
-                    currentFeatureIndex: null
+                    currentFeatureIndex: null,
+                    heatmapEditActive: false
                 })
             }
 
@@ -203,7 +209,8 @@ function GlobalStoreContextProvider(props) {
                     currentSearchResult: "",
                     currentSortMethod: "",
                     currentRegion: null,
-                    currentFeatureIndex: null
+                    currentFeatureIndex: null,
+                    heatmapEditActive: false
                 })
             }
 
@@ -222,7 +229,8 @@ function GlobalStoreContextProvider(props) {
                     currentSearchResult: "",
                     currentSortMethod: "",
                     currentRegion: null,
-                    currentFeatureIndex: null
+                    currentFeatureIndex: null,
+                    heatmapEditActive: false
                 })
             }
 
@@ -242,7 +250,8 @@ function GlobalStoreContextProvider(props) {
                     currentSearchResult: "",
                     currentSortMethod: "",
                     currentRegion: null,
-                    currentFeatureIndex: null
+                    currentFeatureIndex: null,
+                    heatmapEditActive: false
                 })
             }
 
@@ -261,7 +270,8 @@ function GlobalStoreContextProvider(props) {
                     currentSearchResult: "",
                     currentSortMethod: "",
                     currentRegion: payload.region,
-                    currentFeatureIndex: payload.featureIndex
+                    currentFeatureIndex: payload.featureIndex,
+                    heatmapEditActive: false
                 })
             }
 
@@ -280,7 +290,8 @@ function GlobalStoreContextProvider(props) {
                     currentSearchResult: "",
                     currentSortMethod: "",
                     currentRegion: store.currentRegion,
-                    currentFeatureIndex: store.currentFeatureIndex
+                    currentFeatureIndex: store.currentFeatureIndex,
+                    heatmapEditActive: store.heatmapEditActive
                 })
             }
 
@@ -299,7 +310,28 @@ function GlobalStoreContextProvider(props) {
                     currentSearchResult: "",
                     currentSortMethod: "",
                     currentRegion: store.currentRegion,
-                    currentFeatureIndex: store.currentFeatureIndex
+                    currentFeatureIndex: store.currentFeatureIndex,
+                    heatmapEditActive: store.heatmapEditActive
+                })
+            }
+
+            case GlobalStoreActionType.SET_HEATMAP_ACTIVE: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : store.currentScreen,
+                    idNamePairs: store.idNamePairs,
+                    likedMapPairs: store.likedMapPairs,
+                    currentMaps: [],
+                    currentMap: store.currentMap,
+                    currentMapLayer: store.currentMapLayer,
+                    mapTemplate: store.mapTemplate,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                    currentRegion: store.currentRegion,
+                    currentFeatureIndex: store.currentFeatureIndex,
+                    heatmapEditActive: payload
                 })
             }
 
@@ -327,9 +359,7 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.USER
                 }
             });
-            navigate("/user/" + auth.user.id);
-            store.loadIdNamePairs();
-            store.loadLikedMapPairs();
+            navigate("/user/" + auth.userToView.id);
         }
         if (screenType === CurrentScreen.MAP_POST) {
             storeReducer({
@@ -432,6 +462,26 @@ function GlobalStoreContextProvider(props) {
         }
         asyncLoadIdNamePairs()
     }
+
+    store.getMapsByUser = function() {
+        async function asyncLoadIdNamePairs() {
+            if (auth.userToView) {
+                let response = await api.getMapsByUser(auth.userToView.email);
+                if (response.data.success) {
+                    let idNamePairs = response.data.idNamePairs;
+                    storeReducer({
+                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                        payload: idNamePairs,
+                    })
+                }
+                else {
+                    console.log("API FAILED TO GET THE LIST PAIRS");
+                }
+            }  
+        }
+        asyncLoadIdNamePairs()
+    }
+
     store.loadLikedMapPairs = function() {
         async function asyncLoadLikedNamePairs() {
             let response = await api.getLikedMapPairs();
@@ -705,7 +755,15 @@ function GlobalStoreContextProvider(props) {
             type: GlobalStoreActionType.EDIT_MAP_DATA,
             payload: mapData
         });
-    }    
+    }
+    
+    store.setHeatmapEditActive = function(active) {
+        console.log("STORE EDIT ACTIVE " + active);
+        storeReducer({
+            type: GlobalStoreActionType.SET_HEATMAP_ACTIVE,
+            payload: active
+        });
+    }
 
 // //Processes closing the currently loaded map
     store.closeCurrentMap = function(){

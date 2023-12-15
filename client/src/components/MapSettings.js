@@ -341,12 +341,12 @@ const MapSettings = () => {
                 <Divider style={{borderBottom: '2px solid black', margin: 10}}/>
 
                 {/* Background Color Picker for Map Title */}
-                <TextField
+                {/* <TextField
                         label="Map Background Color"
                         type="color"
                         fullWidth
                         margin="normal"
-                />
+                /> */}
 
 
                 <Box style={{display: 'flex', alignItems: 'center'}}>

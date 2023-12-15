@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { MapContainer, TileLayer, GeoJSON, Popup, useMap, Marker } from 'react-leaflet';
+import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
+import { MapContainer, TileLayer, GeoJSON, Popup, useMap, Marker, HeatLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { GlobalStoreContext } from '../store/index.js';
 import arrow from './ArrowImage.png';
@@ -9,7 +9,8 @@ import 'leaflet-imageoverlay-rotated';
 import 'leaflet-polylinedecorator';
 import 'leaflet-arrowheads';
 import * as turf from '@turf/turf';
-import _ from 'lodash'; 
+import _ from 'lodash';
+import 'leaflet.heat';
 
 var markerGroup = L.layerGroup();
 var arrowGroup = L.layerGroup();
@@ -20,8 +21,6 @@ const MapWrapper = ({ style}) => {
     const [dotsData, setDotsData] = useState([]);
 
 
-
-
     //USED FOR RENDERING THE INFO POPUP FOR CHOROPLETH MAPS
     const [region, setRegion] = useState({
         name: "",
@@ -30,6 +29,10 @@ const MapWrapper = ({ style}) => {
 
     //Reference to the region label --> removed and added when region label changes
     const labelRef = useRef(null);
+
+    //Reference to heat layer
+    const heatLayerRef = useRef(null);
+
 
     useEffect(() => {
         // console.log(store.currentMap);
@@ -100,6 +103,16 @@ const MapWrapper = ({ style}) => {
     };
 
     const handleFeatureClick = (event, feature) => {
+        // Retrieve the clicked coordinates from the event
+        const latLng = event.latlng;
+        
+        // Access the latitude and longitude
+        const latitude = latLng.lat;
+        const longitude = latLng.lng;
+
+        console.log("Latitude: " + latitude);
+        console.log("Longitude: " + longitude);
+
         const clickedLayer = event.target;
         const featureIndex = store.currentMap.jsonData.features.indexOf(feature);
         store.setCurrentRegion(clickedLayer, featureIndex);
@@ -200,7 +213,7 @@ const MapWrapper = ({ style}) => {
         color: store.currentMapLayer && store.currentMapLayer.style.borderColor ? store.currentMapLayer.style.borderColor : '#79C200',
         weight: store.currentMapLayer && store.currentMapLayer.style.borderWeight ? store.currentMapLayer.style.borderWeight : 2,
         stroke: store.currentMapLayer && store.currentMapLayer.style.border, 
-        fillOpacity: 0.7,
+        // fillOpacity: 0.7,
         dashArray: store.currentMapLayer && store.currentMapLayer.style.borderDashed ? '5 5' : '',
     }
 
@@ -334,10 +347,14 @@ const MapWrapper = ({ style}) => {
             //UPDATE FILL COLOR AND FILL OPACITY FOR ALL OTHER TYPES OF MAPS IF USER HAS CHANGED IT
 
             if (featureFound !== -1) {
+                const regionStyle = store.currentMapLayer.currentRegions[featureFound].style;
+
                 return {
                     ...mapDataStyle,
-                    fillColor: store.currentMapLayer.currentRegions[featureFound].style.fillColor,
-                    fillOpacity: store.currentMapLayer.currentRegions[featureFound].style.fillOpacity
+                    // fillColor: store.currentMapLayer.currentRegions[featureFound].style.fillColor,
+                    // fillOpacity: store.currentMapLayer.currentRegions[featureFound].style.fillOpacity
+                    fillColor: regionStyle.fillColor,
+                    fillOpacity: regionStyle.fillOpacity ? regionStyle.fillOpacity : 0.7
                 }
             }
         }
@@ -597,6 +614,55 @@ const MapWrapper = ({ style}) => {
     }
     //const flowArrows = [<FlowArrow position={[[50.71277, -74.00597], [49.95258, -75.16522]]} lineSize={1} color={'orange'}/>,<FlowArrow position={[[40.71277, -74.00597], [39.95258, -75.16522]]} lineSize={1} color={'orange'}/>];
     //-------------------------------------------------------------------------------------------------------------//
+
+    //-------------------------------------------------------------------------------------------------------------//
+    // HEAT MAP
+
+    const HeatMapLayer = ({editActive}) => {
+        const map = useMap();
+    
+        // Remove existing heat layer if it exists
+        if (heatLayerRef.current) {
+            // console.log("REMOVING HEAT LAYER");
+            map.removeLayer(heatLayerRef.current);
+        }
+
+        let colorGradience = store.currentMapLayer.colorScale;
+
+        heatLayerRef.current = L.heatLayer(store.currentMapLayer.dataValues, {
+            minOpacity: 1,
+            radius: 10,
+            max: 1.0,
+            blur: 15,
+            gradient: {
+                0.0: colorGradience.low ? colorGradience.low : 'blue',
+                0.5: colorGradience.medium ? colorGradience.medium : 'yellow',
+                1.0: colorGradience.high ? colorGradience.high : 'red'
+            }
+            
+        }).addTo(map);
+
+
+        // let editActive = store.heatmapEditActive;
+
+        map.on({
+            click: function (e) {
+                // let editActive = store.heatmapEditActive;
+                console.log("EDITACTIVE: " + editActive);
+                if (editActive) {
+                    let mapLayer = store.currentMapLayer;
+                    mapLayer.dataValues.push(e.latlng);
+                    store.updateCurrentMapLayer(mapLayer);
+                }
+            }
+        })
+    
+        return null;
+
+    }
+
+
+
     return (
         <MapContainer
             center={[0, 0]}
@@ -622,6 +688,7 @@ const MapWrapper = ({ style}) => {
             {store.currentMapLayer && <CustomDescriptionControl position="topleft" description={store.currentMapLayer.graphicDescription} />}
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
+            {store.mapTemplate === 'heatMap' && <HeatMapLayer editActive={store.heatmapEditActive}/>}
             {store.mapTemplate === 'dotDensityMap' && (
                 <DotLegend
                     position="topleft"

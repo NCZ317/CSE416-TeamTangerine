@@ -138,7 +138,7 @@ const ChoroplethToolbox = () => {
             {selectedTab === 0 && (
                 <div>
                     <IconButton onClick={handleDataSettings} aria-label="toggle" sx={{width: '100%'}}>
-                        Data Settings
+                        Region Data 
                         {dataSettingsOpen ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
@@ -164,7 +164,7 @@ const ChoroplethToolbox = () => {
                     </Collapse>
 
                     <IconButton onClick={handleLegendSettings} aria-label="toggle" sx={{width: '100%'}}>
-                        Legend Settings
+                        Legend
                         {legendSettingsOpen ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                     <Collapse in={legendSettingsOpen} timeout="auto" unmountOnExit

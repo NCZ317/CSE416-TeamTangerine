@@ -10,7 +10,7 @@ import Toolbar from '@mui/material/Toolbar';
 import logo from './logo.png';
 import LoginModal from './LoginModal';
 import CreateMapModal from './CreateMapModal';
-
+import { useNavigate } from 'react-router-dom';
 import AuthContext from '../auth';
 import { GlobalStoreContext } from '../store';
 
@@ -32,6 +32,8 @@ const AppBanner = () => {
   const [isCreateMapModalOpen, setCreateMapModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
+
+  const navigate = useNavigate();
   const handleCreateMap = () => {
     store.setScreen("MAP_EDITOR");
     setCreateMapModalOpen(true);
@@ -50,6 +52,7 @@ const AppBanner = () => {
   };
 
   const handleAccountMenuClick = (event) => {
+    
     setAnchorEl(event.currentTarget);
   };
 
@@ -63,7 +66,8 @@ const AppBanner = () => {
   };
 
   const handleUserProfile = () => {
-    auth.viewAuthor = null;
+    auth.viewUser(auth.user.email);
+    auth.userToView = auth.user;
     store.setScreen("USER");
     handleAccountMenuClose();
   }
