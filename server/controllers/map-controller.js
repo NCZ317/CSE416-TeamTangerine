@@ -193,7 +193,24 @@ deleteMap = async (req, res) => {
 
             // Save the updated user object
             await user.save();
-            
+            console.log("Have to delete layer too");
+            console.log(`Looking for layer ${map.mapLayers} of type ${map.mapType}`);
+            if (map.mapType === "choroplethMap") {
+                await ChoroplethLayer.findOneAndDelete({ _id: map.mapLayers });
+            }
+            else if (map.mapType === "heatMap") {
+                await HeatmapLayer.findOneAndDelete({ _id: map.mapLayers });
+            }
+            else if (map.mapType === "dotDensityMap") {
+                await DotDensityLayer.findOneAndDelete({ _id: map.mapLayers });
+            }
+            else if (map.mapType === "graduatedSymbolMap") {
+                await GraduatedSymbolLayer.findOneAndDelete({ _id: map.mapLayers });
+            }
+            else if (map.mapType === "flowMap") {
+                await FlowmapLayer.findOneAndDelete({ _id: map.mapLayers });
+            }
+            console.log("Now just to delete map itself");
             await Map.findOneAndDelete({ _id: req.params.id });
             return res.status(200).json({ success: true });
         } else {

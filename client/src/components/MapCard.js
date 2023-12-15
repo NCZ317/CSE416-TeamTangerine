@@ -31,22 +31,26 @@ function MapCard(props) {
     setAnchorEl(null);
   };
 
+  const handleClose2 = () => {
+    setAnchorEl(null);
+  };
+
   const handlePublish = () => {
     store.publish(idNamePair._id);
     store.loadIdNamePairs();
-    handleClose();
+    handleClose2();
   }
 
   const handleEditDetails = () => {
     setEditDetailsModalOpen(true);
-    handleClose();
+    handleClose2();
   };
 
   const handleDeleteMap = () => {
     console.log("DELETE MAP");
     store.markMapForDeletion(idNamePair._id);
     setDeleteMapModalOpen(true);
-    handleClose();
+    handleClose2();
   };
 
   const handleEditGraphics = async () => {
@@ -55,7 +59,7 @@ function MapCard(props) {
     await store.setCurrentMap(idNamePair._id);
 
     store.setScreen("MAP_EDITOR");
-    handleClose();
+    handleClose2();
   };
 
   const handleEditDetailsModalClose = () => {

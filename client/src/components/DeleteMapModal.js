@@ -19,6 +19,10 @@ export default function DeleteMapModal({ open, onClose }) {
         store.deleteMarkedMap();
         onClose();
     }
+    function handleCancel(event) {
+        event.stopPropagation();
+        onClose()
+    }
 
     return (
         <Modal open={open} onClose={onClose} id="delete-map-modal">
@@ -34,7 +38,7 @@ export default function DeleteMapModal({ open, onClose }) {
                     <Button variant="contained" color="primary" className="login-button" onClick={handleDeleteList}>
                         Confirm
                     </Button>
-                    <Button variant="contained" color="primary" className="login-button" onClick={onClose}>
+                    <Button variant="contained" color="primary" className="login-button" onClick={handleCancel}>
                         Cancel
                     </Button>
                 </Box>
