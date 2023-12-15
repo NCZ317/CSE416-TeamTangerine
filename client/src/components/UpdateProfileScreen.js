@@ -27,8 +27,20 @@ const UpdateProfileScreen = ({ state, setState }) => {
 
 
     useEffect(() => {
-        store.loadIdNamePairs();
+        if (auth.user.id == auth.userToView.id)
+            store.loadIdNamePairs();
+        else {
+            store.getMapsByUser(auth.userToView.email);
+        }
     }, []);
+
+    useEffect(() => {
+        if (auth.user.id == auth.userToView.id)
+            store.loadIdNamePairs();
+        else {
+            store.getMapsByUser(auth.userToView.email);
+        }
+    }, [auth.userToView]);
 
     useEffect(() => {
         if (selectedMenuItem === 'Liked Maps' && !likedMapsLoaded) {
@@ -43,34 +55,45 @@ const UpdateProfileScreen = ({ state, setState }) => {
 
     let mapList = "";
     if (store) {
-        if (selectedMenuItem === 'Liked Maps' && likedMapsLoaded) {
-            mapList = (
-                <List>
-                    {store.likedMapPairs.map((pair) => (
-                        <MapCard key={pair._id} myMap={false} idNamePair={pair} />
-                    ))}
-                </List>
-            );
-        } else {
-            const filteredPairs = store.idNamePairs.filter(pair => {
-                if (selectedMenuItem === 'Drafts') {
-                    return !pair.published;
-                } else if (selectedMenuItem === 'Published') {
-                    return pair.published;
-                }
-                return true;
-            });
-
+        if (auth.user.id == auth.userToView.id) {
+            if (selectedMenuItem === 'Liked Maps' && likedMapsLoaded) {
+                mapList = (
+                    <List>
+                        {store.likedMapPairs.map((pair) => (
+                            <MapCard key={pair._id} myMap={false} idNamePair={pair} />
+                        ))}
+                    </List>
+                );
+            } else {
+                const filteredPairs = store.idNamePairs.filter(pair => {
+                    if (selectedMenuItem === 'Drafts') {
+                        return !pair.published;
+                    } else if (selectedMenuItem === 'Published') {
+                        return pair.published;
+                    }
+                    return true;
+                });
+    
+                mapList = (
+                    <List>
+                        {filteredPairs.map((pair) => (
+                            <MapCard key={pair._id} myMap={true} idNamePair={pair} />
+                        ))}
+                    </List>
+                );
+            }
+        }
+        else {
+            const filteredPairs = store.idNamePairs.filter(pair => pair.published === true);
             mapList = (
                 <List>
                     {filteredPairs.map((pair) => (
-                        <MapCard key={pair._id} myMap={true} idNamePair={pair} />
+                        <MapCard key={pair._id} myMap={false} idNamePair={pair} />
                     ))}
                 </List>
             );
         }
     }
-
 
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
@@ -127,73 +150,61 @@ const UpdateProfileScreen = ({ state, setState }) => {
 
     const openMenu = Boolean(menuAnchorEl);
     const menuId = openMenu ? 'menu-popover' : undefined;
-    if (view){
-        if (auth.viewAuthor){const filteredPairs = store.idNamePairs.filter(pair => {
-            return (pair.username === auth.viewAuthor.username );
-        });
-        mapList = (
-            <List>
-                {filteredPairs.map((pair) => (
-                    <MapCard key={pair._id} myMap={false} idNamePair={pair} />
-                ))}
-            </List>
-        );}
-        return (
-            <Grid item xs={12} sm={8.5} id='profile-grid-2'>
-                <Box>
-                    <Box id='profile-box-4'>
-                        <Typography variant="h3" id='profile-typography-3'>
-                            Posts
-                        </Typography>
-                    </Box>
-                    {mapList}
-                </Box>
-            </Grid>
-        )
-    }else if (state === "NONE") {
+
+    let profileBox4 = <Box id='profile-box-4'>
+        <Typography variant="h3" id='profile-typography-3'>
+            Posts
+        </Typography>
+    </Box>
+
+    if (auth.user.id == auth.userToView.id) {
+        profileBox4 = <Box id='profile-box-4'>
+            <Typography variant="h3" id='profile-typography-3'>
+                {selectedMenuItem}
+            </Typography>
+            <IconButton
+                className='profile-down-button'
+                color="primary"
+                aria-label="menu"
+                onClick={handleMenuClick}
+            >
+                <ArrowDropDownIcon className='create-map-cloud-icon' />
+            </IconButton>
+            <Popover
+                id={menuId}
+                open={openMenu}
+                anchorEl={menuAnchorEl}
+                onClose={handleMenuClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+            >
+                <List>
+                    <ListItem onClick={() => handleMenuItemClick("Drafts")}>
+                        <ListItemText primary="Drafts" />
+                    </ListItem>
+                    <ListItem onClick={() => handleMenuItemClick("Published")}>
+                        <ListItemText primary="Published" />
+                    </ListItem>
+                    <ListItem onClick={() => handleMenuItemClick("Liked Maps")}>
+                        <ListItemText primary="Liked Maps" />
+                    </ListItem>
+                </List>
+            </Popover>
+        </Box>
+    }
+
+    if (state === "NONE") {
 
         return (
             <Grid item xs={12} sm={8.5} id='profile-grid-2'>
                 <Box>
-                    <Box id='profile-box-4'>
-                        <Typography variant="h3" id='profile-typography-3'>
-                            {selectedMenuItem}
-                        </Typography>
-                        <IconButton
-                            className='profile-down-button'
-                            color="primary"
-                            aria-label="menu"
-                            onClick={handleMenuClick}
-                        >
-                            <ArrowDropDownIcon className='create-map-cloud-icon' />
-                        </IconButton>
-                        <Popover
-                            id={menuId}
-                            open={openMenu}
-                            anchorEl={menuAnchorEl}
-                            onClose={handleMenuClose}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'center',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'center',
-                            }}
-                        >
-                            <List>
-                                {!auth.viewAuthor ? <ListItem onClick={() => handleMenuItemClick("Drafts")}>
-                                    <ListItemText primary="Drafts" />
-                                </ListItem> : <></>}
-                                <ListItem onClick={() => handleMenuItemClick("Published")}>
-                                    <ListItemText primary="Published" />
-                                </ListItem>
-                                <ListItem onClick={() => handleMenuItemClick("Liked Maps")}> 
-                                    <ListItemText primary="Liked Maps" />
-                                </ListItem>
-                            </List>
-                        </Popover>
-                    </Box>
+                    {profileBox4}
                     {mapList}
                 </Box>
             </Grid>

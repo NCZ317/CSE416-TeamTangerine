@@ -40,16 +40,7 @@ const PostWrapper = () => {
         title: "Title",
         author: "User",
         description: "Map description",
-        comments: [
-            { user: 'User1', message: 'This is the first comment.' },
-            { user: 'User2', message: 'Here is another comment.' },
-            { user: 'User3', message: 'And one more comment for testing.' },
-            { user: 'User4', message: 'This is the sixth comment.' },
-            { user: 'User5', message: 'Here is another comment.' },
-            { user: 'User6', message: 'And another comment for testing.' },
-            { user: 'User7', message: 'Second to last one.' },
-            { user: 'User8', message: 'Last one.' },
-        ],
+        comments: [],
         views: 0,
         likes: 0,
     });
@@ -57,6 +48,7 @@ const PostWrapper = () => {
     useEffect(() => {
         console.log(store.currentMap);
         if (store.currentMap) {
+            console.log(auth.userToView);
             setMapDetails({
                 title: store.currentMap.title,
                 author: store.currentMap.username,
@@ -65,7 +57,6 @@ const PostWrapper = () => {
                 views: store.currentMap.views,
                 likes: store.currentMap.likes,
             });
-            console.log(store);
             const jsonBlob = new Blob(
                 [JSON.stringify({"type":store.currentMap.jsonData.type,"features":store.currentMap.jsonData.features})],
                 { type: 'application/json' }
@@ -135,10 +126,16 @@ const PostWrapper = () => {
         await store.setScreen("MAP_EDITOR"); 
     }
 
-    const handleClickAuthor = async () => {
-        await auth.getAuthorInfo(mapDetails.author);
-        await store.setScreen("USER");
+    let forkButton = "";
+    if (auth.user){
+        forkButton = <Button id='post-button-2' variant='contained' onClick={handleFork}>Fork</Button>;
     }
+
+    const handleAuthorClick = () => {
+        if (auth.userToView) {
+          store.setScreen("USER");
+        }
+      };
 
     return (
         <div className='post-height'>
@@ -156,7 +153,7 @@ const PostWrapper = () => {
                                 <MenuItem>PNG</MenuItem>
                                 <MenuItem><a href={jsonURL} download={jsonFilename}>JSON</a></MenuItem>
                             </Menu>
-                            <Button id='post-button-2' variant='contained' onClick={handleFork}>Fork</Button>
+                            {forkButton}
                         </Box>
                         <MapWrapper style={{ height: '63vh' }} />
                         <CardContent className='post-card-content'>
@@ -165,8 +162,8 @@ const PostWrapper = () => {
                                     <Typography variant="h4" component="div">
                                         {mapDetails.title}
                                     </Typography>
-                                    <Typography variant="h6" onClick = {handleClickAuthor}>
-                                        By: {mapDetails.author}
+                                    <Typography variant="h6">
+                                        By: <span style={{cursor:'pointer'}} onClick={handleAuthorClick}>{mapDetails.author}</span>
                                     </Typography>
                                     <Typography variant="body1">
                                         {mapDetails.description}

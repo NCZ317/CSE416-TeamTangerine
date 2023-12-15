@@ -10,9 +10,11 @@ import DeleteMapModal from './DeleteMapModal'
 import { useNavigate } from 'react-router-dom';
 
 import { GlobalStoreContext } from '../store';
+import AuthContext from '../auth';
 
 function MapCard(props) {
   const { store } = useContext(GlobalStoreContext);
+  const { auth } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isEditDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
   const [isDeleteMapModalOpen, setDeleteMapModalOpen] = useState(false);
@@ -68,8 +70,9 @@ function MapCard(props) {
   const handleCardClick = async () => {
     if (props.idNamePair.published) {
       console.log(idNamePair);
-      await store.view(idNamePair._id);
       await store.setCurrentMap(idNamePair._id);
+      await store.view(idNamePair._id);
+      await auth.viewUser(idNamePair.email);
       navigate("/post/" + idNamePair._id);
     }
     else handleEditGraphics();

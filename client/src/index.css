@@ -596,7 +596,7 @@ code {
 #post-button{
   background-color: #79C200;
   position: absolute;
-  z-index: 999;
+  z-index: 2000;
   top: 125px;
   left: 55px;
 }
@@ -604,9 +604,9 @@ code {
 #post-button-2{
   background-color: #79C200;
   position: absolute;
-  z-index: 999;
+  z-index: 2000;
   top: 125px;
-  left: 62%;
+  left: 66%;
 }
 
 #post-box{

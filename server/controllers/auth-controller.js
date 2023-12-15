@@ -346,16 +346,16 @@ changeUserPassword = async (req,res) => {
 }
 
 sendEmail = async (req, res) => {
-    const {email} = req.body;
+    const { email } = req.body;
     console.log(req.body);
     console.log(email);
     console.log('SEND EMAIL')
-    
+
     try {
         var existingUser = false;
-        try{
+        try {
             existingUser = await User.findOne({ email: email });
-        } catch(error){
+        } catch (error) {
             console.log(error);
         }
         if (!existingUser) {
@@ -365,10 +365,10 @@ sendEmail = async (req, res) => {
                     errorMessage: "Email is not in database"
                 })
         }
-        console.log('existingUser: '+ existingUser);
+        console.log('existingUser: ' + existingUser);
         const nodemailer = require('nodemailer');
         //insert oauth2
-        
+
         const generatedPassword = 'bwnz vlgl vwob krbv'; //get from google accounts, security sign-in 2-step verification, app-password
         var transporter = nodemailer.createTransport({ //sender email
             host: "smtp.gmail.com",
@@ -387,22 +387,22 @@ sendEmail = async (req, res) => {
         const hashPass = existingUser.passwordHash;
         console.log(hashPass)
         var mailOptions = { //email contents
-            from: {name:'TerraTrove', address: 'dylan.lai@stonybrook.edu'},
+            from: { name: 'TerraTrove', address: 'dylan.lai@stonybrook.edu' },
             to: email,
             subject: 'Forgot Password',
             text: 'Link to make new password ' + baseURL + '?' + email + '//' + hashPass + '.   '
         };
-        transporter.sendMail(mailOptions, function(error, info){//function to send email
-            try{
+        transporter.sendMail(mailOptions, function (error, info) {//function to send email
+            try {
                 console.log('Email sent: ' + info);
                 res.status(200).send();
-            } catch(error){
+            } catch (error) {
                 console.log(error);
                 res.status(500).send()
             }
         })
-       
-        
+
+
         /* const { google } = require("googleapis");
         const OAuth2 = google.auth.OAuth2;
         const oauth2Client = new OAuth2(
@@ -458,25 +458,25 @@ sendEmail = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).send();
-    } 
+    }
 }
-resetPassword = async(req,res) =>{
-     //temp Reseter
-     try {
-        const { email, verifyPass, newPassword,  confirmNewPassword} = req.body;
+resetPassword = async (req, res) => {
+    //temp Reseter
+    try {
+        const { email, verifyPass, newPassword, confirmNewPassword } = req.body;
         console.log(req.body)
         console.log(email)
         const thisUser = await User.findOne({ email: email });
         console.log(thisUser);
         console.log(verifyPass)
-        if (!verifyPass){
+        if (!verifyPass) {
             return res
                 .status(400)
                 .json({
                     errorMessage: "Illegal Actions taken"
                 })
         }
-        const passwordCorrect = (verifyPass===thisUser.passwordHash);
+        const passwordCorrect = (verifyPass === thisUser.passwordHash);
         if (!passwordCorrect) {
             return res
                 .status(401)
@@ -491,7 +491,7 @@ resetPassword = async(req,res) =>{
                     errorMessage: "Your new password must have at least 8 characters"
                 });
         }
-        else if (!confirmNewPassword || newPassword != confirmNewPassword){
+        else if (!confirmNewPassword || newPassword != confirmNewPassword) {
             return res
                 .status(400)
                 .json({
@@ -502,24 +502,26 @@ resetPassword = async(req,res) =>{
         const salt = await bcrypt.genSalt(saltRounds);
         const passwordH = await bcrypt.hash(newPassword, salt);
         console.log("passwordHash: " + passwordH);
-        await User.findByIdAndUpdate(thisUser._id, {passwordHash: passwordH});
+        await User.findByIdAndUpdate(thisUser._id, { passwordHash: passwordH });
         const dateJoined = new Date(thisUser.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
         const updatedUser = await User.findOne({ _id: thisUser._id });
-        return res.status(200).json({user: {
-            firstName: updatedUser.firstName,
-            lastName: updatedUser.lastName,
-            email: updatedUser.email,
-            username: updatedUser.username,
-            bio: updatedUser.bio,
-            numPosts: updatedUser.numPosts,
-            dateJoined: dateJoined,
-            id: updatedUser._id,
-            numLikes: updatedUser.numLikes
-        }});
+        return res.status(200).json({
+            user: {
+                firstName: updatedUser.firstName,
+                lastName: updatedUser.lastName,
+                email: updatedUser.email,
+                username: updatedUser.username,
+                bio: updatedUser.bio,
+                numPosts: updatedUser.numPosts,
+                dateJoined: dateJoined,
+                id: updatedUser._id,
+                numLikes: updatedUser.numLikes
+            }
+        });
     } catch (error) {
         console.log(error);
         res.status(500).send();
@@ -563,10 +565,56 @@ const validateEmail = (email) => {
     return String(email)
         .toLowerCase()
         .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         );
-    };
+};
 
+findUserByEmail = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res
+                .status(400)
+                .json({ errorMessage: "Please provide an email address." });
+        }
+
+        const foundUser = await User.findOne({ email: email });
+
+        if (!foundUser) {
+            return res
+                .status(404)
+                .json({
+                    success: false,
+                    errorMessage: "User not found for the provided email address."
+                });
+        }
+
+        return res.status(200).json({
+            success: true,
+            user: {
+                firstName: foundUser.firstName,
+                lastName: foundUser.lastName,
+                email: foundUser.email,
+                username: foundUser.username,
+                maps: foundUser.maps,
+                likedMaps: foundUser.likedMaps,
+                bio: foundUser.bio,
+                numPosts: foundUser.numPosts,
+                dateJoined: new Date(foundUser.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                id: foundUser._id,
+                numLikes: foundUser.numLikes,
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send();
+    }
+}
 
 
 module.exports = {
@@ -578,5 +626,5 @@ module.exports = {
     changeUserPassword,
     sendEmail,
     resetPassword,
-    getAuthorInfo
+    findUserByEmail
 }

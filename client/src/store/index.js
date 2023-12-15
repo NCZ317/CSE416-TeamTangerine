@@ -327,9 +327,7 @@ function GlobalStoreContextProvider(props) {
                     screen: CurrentScreen.USER
                 }
             });
-            navigate("/user/" + auth.user.id);
-            store.loadIdNamePairs();
-            store.loadLikedMapPairs();
+            navigate("/user/" + auth.userToView.id);
         }
         if (screenType === CurrentScreen.MAP_POST) {
             storeReducer({
@@ -432,6 +430,26 @@ function GlobalStoreContextProvider(props) {
         }
         asyncLoadIdNamePairs()
     }
+
+    store.getMapsByUser = function() {
+        async function asyncLoadIdNamePairs() {
+            if (auth.userToView) {
+                let response = await api.getMapsByUser(auth.userToView.email);
+                if (response.data.success) {
+                    let idNamePairs = response.data.idNamePairs;
+                    storeReducer({
+                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                        payload: idNamePairs,
+                    })
+                }
+                else {
+                    console.log("API FAILED TO GET THE LIST PAIRS");
+                }
+            }  
+        }
+        asyncLoadIdNamePairs()
+    }
+
     store.loadLikedMapPairs = function() {
         async function asyncLoadLikedNamePairs() {
             let response = await api.getLikedMapPairs();
