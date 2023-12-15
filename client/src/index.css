@@ -780,10 +780,17 @@ code {
 }
 
 
-.leaflet-control-custom-title {
+.leaflet-control-custom-title .leaflet-control-custom-description {
   /* background-color: white; */
   padding: 10px;
   /* border: 1px solid #ccc; */
+}
+
+.leaflet-control-custom-description {
+  font-family: 'Times New Roman', Times, serif;
+  /* border: 1px solid black; */
+  text-align: left;
+  line-height: 1.25;
 }
 
 .info-popup {

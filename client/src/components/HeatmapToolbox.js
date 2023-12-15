@@ -55,6 +55,10 @@ const HeatmapToolbox = () => {
                     <Box style={{display: 'flex', justifyContent: 'space-evenly', marginTop: 20}}> 
 
                         <ToggleButton
+                                style={{
+                                    backgroundColor: store.heatmapEditActive ? '#4caf50' : '#ccc',
+                                    color: store.heatmapEditActive ? '#fff' : '#333',
+                                }}
                                 selected={store.heatmapEditActive}
                                 onChange={() => {
                                     store.setHeatmapEditActive(!store.heatmapEditActive);

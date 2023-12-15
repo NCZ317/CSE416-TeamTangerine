@@ -149,9 +149,11 @@ const MapWrapper = ({ style}) => {
         const map = useMap();
     
         useEffect(() => {
-            const container = L.DomUtil.create('div', 'leaflet-control leaflet-control-custom-title');
+            const container = L.DomUtil.create('div', 'leaflet-control leaflet-control-custom-description');
             container.innerHTML = `<span style="${getDescriptionStyle()}">${description}</span>`;
             L.DomEvent.disableClickPropagation(container);
+
+            container.style.maxWidth = '500px';
     
             const control = L.control({ position });
             control.onAdd = () => container;
@@ -644,7 +646,27 @@ const MapWrapper = ({ style}) => {
     let check = 0;
     const HeatMapLayer = ({editActive}) => {
         const map = useMap();
+
+        useEffect(() => {
+            const handleClick = (e) => {
+                console.log("EDITACTIVE: " + editActive + check);
+                check++;
+                if (editActive) {
+                    let mapLayer = store.currentMapLayer;
+                    mapLayer.dataValues.push(e.latlng);
+                    console.log(mapLayer);
+                    store.updateCurrentMapLayer(mapLayer);
+                }
+            };
     
+            map.on('click', handleClick);
+    
+            return () => {
+                map.off('click', handleClick);
+            };
+        }, [map, editActive]);
+
+
         // Remove existing heat layer if it exists
         if (heatLayerRef.current) {
             // console.log("REMOVING HEAT LAYER");
@@ -666,22 +688,6 @@ const MapWrapper = ({ style}) => {
             
         }).addTo(map);
 
-
-        // let editActive = store.heatmapEditActive;
-
-        map.on({
-            click: function (e) {
-                // let editActive = store.heatmapEditActive;
-                console.log("EDITACTIVE: " + editActive + check);
-                check++;
-                if (editActive) {
-                    let mapLayer = store.currentMapLayer;
-                    mapLayer.dataValues.push(e.latlng);
-                    console.log(mapLayer);
-                    store.updateCurrentMapLayer(mapLayer);
-                }
-            }
-        })
     
         return null;
 
