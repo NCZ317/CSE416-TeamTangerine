@@ -26,7 +26,8 @@ function MapCard(props) {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.stopPropagation();
     setAnchorEl(null);
   };
 
@@ -120,10 +121,16 @@ function MapCard(props) {
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <MenuItem onClick={(event) => { event.stopPropagation(); handlePublish(); }}>Publish</MenuItem>
-            <MenuItem onClick={(event) => { event.stopPropagation(); handleEditDetails(); }}>Edit Details</MenuItem>
-            <MenuItem onClick={(event) => { event.stopPropagation(); handleEditGraphics(); }}>Edit Graphics</MenuItem>
-            <MenuItem onClick={(event) => { event.stopPropagation(); handleDeleteMap(); }}>Delete</MenuItem>
+            {idNamePair.published ? (
+              <MenuItem onClick={(event) => { event.stopPropagation(); handleDeleteMap(); }}>Delete</MenuItem>
+            ) : (
+              <>
+                <MenuItem onClick={(event) => { event.stopPropagation(); handlePublish(); }}>Publish</MenuItem>
+                <MenuItem onClick={(event) => { event.stopPropagation(); handleEditDetails(); }}>Edit Details</MenuItem>
+                <MenuItem onClick={(event) => { event.stopPropagation(); handleEditGraphics(); }}>Edit Graphics</MenuItem>
+                <MenuItem onClick={(event) => { event.stopPropagation(); handleDeleteMap(); }}>Delete</MenuItem>
+              </>
+            )}
           </Menu>
 
         </>
