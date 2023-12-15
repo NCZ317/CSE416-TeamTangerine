@@ -44,7 +44,11 @@ createMap = async (req, res) => {
             // mapLayer = new ChoroplethLayer();
         } else if (body.mapType === "heatMap") {
             let radius = 0;
-            let colorScale = {};
+            let colorScale = {
+                low: 'blue',
+                medium: 'yellow',
+                high: 'red'
+            };
             mapLayer = new HeatmapLayer({
                 graphicTitle: graphicTitle, 
                 graphicDescription: graphicDescription, 
