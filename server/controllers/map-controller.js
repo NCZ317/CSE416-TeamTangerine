@@ -115,14 +115,13 @@ createMap = async (req, res) => {
             //console.log(mapLayer.geographicRegion);
 
         } else if (body.mapType === "graduatedSymbolMap") {
-            let symbolColor = "";
-            let sizeScale = {};
+            let symbolColor = "#FF0000";
             mapLayer = new GraduatedSymbolLayer({
                 graphicTitle: graphicTitle, 
                 graphicDescription: graphicDescription, 
+                dataValues: [],
                 style: style, 
                 symbolColor: symbolColor, 
-                sizeScale: sizeScale,
                 currentRegions: currentRegions
             });
 
@@ -536,7 +535,7 @@ getMapLayerById = async (req, res) => {
 
 updateMapLayer = async (req, res) => {
     const body = req.body;
-    // console.log("updateMapLayer: " + JSON.stringify(body));
+    console.log("updateMapLayer: " + JSON.stringify(body));
 
     try {
         if (!body) {
@@ -578,10 +577,10 @@ updateMapLayer = async (req, res) => {
 
         } else if (mapType === "graduatedSymbolMap") {
             mapLayer = await GraduatedSymbolLayer.findOne({ _id: req.params.id });
+            console.log(mapLayer);
             if (mapLayer) {
                 mapLayer.dataValues = body.mapLayer.dataValues;
                 mapLayer.symbolColor = body.mapLayer.symbolColor;
-                mapLayer.sizeScale = body.mapLayer.sizeScale;
             }
 
         } else if (mapType === "flowMap") {

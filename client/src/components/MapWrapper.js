@@ -314,6 +314,29 @@ const MapWrapper = ({ style}) => {
 
             }
         }
+        if (store.mapTemplate === 'graduatedSymbolMap') {
+            let symbols = [];
+            if (store.currentMapLayer && store.currentMapLayer.dataValues) symbols = store.currentMapLayer.dataValues;
+            //console.log(symbols);
+            if(featureIndex == 0) {
+                map.eachLayer((layer) => {
+                    if (layer instanceof L.CircleMarker) {
+                        map.removeLayer(layer);
+                    }
+                });
+            }
+            let symbolColor = '#000000';
+            if (store.currentMapLayer) {
+                symbolColor = store.currentMapLayer.symbolColor;
+            }
+            symbols.forEach((symbol) => {
+                const marker = L.circleMarker(L.latLng(symbol.coordinates[1], symbol.coordinates[0]), {
+                    radius: symbol.radius,
+                    weight: 1,
+                    color: symbolColor,
+                }).addTo(map);
+            })
+        }
 
         if (featureFound !== -1) {
 
@@ -530,34 +553,34 @@ const MapWrapper = ({ style}) => {
     };
     
     //------------------------------------------Graduated Symbol Map------------------------------------------------// 
-    const ProportionalSymbol = ({data, scale, symbolColor}) =>{
-        const map = useMap();
-        markerGroup.clearLayers();
-        function scaleRadius(value) {
-            var radius = 1;
-            for (var i = 0; i< scale.length; i++){
-                if (value >= scale[i].value)
-                    radius = scale[i].radius
-            }
-            return radius;
-        };
-        if (data){ 
-            data.forEach(({latitude,longitude, value}, index) => {
-                L.circleMarker(L.latLng(latitude, longitude), { radius: scaleRadius(value), weight: 1, color: symbolColor }).addTo(markerGroup)
-            });
-        }
-        // function calcRadius(val, zoom) {
-        //     return 1.00083 * Math.pow(val/20,0.5716) * (zoom / 2);      
-        // }
-        // map.on('zoomend', function() {
-        //     markerGroup.eachLayer(function(layer){
-        //         if (layer instanceof L.CircleMarker){
-        //             layer.setRadius(calcRadius(layer._orgRadius,map.getZoom()))
-        //         }
-        //     });
-        // });
-        markerGroup.addTo(map);
-    }
+    // const ProportionalSymbol = ({data, scale, symbolColor}) =>{
+    //     const map = useMap();
+    //     markerGroup.clearLayers();
+    //     function scaleRadius(value) {
+    //         var radius = 1;
+    //         for (var i = 0; i< scale.length; i++){
+    //             if (value >= scale[i].value)
+    //                 radius = scale[i].radius
+    //         }
+    //         return radius;
+    //     };
+    //     if (data){ 
+    //         data.forEach(({latitude,longitude, value}, index) => {
+    //             L.circleMarker(L.latLng(latitude, longitude), { radius: scaleRadius(value), weight: 1, color: symbolColor }).addTo(markerGroup)
+    //         });
+    //     }
+    //     // function calcRadius(val, zoom) {
+    //     //     return 1.00083 * Math.pow(val/20,0.5716) * (zoom / 2);      
+    //     // }
+    //     // map.on('zoomend', function() {
+    //     //     markerGroup.eachLayer(function(layer){
+    //     //         if (layer instanceof L.CircleMarker){
+    //     //             layer.setRadius(calcRadius(layer._orgRadius,map.getZoom()))
+    //     //         }
+    //     //     });
+    //     // });
+    //     markerGroup.addTo(map);
+    // }
     //--------------------------------------------------------------------------------------------------------------//
     // Flow MAPS
     const deleteArrow = (index) => {
@@ -732,7 +755,7 @@ const MapWrapper = ({ style}) => {
             )}
             {store.mapTemplate === 'flowMap' && <FlowArrows data={store.currentMapLayer.dataValues}/>/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
             {/* Render dots only if mapType is "dotDensityMap" */}
-            {store.mapTemplate === 'graduatedSymbolMap' && <ProportionalSymbol data = {store.currentMapLayer.dataValues} scale = {store.currentMapLayer.sizeScale} symbolColor = {store.currentMapLayer.symbolColor} />}
+            {/* {store.mapTemplate === 'graduatedSymbolMap' && <ProportionalSymbol data = {store.currentMapLayer.dataValues} scale = {store.currentMapLayer.sizeScale} symbolColor = {store.currentMapLayer.symbolColor} />} */}
         </MapContainer>
 
     );

@@ -1,28 +1,54 @@
-
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Box } from '@mui/material';
+import { MultiPolygon } from 'react-leaflet';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { Typography, IconButton, Checkbox, FormGroup, FormControlLabel, Collapse, Switch } from '@mui/material';
+import { Typography, IconButton, Checkbox, FormGroup, FormControlLabel, Collapse, Switch, Popover } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
+import AddLocationIcon from '@mui/icons-material/AddLocation';
+import * as turf from '@turf/turf';
+import _ from 'lodash'; 
 
 import { GlobalStoreContext } from '../store';
 
 const GraduatedSymbolToolbox = () => {
     const { store } = useContext(GlobalStoreContext);
 
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [geometry, setGeometry] = useState(null);
+
+    const handlePopoverOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+    const open = Boolean(anchorEl);
     const [selectedTab, setSelectedTab] = useState(0);
     const [dataSettingsOpen, setDataSettingsOpen] = useState(true);
     const [mapSettingsOpen, setMapSettingsOpen] = useState(true);
 
     const [data, setData] = useState([{latitude: 0, longitude: 0, value: 0}])
     const [legend, setLegend] = useState([{ value: 0, radius: 0 }]);
+
+
+    const [properties, setProperties] = useState([]);
+    //console.log(properties);
+    useEffect(() => {
+        //console.log("GRADUATED SYMBOL TOOLBOX LISTENER");
+        if (store.currentMapLayer) {
+            if (store.currentMapLayer.dataValues) {
+                //console.log(store.currentMapLayer.dataValues);
+                setProperties(store.currentMapLayer.dataValues);
+            }
+        }
+    }, [store.currentMapLayer]);
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -104,6 +130,22 @@ const GraduatedSymbolToolbox = () => {
         store.updateCurrentMapLayer(mapLayer);
     }
 
+    const handleAddSymbol = () => {
+        console.log("ADDING SYMBOL");
+        let point = turf.pointOnFeature(store.currentMap.jsonData);
+        console.log(point.geometry.coordinates);
+        if (store.currentMapLayer) {
+            let prev = _.cloneDeep(store.currentMapLayer);
+            let coords = turf.getCoord(point);
+            console.log(coords);
+            store.currentMapLayer.dataValues.push({
+                coordinates: coords,
+                radius: 10
+            });
+            store.addUpdateLayerTransaction(prev); 
+        }
+    }
+
     return (
         <div className="dotdensity-toolbox">
             <Tabs
@@ -120,44 +162,130 @@ const GraduatedSymbolToolbox = () => {
             {selectedTab === 0 && (
                 <div>
                     <IconButton onClick={handleDataSettings} aria-label="toggle" sx={{width: '100%'}}>
-                        Data Settings
+                        Symbol Settings
                         {dataSettingsOpen ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                     <Collapse in={dataSettingsOpen} timeout="auto" unmountOnExit
-                        sx={{width: '95%', p: 1, textAlign: 'center' }}
+                        sx={{ width: '95%', p: 1, textAlign: 'center' }}
                     >
-
-                        {data.map((row, index) => (
-                            <div key={index} style={{display: 'flex'}}>
+                        <Button
+                            aria-owns={open ? 'mouse-over-popover' : undefined}
+                            aria-haspopup="true"
+                            onMouseEnter={handlePopoverOpen}
+                            onMouseLeave={handlePopoverClose}
+                            variant='contained'
+                            fullWidth
+                            style={{ marginBottom: '24px' }}
+                            onClick={handleAddSymbol}
+                        >
+                            <AddLocationIcon />
+                        </Button>
+                        <Popover
+                            id="mouse-over-popover"
+                            sx={{
+                                pointerEvents: 'none',
+                            }}
+                            open={open}
+                            anchorEl={anchorEl}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            onClose={handlePopoverClose}
+                            disableRestoreFocus
+                        >
+                            <Typography sx={{ p: 1 }}>Click to use the Symbol Creator. I add a symbol to the map and you can edit the details below</Typography>
+                        </Popover>
+                        {properties.map((row, index) => (
+                            <div key={index} style={{display: 'flex', marginBottom: '12px'}}>
                                 <TextField
                                     label="Latitude"
-                                    value={row.latitude}
+                                    value={row.coordinates[1]}
                                     fullWidth
-                                    onChange={(e) => handleLatData(index, e.target.value)}
+                                    type='number'
+                                    InputProps={{
+                                        inputProps: {
+                                            step: 1
+                                        },
+
+                                    }}
+                                    onChange={(e) => {
+                                        let prev = _.cloneDeep(store.currentMapLayer);
+                                        const newLat = e.target.value;
+                                        if (store.currentMapLayer) {
+                                            console.log(index);
+                                            store.currentMapLayer.dataValues[index].coordinates[1] = newLat;
+                                            store.addUpdateLayerTransaction(prev);
+                                        }
+                                    }}
                                 />
                                 <TextField
                                     label="Longitude"
-                                    value={row.longitude}
+                                    value={row.coordinates[0]}
                                     fullWidth
-                                    onChange={(e) => handleLongData(index, e.target.value)}
+                                    type='number'
+                                    InputProps={{
+                                        inputProps: {
+                                            step: 1
+                                        },
+
+                                    }}
+                                    onChange={(e) => {
+                                        let prev = _.cloneDeep(store.currentMapLayer);
+                                        const newLong = e.target.value;
+                                        if (store.currentMapLayer) {
+                                            console.log(index);
+                                            store.currentMapLayer.dataValues[index].coordinates[0] = newLong;
+                                            store.addUpdateLayerTransaction(prev);
+                                        }
+                                    }}
                                 />
                                 <TextField
-                                    label="Value"
-                                    value={row.value}
+                                    label="Radius"
+                                    value={row.radius}
                                     fullWidth
-                                    onChange={(e) => handleDataValue(index, e.target.value)}
+                                    type='number'
+                                    InputProps={{
+                                        inputProps: {
+                                            min: 1,
+                                            step: 1
+                                        },
+
+                                    }}
+                                    onChange={(e) => {
+                                        let prev = _.cloneDeep(store.currentMapLayer);
+                                        const newRadius = e.target.value;
+                                        if (store.currentMapLayer) {
+                                            console.log(index);
+                                            store.currentMapLayer.dataValues[index].radius = newRadius;
+                                            store.addUpdateLayerTransaction(prev);
+                                        }
+                                    }}
                                 />
-                                <IconButton variant="outlined" onClick={() => deleteDataRow(index)}>
+                                <IconButton 
+                                    variant="outlined" 
+                                    onClick={() => {
+                                        let prev = _.cloneDeep(store.currentMapLayer);
+                                        if (store.currentMapLayer) {
+                                            console.log(index);
+                                            store.currentMapLayer.dataValues.splice(index, 1);
+                                            store.addUpdateLayerTransaction(prev);
+                                        }
+                                    }}>
                                     <DeleteIcon/>
                                 </IconButton>
                             </div>
                         ))}
-                        <Button variant="outlined" onClick={saveData}>
+                        {/* <Button variant="outlined" onClick={saveData}>
                             Save Data
                         </Button>
                         <Button variant="outlined" onClick={addDataRow}>
                             Add Data Point
-                        </Button>
+                        </Button> */}
 
                     </Collapse>
 
@@ -172,12 +300,19 @@ const GraduatedSymbolToolbox = () => {
                         <TextField 
                             label="Symbol Color"
                             type='color'
-                            value = {store.currentMapLayer.symbolColor ? store.currentMapLayer.symbolColor : "black"}
+                            value = {store.currentMapLayer.symbolColor ? store.currentMapLayer.symbolColor : "#000000"}
                             fullWidth
-                            onChange = {(e) => handleSymbolColor(e.target.value)}
+                            onChange={(e) => {
+                                let prev = _.cloneDeep(store.currentMapLayer);
+                                const newSymbolColor = e.target.value;
+                                if (store.currentMapLayer) {
+                                    store.currentMapLayer.symbolColor = newSymbolColor;
+                                    store.addUpdateLayerTransaction(prev);
+                                }
+                            }}
                         />
 
-                        <Divider style={{borderBottom: '2px solid black', margin: 10}} />
+                        {/* <Divider style={{borderBottom: '2px solid black', margin: 10}} />
 
 
                         <Typography variant='h6'>Radius Scale</Typography>
@@ -208,7 +343,7 @@ const GraduatedSymbolToolbox = () => {
                         </Button>
                         <Button variant="outlined" onClick={addLegendRow}>
                             Add Scale Value
-                        </Button>
+                        </Button> */}
                     </Collapse>
 
                 </div>
