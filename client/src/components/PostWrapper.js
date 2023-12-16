@@ -11,8 +11,8 @@ const PostWrapper = () => {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [liked, setLiked] = useState(false);
-    const [jsonURL, setJSONurl] = useState("");
-    const [jsonFilename, setJSONfilename] = useState("");
+    // const [jsonURL, setJSONurl] = useState("");
+    // const [jsonFilename, setJSONfilename] = useState("");
     
 
 
@@ -57,14 +57,14 @@ const PostWrapper = () => {
                 views: store.currentMap.views,
                 likes: store.currentMap.likes,
             });
-            const jsonBlob = new Blob(
-                [JSON.stringify({"type":store.currentMap.jsonData.type,"features":store.currentMap.jsonData.features})],
-                { type: 'application/json' }
-              );
-            console.log(jsonBlob);  
-            // Create a download link for the blob content
-            setJSONurl(URL.createObjectURL(jsonBlob));
-            setJSONfilename(store.currentMap.title + '.json');
+            // const jsonBlob = new Blob(
+            //     [JSON.stringify({"type":store.currentMap.jsonData.type,"features":store.currentMap.jsonData.features})],
+            //     { type: 'application/json' }
+            //   );
+            // console.log(jsonBlob);  
+            // // Create a download link for the blob content
+            // setJSONurl(URL.createObjectURL(jsonBlob));
+            // setJSONfilename(store.currentMap.title + '.json');
         }
     }, [store.currentMap]);
 
@@ -133,9 +133,34 @@ const PostWrapper = () => {
 
     const handleAuthorClick = () => {
         if (auth.userToView) {
-          store.setScreen("USER");
+            store.setScreen("USER");
         }
-      };
+    };
+
+    const handleDownloadJSON = () => {
+        console.log("DOWNLOADING JSON");
+        if (store.currentMap && store.currentMapLayer) {
+            const jsonContent = {
+                mapType: store.currentMap.mapType,
+                jsonData: store.currentMap.jsonData,
+                mapLayer: store.currentMapLayer,
+            };
+            console.log(jsonContent);
+
+            const jsonString = JSON.stringify(jsonContent, null, 2); 
+        
+            const jsonBlob = new Blob([jsonString], { type: 'application/json' });
+
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(jsonBlob);
+            downloadLink.download = `${store.currentMap.title}.json`; 
+
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+
+            document.body.removeChild(downloadLink);
+        }
+    }
 
     return (
         <div className='post-height'>
@@ -151,7 +176,7 @@ const PostWrapper = () => {
                             >
                                 <MenuItem>JPEG</MenuItem>
                                 <MenuItem>PNG</MenuItem>
-                                <MenuItem><a href={jsonURL} download={jsonFilename}>JSON</a></MenuItem>
+                                <MenuItem onClick={handleDownloadJSON}>JSON</MenuItem>
                             </Menu>
                             {forkButton}
                         </Box>
