@@ -13,6 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
 import L from 'leaflet';
+import _ from 'lodash'; 
 
 import { GlobalStoreContext } from '../store';
 
@@ -55,9 +56,10 @@ const ChoroplethToolbox = () => {
 
     const handleValueField = (event) => {
         if (event.key === "Enter") {
+            let prev = _.cloneDeep(store.currentMapLayer);
             let mapLayer = store.currentMapLayer;
             mapLayer.valueField = valueField;
-            store.updateCurrentMapLayer(mapLayer);
+            store.addUpdateLayerTransaction(prev);
         }
     }
 
@@ -72,29 +74,31 @@ const ChoroplethToolbox = () => {
     };
 
     const handleLegendColor = (index, color) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         const newLegend = [...legend];
         newLegend[index].color = color;
 
         let mapLayer = store.currentMapLayer;
         mapLayer.colorScale = newLegend;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
         setLegend(newLegend);
     };
 
     const deleteLegendRow = (index) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         const newLegend = [...legend];
         newLegend.splice(index, 1);
         // store.currentMap.legend = newLegend;
         // setLegend(newLegend);
         let mapLayer = store.currentMapLayer;
         mapLayer.colorScale = newLegend;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
         setLegend(newLegend);
     };
 
     const updateLegendValue = (event, index) => {
         if (event.key === "Enter") {
-
+            let prev = _.cloneDeep(store.currentMapLayer);
             if (event.target.value === "") {
                 const newLegend = [...legend];
                 newLegend[index].value = "";
@@ -102,13 +106,13 @@ const ChoroplethToolbox = () => {
                 
                 let mapLayer = store.currentMapLayer;
                 mapLayer.colorScale = newLegend;
-                store.updateCurrentMapLayer(mapLayer);
+                store.addUpdateLayerTransaction(prev);
                 setLegend(newLegend);
 
             } else {
                 let mapLayer = store.currentMapLayer;
                 mapLayer.colorScale = legend;
-                store.updateCurrentMapLayer(mapLayer);
+                store.addUpdateLayerTransaction(prev);
 
             }
 
@@ -116,9 +120,10 @@ const ChoroplethToolbox = () => {
     }
 
     const handleDefaultColor = (event) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         let mapLayer = store.currentMapLayer;
         mapLayer.defaultColor = event.target.value;
-        store.updateCurrentMapLayer(mapLayer);
+        store.addUpdateLayerTransaction(prev);
     }
 
 
@@ -191,7 +196,7 @@ const ChoroplethToolbox = () => {
 
                         <Divider style={{borderBottom: '2px solid black', margin: 10}} />
 
-                        <Typography style={{fontSize: '16px'}}>For numeric data, add start value in decreasing order</Typography>
+                        <Typography style={{fontSize: '16px'}}>For numeric data, add start value (Should be largest value) in decreasing order</Typography>
                         <Typography style={{fontSize: '16px'}}>For categorical data, add the category name and its corresponding color</Typography>
                         <br></br>
                         {legend.map((row, index) => (
