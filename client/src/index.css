@@ -598,15 +598,15 @@ code {
   position: absolute;
   z-index: 2000;
   top: 125px;
-  left: 55px;
+  right: 30%;
 }
 
 #post-button-2{
   background-color: #79C200;
   position: absolute;
-  z-index: 2000;
-  top: 125px;
-  left: 66%;
+  z-index: 1999;
+  top: 170px;
+  right: 30%;
 }
 
 #post-box{

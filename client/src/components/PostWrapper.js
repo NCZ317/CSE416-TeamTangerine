@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext,} from 'react';
 import { Box, Card, CardContent, Grid, Typography, TextField, Button, Menu, MenuItem } from '@mui/material';
 import MapWrapper from './MapWrapper';
 import { styled } from '@mui/material/styles';
@@ -6,6 +6,8 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { GlobalStoreContext } from '../store/index.js';
 import AuthContext from '../auth';
+import html2canvas from 'html2canvas';
+import 'leaflet/dist/leaflet.css';
 
 const PostWrapper = () => {
     const { auth } = useContext(AuthContext);
@@ -161,7 +163,32 @@ const PostWrapper = () => {
             document.body.removeChild(downloadLink);
         }
     }
+    const captureMapJPG = () => {
+        // Use html2canvas to capture the entire map container
+        html2canvas(document.querySelector('.leaflet-container')).then((canvas) => {
+            // Convert the canvas to a data URL
+            const imgURL = canvas.toDataURL('image/jpeg');
 
+            // Create a link element and trigger a download
+            const link = document.createElement('a');
+            link.href = imgURL;
+            link.download = 'map.png';
+            link.click();
+        }); 
+    };
+    const captureMapPNG = () => {
+        // Use html2canvas to capture the entire map container
+        html2canvas(document.querySelector('.leaflet-container')).then((canvas) => {
+            // Convert the canvas to a data URL
+            const imgURL = canvas.toDataURL('image/png');
+
+            // Create a link element and trigger a download
+            const link = document.createElement('a');
+            link.href = imgURL;
+            link.download = 'map.png';
+            link.click();
+        });
+    };
     return (
         <div className='post-height'>
             <Grid container spacing={2} className='post-height'>
@@ -173,12 +200,13 @@ const PostWrapper = () => {
                                 anchorEl={anchorEl}
                                 open={Boolean(anchorEl)}
                                 onClose={handleExportMenuClose}
+                                style = {{zIndex: "2000"}}
                             >
-                                <MenuItem>JPEG</MenuItem>
-                                <MenuItem>PNG</MenuItem>
+                                <MenuItem onClick={captureMapJPG}>JPEG</MenuItem>
+                                <MenuItem onClick={captureMapPNG}>PNG</MenuItem>
                                 <MenuItem onClick={handleDownloadJSON}>JSON</MenuItem>
                             </Menu>
-                            {forkButton}
+                            {forkButton} 
                         </Box>
                         <MapWrapper style={{ height: '63vh' }} />
                         <CardContent className='post-card-content'>
