@@ -102,6 +102,7 @@ function MapCard(props) {
       comments = pair.comments.length;
       views = pair.views;
       imageURL = pair.imageURL;
+      if (imageURL === "" || !imageURL) imageURL = mapImage;
       console.log(imageURL);
     }
   }
