@@ -551,6 +551,46 @@ const MapWrapper = ({ style}) => {
     
         return null;
     };
+
+
+    const FlowmapLegend = ({position, legend}) => {
+
+        const map = useMap();
+
+        useEffect(() => {
+
+            if (legend.length > 0) {
+                const container = L.DomUtil.create('div', 'legend info-popup');
+                if (store.mapTemplate === 'flowMap') {
+    
+                    container.innerHTML += `<h4>${store.currentMapLayer.valueField}</h4>`
+    
+                    for (var i = 0; i < legend.length; i++) {
+                        if (legend[i].value !== "") {
+    
+                            container.innerHTML +=
+                            '<i style="background:' + legend[i].color + '"></i>' +
+                            legend[i].value + '<br>';
+                        }
+                    }
+                    
+                    L.DomEvent.disableClickPropagation(container);
+            
+                    const control = L.control({ position });
+                    control.onAdd = () => container;
+                    control.addTo(map);
+            
+                    return () => {
+                        // Cleanup on component unmount
+                        control.remove();
+                    };
+                }
+
+            }
+
+        }, [position, legend])
+
+    }
     
     //------------------------------------------Graduated Symbol Map------------------------------------------------// 
     // const ProportionalSymbol = ({data, scale, symbolColor}) =>{
@@ -718,6 +758,114 @@ const MapWrapper = ({ style}) => {
 
     }
 
+    //---------------------------------------------------------------------------------
+    //FLOW MAP
+
+    const FlowMapLayer = ({editActive}) => {
+        const map = useMap();
+        const isOriginSelected = useRef(false);
+        const originLatLng = useRef(null);
+        const tempFlowLineRef = useRef(null);
+      
+        useEffect(() => {
+            const handleMapClick = (e) => {
+                if (editActive) {
+                    if (isOriginSelected.current) {
+                        // User has selected destination
+                        const destinationLatLng = e.latlng;
+                        addFlowLine(originLatLng.current, destinationLatLng);
+                        isOriginSelected.current = false;
+                        map.off('mousemove', handleMapMove);
+                    } else {
+                        // User is selecting origin
+                        originLatLng.current = e.latlng;
+                        isOriginSelected.current = true;
+                        map.on('mousemove', handleMapMove);
+                    }
+                }
+            };
+      
+            const handleMapMove = (e) => {
+                // Update the temporary arrow line based on the mouse position
+                if (originLatLng.current) {
+                    const tempDestinationLatLng = e.latlng;
+                    updateTempFlowLine(originLatLng.current, tempDestinationLatLng);
+                }
+            };
+      
+            const updateTempFlowLine = (origin, destination) => {
+                // Remove existing temporary arrow line
+                if (tempFlowLineRef.current) {
+                map.removeLayer(tempFlowLineRef.current);
+                }
+        
+                // Draw the temporary arrow line
+                tempFlowLineRef.current = L.polyline([origin, destination], { color: 'gray', dashArray: '5, 5' }).arrowheads().addTo(map);
+            };
+      
+            map.on('click', handleMapClick);
+        
+            return () => {
+                map.off('click', handleMapClick);
+                map.off('mousemove', handleMapMove);
+            };
+
+        }, [map, editActive]);
+      
+        const addFlowLine = (origin, destination) => {
+          // Remove the temporary arrow line
+            if (tempFlowLineRef.current) {
+                map.removeLayer(tempFlowLineRef.current);
+            }
+      
+            let mapLayer = store.currentMapLayer;
+            mapLayer.dataValues.push({origin: origin, destination: destination});
+            store.updateCurrentMapLayer(mapLayer);
+
+        };
+
+        const handlePolylineClick = (event) => {
+            L.DomEvent.stopPropagation(event);
+            const clickedPolyline = event.target;;
+            const arrowIndex = clickedPolyline.options.arrowIndex;
+    
+            // Retrieve arrow data from dataValues using the index
+            const clickedArrow = store.currentMapLayer.dataValues[arrowIndex];
+    
+            store.setCurrentFlow(clickedArrow, arrowIndex);
+    
+        };
+
+
+        //Remove all existing flow lines before rendering updated lines
+        map.eachLayer(layer => {
+            if (layer instanceof L.Polyline && layer.options.isFlowLine) {
+                map.removeLayer(layer);
+            }
+        });
+
+        store.currentMapLayer.dataValues.forEach((arrow, index) => {
+
+            const polyline = L.polyline([arrow.origin, arrow.destination], {
+                color: arrow.color ? arrow.color : 'black',
+                weight: arrow.lineSize ? arrow.lineSize : 3
+            
+            
+            }).arrowheads().addTo(map);
+
+            if (arrow.label && arrow.label !== "") {
+                polyline.bindTooltip(arrow.label, {permanent: true}).openTooltip();
+            }
+            
+            polyline.on('click', handlePolylineClick);
+
+            // Store the arrow index in the polyline options for later retrieval
+            polyline.options.arrowIndex = index;
+            polyline.options.isFlowLine = true;
+        })
+
+        return null;
+    };
 
 
     return (
@@ -736,7 +884,9 @@ const MapWrapper = ({ style}) => {
             />
 
             {mapData && <GeoJSON data={mapData} style={getMapStyle}
+                key={store.flowmapEditActive}
                 onEachFeature={onEachFeature}
+                interactive={!store.flowmapEditActive}
             />}
             {/* <FitBounds /> IS BUGGY; CONSTANTLY ZOOMS OUT*/}
 
@@ -746,6 +896,8 @@ const MapWrapper = ({ style}) => {
             {store.mapTemplate === 'choroplethMap' && <InfoPopup position="topleft" name={region.name} value={region.value} />}
             {store.mapTemplate === 'choroplethMap' && <MapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
             {store.mapTemplate === 'heatMap' && <HeatMapLayer editActive={store.heatmapEditActive}/>}
+            {store.mapTemplate === 'flowMap' && <FlowMapLayer editActive={store.flowmapEditActive}/>}
+            {store.mapTemplate === 'flowMap' && <FlowmapLegend position="topleft" legend={store.currentMapLayer.colorScale} />}
             {store.mapTemplate === 'dotDensityMap' && (
                 <DotLegend
                     position="topleft"
@@ -755,7 +907,6 @@ const MapWrapper = ({ style}) => {
                     valueField={store.currentMapLayer.valueField}
                 />
             )}
-            {store.mapTemplate === 'flowMap' && <FlowArrows data={store.currentMapLayer.dataValues}/>/*<FlowArrow position={[[store.currentMapLayer.dataValues[0].originLatitude,store.currentMapLayer.dataValues[0].originLongitude], [store.currentMapLayer.dataValues[0].destinationLatitude,store.currentMapLayer.dataValues[0].destinationLongitude]]} lineSize={1} color={'red'}/>*/}
             {/* Render dots only if mapType is "dotDensityMap" */}
             {/* {store.mapTemplate === 'graduatedSymbolMap' && <ProportionalSymbol data = {store.currentMapLayer.dataValues} scale = {store.currentMapLayer.sizeScale} symbolColor = {store.currentMapLayer.symbolColor} />} */}
         </MapContainer>

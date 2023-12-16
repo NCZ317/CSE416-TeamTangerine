@@ -137,13 +137,14 @@ createMap = async (req, res) => {
             });
 
         } else if (body.mapType === "flowMap") {
-            let lineSizeScale = {};
-            let colorScale = {};
+            
+            let valueField = "";
+            let colorScale = [];
             mapLayer = new FlowmapLayer({
                 graphicTitle: graphicTitle, 
                 graphicDescription: graphicDescription, 
                 style: style, 
-                lineSizeScale: lineSizeScale, 
+                valueField: valueField,
                 colorScale: colorScale,
                 currentRegions: currentRegions
             });
@@ -603,7 +604,7 @@ updateMapLayer = async (req, res) => {
             if (mapLayer) {
                 console.log(mapLayer);
                 mapLayer.dataValues = body.mapLayer.dataValues;
-                mapLayer.lineSizeScale = body.mapLayer.lineSizeScale;
+                mapLayer.valueField = body.mapLayer.valueField;
                 mapLayer.colorScale = body.mapLayer.colorScale;
             }
 
