@@ -33,7 +33,9 @@ export const GlobalStoreActionType = {
     SET_SORT: "SET_SORT",
     SET_CURRENT_USER: "SET_CURRENT_USER",
     SET_MAP_TEMPLATE: "SET_MAP_TEMPLATE",
-    SET_HEATMAP_ACTIVE: "SET_HEATMAP_ACTIVE"
+    SET_HEATMAP_ACTIVE: "SET_HEATMAP_ACTIVE",
+    SET_FLOWMAP_ACTIVE: "SET_FLOWMAP_ACTIVE",
+    SET_CURRENT_FLOW: "SET_CURRENT_FLOW"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -98,7 +100,10 @@ function GlobalStoreContextProvider(props) {
         currentSortMethod: "",
         currentRegion: {},
         currentFeatureIndex: null,
-        heatmapEditActive: false
+        heatmapEditActive: false,
+        flowmapEditActive: false,
+        currentFlow: null,
+        currentFlowIndex: null
     });
 
     const navigate = useNavigate();
@@ -131,7 +136,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: null,
                     currentFeatureIndex: null,
-                    heatmapEditActive: false
+                    heatmapEditActive: false,
+                    flowmapEditActive: false,
+                    currentFlow: null,
+                    currentFlowIndex: null
                 });
             }
             case GlobalStoreActionType.CREATE_NEW_MAP: {
@@ -150,7 +158,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: null,
                     currentFeatureIndex: null,
-                    heatmapEditActive: false
+                    heatmapEditActive: false,
+                    flowmapEditActive: false,
+                    currentFlow: null,
+                    currentFlowIndex: null
                 });
             }
             //THIS SHOULD BE CALLED WHEN USER FORKS MAP AND IT WILL REDIRECT TO THEIR PROFILE WITH THE MAP DUPED
@@ -170,7 +181,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: null,
                     currentFeatureIndex: null,
-                    heatmapEditActive: false
+                    heatmapEditActive: false,
+                    flowmapEditActive: false,
+                    currentFlow: null,
+                    currentFlowIndex: null
                 });
             }
 
@@ -190,7 +204,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: null,
                     currentFeatureIndex: null,
-                    heatmapEditActive: false
+                    heatmapEditActive: false,
+                    flowmapEditActive: false,
+                    currentFlow: null,
+                    currentFlowIndex: null
                 })
             }
 
@@ -210,7 +227,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: null,
                     currentFeatureIndex: null,
-                    heatmapEditActive: false
+                    heatmapEditActive: false,
+                    flowmapEditActive: false,
+                    currentFlow: null,
+                    currentFlowIndex: null
                 })
             }
 
@@ -230,7 +250,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: null,
                     currentFeatureIndex: null,
-                    heatmapEditActive: false
+                    heatmapEditActive: false,
+                    flowmapEditActive: false,
+                    currentFlow: null,
+                    currentFlowIndex: null
                 })
             }
 
@@ -251,7 +274,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: null,
                     currentFeatureIndex: null,
-                    heatmapEditActive: false
+                    heatmapEditActive: false,
+                    flowmapEditActive: false,
+                    currentFlow: null,
+                    currentFlowIndex: null
                 })
             }
 
@@ -271,7 +297,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: payload.region,
                     currentFeatureIndex: payload.featureIndex,
-                    heatmapEditActive: false
+                    heatmapEditActive: false,
+                    flowmapEditActive: false,
+                    currentFlow: null,
+                    currentFlowIndex: null
                 })
             }
 
@@ -291,7 +320,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: store.currentRegion,
                     currentFeatureIndex: store.currentFeatureIndex,
-                    heatmapEditActive: store.heatmapEditActive
+                    heatmapEditActive: store.heatmapEditActive,
+                    flowmapEditActive: store.flowmapEditActive,
+                    currentFlow: store.currentFlow,
+                    currentFlowIndex: store.currentFlowIndex
                 })
             }
 
@@ -311,7 +343,10 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: store.currentRegion,
                     currentFeatureIndex: store.currentFeatureIndex,
-                    heatmapEditActive: store.heatmapEditActive
+                    heatmapEditActive: store.heatmapEditActive,
+                    flowmapEditActive: store.flowmapEditActive,
+                    currentFlow: store.currentFlow,
+                    currentFlowIndex: store.currentFlowIndex
                 })
             }
 
@@ -331,7 +366,56 @@ function GlobalStoreContextProvider(props) {
                     currentSortMethod: "",
                     currentRegion: store.currentRegion,
                     currentFeatureIndex: store.currentFeatureIndex,
-                    heatmapEditActive: payload
+                    heatmapEditActive: payload,
+                    flowmapEditActive: false,
+                    currentFlow: null,
+                    currentFlowIndex: null
+                })
+            }
+
+            case GlobalStoreActionType.SET_FLOWMAP_ACTIVE: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : store.currentScreen,
+                    idNamePairs: store.idNamePairs,
+                    likedMapPairs: store.likedMapPairs,
+                    currentMaps: [],
+                    currentMap: store.currentMap,
+                    currentMapLayer: store.currentMapLayer,
+                    mapTemplate: store.mapTemplate,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                    currentRegion: store.currentRegion,
+                    currentFeatureIndex: store.currentFeatureIndex,
+                    heatmapEditActive: false,
+                    flowmapEditActive: payload,
+                    currentFlow: null,
+                    currentFlowIndex: null
+                })
+            }
+
+            case GlobalStoreActionType.SET_CURRENT_FLOW: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    currentScreen : store.currentScreen,
+                    idNamePairs: store.idNamePairs,
+                    likedMapPairs: store.likedMapPairs,
+                    currentMaps: [],
+                    currentMap: store.currentMap,
+                    currentMapLayer: store.currentMapLayer,
+                    mapTemplate: store.mapTemplate,
+                    newMapCounter: store.newMapCounter,
+                    mapMarkedForDeletion: null,
+                    currentSearchResult: "",
+                    currentSortMethod: "",
+                    currentRegion: store.currentRegion,
+                    currentFeatureIndex: store.currentFeatureIndex,
+                    heatmapEditActive: false,
+                    flowmapEditActive: store.flowmapEditActive,
+                    currentFlow: payload.arrow,
+                    currentFlowIndex: payload.arrowIndex
                 })
             }
 
@@ -792,6 +876,24 @@ function GlobalStoreContextProvider(props) {
         storeReducer({
             type: GlobalStoreActionType.SET_HEATMAP_ACTIVE,
             payload: active
+        });
+    }
+
+    store.setFlowmapEditActive = function(active) {
+        console.log("STORE EDIT ACTIVE " + active);
+        storeReducer({
+            type: GlobalStoreActionType.SET_FLOWMAP_ACTIVE,
+            payload: active
+        });
+    }
+
+    store.setCurrentFlow = function(arrow, arrowIndex) {
+        storeReducer({
+            type: GlobalStoreActionType.SET_CURRENT_FLOW,
+            payload: {
+                arrow: arrow,
+                arrowIndex: arrowIndex
+            }
         });
     }
 
