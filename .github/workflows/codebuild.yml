@@ -32,4 +32,5 @@ jobs:
         run: npm test
         env:
           NODE_ENV: test
+          AZURE_STORAGE_CONNECTION_STRING: "DefaultEndpointsProtocol=https;AccountName=terratrove;AccountKey=DJkiS08KgUajs8vQukPuHYn9NPNWy0HpQj9bZnn+9ya0iKBisqidPJVnUpz5KrGhRjMmU33s0xxq+ASt8IqMYw==;EndpointSuffix=core.windows.net"
           
