@@ -18,6 +18,7 @@ function MapCard(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isEditDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
   const [isDeleteMapModalOpen, setDeleteMapModalOpen] = useState(false);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
   const { myMap, idNamePair } = props;
   const navigate = useNavigate();
 
@@ -89,6 +90,7 @@ function MapCard(props) {
   let likes = 0;
   let comments = 0;
   let views = 0;
+  let imageURL = "";
   if (props) {
     if (idNamePair) {
       let pair = idNamePair;
@@ -99,12 +101,90 @@ function MapCard(props) {
       likes = pair.likes;
       comments = pair.comments.length;
       views = pair.views;
+      imageURL = pair.imageURL;
+      console.log(imageURL);
     }
   }
 
   let editModal = "";
   if (myMap) {
     editModal = <EditDetailsModal idNamePair={idNamePair} open={isEditDetailsModalOpen} onClose={handleEditDetailsModalClose} />;
+  }
+
+  const handleThumbnailChange = (event) => {
+    const file = event.target.files[0];
+    setThumbnailFile(file);
+    
+    if (file) {
+      const reader = new FileReader();
+  
+      reader.onload = async (e) => {
+        try {
+          // Get the image data
+          const imageDataUrl = e.target.result;
+          
+          // Create an image element
+          const img = new Image();
+          img.src = imageDataUrl;
+  
+          img.onload = () => {
+            // Ensure the file is an image
+            if (img.width === 0 || img.height === 0) {
+              console.error('Invalid image file');
+              return;
+            }
+  
+            // Create a canvas for image manipulation
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+  
+            // Calculate the cropping dimensions to achieve a 1:1 aspect ratio
+            const size = Math.min(img.width, img.height);
+            const x = (img.width - size) / 2;
+            const y = (img.height - size) / 2;
+  
+            // Set canvas dimensions to achieve a fixed size (500x500)
+            canvas.width = 500;
+            canvas.height = 500;
+  
+            // Crop the image
+            context.drawImage(img, x, y, size, size, 0, 0, 500, 500);
+  
+            // Convert the canvas content to a data URL (JPEG format)
+            const croppedImageDataUrl = canvas.toDataURL('image/jpeg');
+  
+            // Convert the data URL to a Blob
+            const blob = dataURItoBlob(croppedImageDataUrl);
+  
+            // Create a new File with the Blob and original file name
+            const croppedFile = new File([blob], file.name, { type: 'image/jpeg' });
+            console.log(croppedFile);
+            // Upload the cropped thumbnail
+            store.uploadThumbnail(croppedFile, idNamePair._id);
+          };
+        } catch (error) {
+          console.error('Error processing image:', error.message);
+        }
+      };
+  
+      // Read the file as a data URL
+      reader.readAsDataURL(file);
+    }
+  
+    handleClose2();
+  };
+  
+  // Function to convert data URI to Blob
+  function dataURItoBlob(dataURI) {
+    const byteString = atob(dataURI.split(',')[1]);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+  
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+  
+    return new Blob([ab], { type: 'image/jpeg' });
   }
 
   return (
@@ -132,6 +212,20 @@ function MapCard(props) {
                 <MenuItem onClick={(event) => { event.stopPropagation(); handlePublish(); }}>Publish</MenuItem>
                 <MenuItem onClick={(event) => { event.stopPropagation(); handleEditDetails(); }}>Edit Details</MenuItem>
                 <MenuItem onClick={(event) => { event.stopPropagation(); handleEditGraphics(); }}>Edit Graphics</MenuItem>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    id="upload-thumbnail-input"
+                    onChange={handleThumbnailChange}
+
+                    onClick={(event) => {event.stopPropagation();}}
+                  />
+                  <label htmlFor="upload-thumbnail-input">
+                    <MenuItem component="div" onClick={(event) => {event.stopPropagation();}}>
+                      Upload Thumbnail
+                    </MenuItem>
+                  </label>
                 <MenuItem onClick={(event) => { event.stopPropagation(); handleDeleteMap(); }}>Delete</MenuItem>
               </>
             )}
@@ -140,7 +234,7 @@ function MapCard(props) {
         </>
       )}
       <Box className ='map-card-box'>
-        <CardMedia component="img" src={mapImage} alt="Map Graphic" className='map-card-image' />
+        <CardMedia component="img" src={imageURL} alt={mapImage} className='map-card-image' />
         <div className='map-card-counter'>
           <Box className='map-card-box-2'>
             <FavoriteIcon className='map-card-favorite-icon' />

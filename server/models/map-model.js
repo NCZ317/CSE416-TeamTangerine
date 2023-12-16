@@ -17,6 +17,7 @@ const mapSchema = new Schema({
         user: { type: String, required: true },
         message: { type: String, required: true }
     }],
+    imageURL: {type: String, default: ''},
     published: { type: Boolean, required: true },
     publishedDate: { type: Date, required: true },
     // currentRegions: {type: [Object], default: []}

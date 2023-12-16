@@ -62,6 +62,21 @@ export const unlikeMapById = (id) => api.post(`/map/${id}/unlike`);
 
 export const viewMapById = (id) => api.post(`/map/${id}/view`);
 
+export const uploadThumbnail = (file, mapObjectId) => {
+    console.log(file);
+    console.log(mapObjectId);
+    const formData = new FormData();
+    formData.append('thumbnail', file);
+    formData.append('mapObjectId', mapObjectId);
+
+    console.log(formData);
+  
+    return api.post(`/upload-thumbnail/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  };
 
 const apis = {
     createMap,
@@ -77,7 +92,8 @@ const apis = {
     updateMapLayerById,
     likeMapById,
     unlikeMapById,
-    viewMapById
+    viewMapById,
+    uploadThumbnail
 }
 
 export default apis

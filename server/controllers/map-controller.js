@@ -2,6 +2,16 @@ const { ChoroplethLayer, HeatmapLayer, DotDensityLayer, GraduatedSymbolLayer, Fl
 const User = require('../models/user-model')
 const turf = require('@turf/turf');
 
+const { BlobServiceClient } = require('@azure/storage-blob');
+const multer = require('multer');
+
+const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
+const containerName = 'thumbnails';
+const containerClient = blobServiceClient.getContainerClient(containerName);
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 
 createMap = async (req, res) => {
     try {
@@ -274,6 +284,7 @@ getMapPairs = async (req, res) => {
                 likes: map.likes,
                 views: map.views,
                 comments: map.comments,
+                imageURL: map.imageURL,
                 published: map.published
             }));
 
@@ -318,6 +329,7 @@ getLikedMapPairs = async (req, res) => {
                 likes: map.likes,
                 views: map.views,
                 comments: map.comments,
+                imageURL: map.imageURL,
                 published: map.published
             }));
 
@@ -368,6 +380,7 @@ getAllPublishedMapPairs = async (req, res) => {
             likes: map.likes,
             views: map.views,
             comments: map.comments,
+            imageURL: map.imageURL,
             published: map.published
         }));
 
@@ -474,7 +487,8 @@ getMapsByUser = async (req, res) => {
                 likes: map.likes,
                 views: map.views,
                 comments: map.comments,
-                published: map.published
+                imageURL: map.imageURL,
+                published: map.published,
             }));
 
             return res.status(200).json({ success: true, idNamePairs: pairs });
@@ -734,6 +748,59 @@ viewMapById = async (req, res) => {
         return res.status(500).json({ success: false, error: "Internal Server Error" });
     }
 }
+
+const uploadThumbnail = async (file, mapObjectId) => {
+    try {
+        console.log("Uploading thumbnail for " + mapObjectId);
+
+        // Generate a unique random string
+        const uniqueString = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+        // Create a blob name with mapObjectId and unique string
+        const blobName = mapObjectId + "_" + uniqueString + ".jpg";
+
+        // Get the block blob client
+        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+        // Upload the new thumbnail
+        await blockBlobClient.upload(file.buffer, file.size);
+
+        // Get the new imageUrl
+        const imageUrl = blockBlobClient.url;
+
+        console.log('Thumbnail uploaded to Azure Blob Storage');
+        console.log('Image URL:', imageUrl);
+
+        // Retrieve the map object
+        const map = await Map.findOne({ _id: mapObjectId });
+
+        if (!map) {
+            return null;
+        }
+
+        // Delete the old thumbnail if it exists
+        if (map.imageURL) {
+            const oldBlobName = map.imageURL.split('/').pop(); // Extract blob name from the old imageUrl
+            const oldBlockBlobClient = containerClient.getBlockBlobClient(oldBlobName);
+            await oldBlockBlobClient.delete();
+            console.log('Old thumbnail deleted from Azure Blob Storage');
+        }
+
+        // Update the map object with the new imageUrl
+        map.imageURL = imageUrl;
+
+        // Save the updated map object
+        await map.save();
+
+        console.log("SUCCESS!!! Saved map's image URL");
+
+        return imageUrl;
+    } catch (error) {
+        console.error('Error uploading thumbnail to Azure Blob Storage:', error.message);
+        return null; // Return null or handle the error appropriately
+    }
+};
+
 module.exports = {
     createMap,
     deleteMap,
@@ -749,5 +816,6 @@ module.exports = {
     updateMapLayer,
     likeMapById,
     unlikeMapById,
-    viewMapById
+    viewMapById,
+    uploadThumbnail
 }

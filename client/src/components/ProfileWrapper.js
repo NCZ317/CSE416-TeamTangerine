@@ -64,7 +64,6 @@ const ProfileWrapper = () => {
   //   console.log("3");
   //   setUpdateInfo("VIEW");
   // }
-  console.log("4");
   return (
     <div>
       <Grid container spacing={2} id='profile-grid'>

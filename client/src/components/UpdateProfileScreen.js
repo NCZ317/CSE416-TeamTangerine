@@ -19,8 +19,6 @@ import GlobalStoreContext from '../store';
 const UpdateProfileScreen = ({ state, setState }) => {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
-
-    console.log(store);
     const [selectedMenuItem, setSelectedMenuItem] = useState('Drafts');
     const [likedMapsLoaded, setLikedMapsLoaded] = useState(false);
     let view = (auth.viewAuthor ? true : false);

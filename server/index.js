@@ -6,11 +6,36 @@ const path = require('path')
 const db = require('./db')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
+const { BlobServiceClient } = require('@azure/storage-blob');
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 
 // CREATE OUR SERVER
 dotenv.config()
 const PORT = process.env.PORT || 4000;
 const app = express()
+
+const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
+const containerName = 'thumbnails'; 
+const containerClient = blobServiceClient.getContainerClient(containerName);
+
+async function checkContainer() {
+    const exists = await containerClient.exists();
+    console.log(`Container "${containerName}" exists: ${exists}`);
+}
+
+// Call the checkContainer function
+checkContainer()
+    .then(() => {
+        // If the check is successful, log a message
+        console.log('Connection to Azure Blob Storage is established.');
+    })
+    .catch((error) => {
+        // If an error occurs, log the error
+        console.error('Error checking Azure Blob Storage connection:', error.message);
+    });
 
 // SETUP THE MIDDLEWARE
 app.use(express.urlencoded({ extended: true }))

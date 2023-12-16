@@ -441,6 +441,14 @@ function GlobalStoreContextProvider(props) {
         asyncDuplicateMap(id)
     }
 
+    store.uploadThumbnail = async function (file, id) {
+        let response = await api.uploadThumbnail(file, id);
+        if (response.status == 200) {
+            console.log("Thumbnail uploaded");
+            store.loadIdNamePairs();
+        }
+    }
+
     store.importMap = async function (jsonData, mapTemplate, layer) {
         async function asyncImport(jsonData, mapTemplate, layer) {
             console.log("IMPORTING MAP");
