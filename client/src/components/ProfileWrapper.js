@@ -45,7 +45,6 @@ const ProfileWrapper = () => {
   let likes = 0;
   let bio = "";
   if (auth.userToView) {
-    console.log(auth.userToView.id == auth.user.id);
     posts = store.idNamePairs.filter(entry => entry.published === true).length;
     likes = store.idNamePairs.reduce((sum, entry) => sum + (entry.likes || 0), 0);
     initials += auth.userToView.firstName.charAt(0);

@@ -27,17 +27,17 @@ const UpdateProfileScreen = ({ state, setState }) => {
 
 
     useEffect(() => {
-        if (auth.user.id == auth.userToView.id)
+        if (auth.userToView && auth.user && auth.userToView.id === auth.user.id)
             store.loadIdNamePairs();
-        else {
+        else if (auth.userToView) {
             store.getMapsByUser(auth.userToView.email);
         }
     }, []);
 
     useEffect(() => {
-        if (auth.user.id == auth.userToView.id)
+        if (auth.userToView && auth.user && auth.userToView.id === auth.user.id)
             store.loadIdNamePairs();
-        else {
+        else if (auth.userToView) {
             store.getMapsByUser(auth.userToView.email);
         }
     }, [auth.userToView]);
@@ -55,7 +55,7 @@ const UpdateProfileScreen = ({ state, setState }) => {
 
     let mapList = "";
     if (store) {
-        if (auth.user.id == auth.userToView.id) {
+        if (auth.userToView && auth.user && auth.userToView.id === auth.user.id) {
             if (selectedMenuItem === 'Liked Maps' && likedMapsLoaded) {
                 mapList = (
                     <List>
@@ -157,7 +157,7 @@ const UpdateProfileScreen = ({ state, setState }) => {
         </Typography>
     </Box>
 
-    if (auth.user.id == auth.userToView.id) {
+    if (auth.userToView && auth.user && auth.userToView.id === auth.user.id) {
         profileBox4 = <Box id='profile-box-4'>
             <Typography variant="h3" id='profile-typography-3'>
                 {selectedMenuItem}

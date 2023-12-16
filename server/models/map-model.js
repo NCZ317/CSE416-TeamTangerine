@@ -88,12 +88,13 @@ const graduatedSymbolLayerSchema = new Schema({
     graphicDescription: { type: String },
     style: { type: Object },
     dataValues: [{
-        latitude: Number,
-        longitude: Number,
-        value: Number
+        coordinates: {
+            type: [Number], // [longitude, latitude]
+            index: '2dsphere', // for geospatial indexing
+        },
+        radius: Number
     }],
     symbolColor: { type: String },
-    sizeScale: { type: Object },
     currentRegions: {type: [Object], default: []}
 }, {minimize: false});
 

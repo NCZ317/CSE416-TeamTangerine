@@ -305,7 +305,8 @@ const MapSettings = () => {
                         fullWidth
                         margin="normal"
                         inputProps={{
-                            min: 10
+                            min: 10,
+                            max: 20
                         }}
                         onChange={handleDescriptionFont}
                     />

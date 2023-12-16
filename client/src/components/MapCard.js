@@ -26,26 +26,31 @@ function MapCard(props) {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.stopPropagation();
+    setAnchorEl(null);
+  };
+
+  const handleClose2 = () => {
     setAnchorEl(null);
   };
 
   const handlePublish = () => {
     store.publish(idNamePair._id);
     store.loadIdNamePairs();
-    handleClose();
+    handleClose2();
   }
 
   const handleEditDetails = () => {
     setEditDetailsModalOpen(true);
-    handleClose();
+    handleClose2();
   };
 
   const handleDeleteMap = () => {
     console.log("DELETE MAP");
     store.markMapForDeletion(idNamePair._id);
     setDeleteMapModalOpen(true);
-    handleClose();
+    handleClose2();
   };
 
   const handleEditGraphics = async () => {
@@ -54,7 +59,7 @@ function MapCard(props) {
     await store.setCurrentMap(idNamePair._id);
 
     store.setScreen("MAP_EDITOR");
-    handleClose();
+    handleClose2();
   };
 
   const handleEditDetailsModalClose = () => {
@@ -120,10 +125,16 @@ function MapCard(props) {
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <MenuItem onClick={(event) => { event.stopPropagation(); handlePublish(); }}>Publish</MenuItem>
-            <MenuItem onClick={(event) => { event.stopPropagation(); handleEditDetails(); }}>Edit Details</MenuItem>
-            <MenuItem onClick={(event) => { event.stopPropagation(); handleEditGraphics(); }}>Edit Graphics</MenuItem>
-            <MenuItem onClick={(event) => { event.stopPropagation(); handleDeleteMap(); }}>Delete</MenuItem>
+            {idNamePair.published ? (
+              <MenuItem onClick={(event) => { event.stopPropagation(); handleDeleteMap(); }}>Delete</MenuItem>
+            ) : (
+              <>
+                <MenuItem onClick={(event) => { event.stopPropagation(); handlePublish(); }}>Publish</MenuItem>
+                <MenuItem onClick={(event) => { event.stopPropagation(); handleEditDetails(); }}>Edit Details</MenuItem>
+                <MenuItem onClick={(event) => { event.stopPropagation(); handleEditGraphics(); }}>Edit Graphics</MenuItem>
+                <MenuItem onClick={(event) => { event.stopPropagation(); handleDeleteMap(); }}>Delete</MenuItem>
+              </>
+            )}
           </Menu>
 
         </>

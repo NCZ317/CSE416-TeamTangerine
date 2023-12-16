@@ -17,13 +17,14 @@ import HeatmapToolbox from './HeatmapToolbox';
 import DotDensityToolbox from './DotDensityToolbox';
 import GraduatedSymbolToolbox from './GraduatedSymbolToolbox';
 import FlowToolbox from './FlowToolbox';
+import AuthContext from '../auth';
 
 import { GlobalStoreContext } from '../store';
 
 const drawerWidth = '25%';
 
 const MapEditorWrapper = () => {
-
+    const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [open, setOpen] = React.useState(false);
 
@@ -43,9 +44,9 @@ const MapEditorWrapper = () => {
     }
 
     const handleSave = async () => {
-        
+        auth.viewUser(auth.user.email);
+        auth.userToView = auth.user;
         await store.updateCurrentMap();
-        console.log(store.currentMapLayer);
         store.setScreen("USER");
     }
     /* const Toolbox = () => {

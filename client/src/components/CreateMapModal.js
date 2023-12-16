@@ -54,7 +54,6 @@ export default function CreateMapModal({open,onClose}) {
             const reader = new FileReader();
             reader.onload = async (e) => {
                 const zipData = e.target.result;
-                console.log(zipData);
 
                 // Read the contents of the zip file using JSZip
                 const zip = new JSZip();
@@ -64,18 +63,65 @@ export default function CreateMapModal({open,onClose}) {
                 const shpBuffer = await zipContents.file(/\.shp$/)[0].async('arraybuffer');
                 const dbfBuffer = await zipContents.file(/\.dbf$/)[0].async('arraybuffer');
 
-                // Parse the .shp file
-                geojson = await shapefile.read(
-                    shpBuffer,
-                    dbfBuffer,
-                    { type: 'buffer' } // Specify the type of data source
-                );
+                const geojson = await shapefile.read(shpBuffer, dbfBuffer, { encoding: 'utf-8' });
+
+                /**Properly name each region */
+                geojson.features.forEach((feature, index) => {
+                    if (!feature.properties.name) {
+                        let name = `Region ${index}`;
+                        let maxFieldName = null;
+                        let maxFieldNumber = -1;
+                
+                        for (let i = 0; i < 5; i++) {
+                            let fieldName = `NAME_${i}`;
+                            if (feature.properties[fieldName] !== undefined) {
+                                // Check if the current field number is greater than the current maximum
+                                if (parseInt(fieldName.split('_')[1]) > maxFieldNumber) {
+                                    maxFieldName = fieldName;
+                                    maxFieldNumber = parseInt(fieldName.split('_')[1]);
+                                }
+                            }
+                        }
+                
+                        // Use the field with the greatest number as the "name" field
+                        if (maxFieldName !== null) {
+                            feature.properties.name = feature.properties[maxFieldName];
+                        } else {
+                            feature.properties.name = name;
+                        }
+                    }
+                });
                 
                 console.log(geojson);
                 await store.createNewMap(geojson, template);
 
                 // Close the modal and set the screen to "MAP_EDITOR"
                 onClose();
+            };
+
+            reader.readAsArrayBuffer(selectedFile);
+        }
+        else if (selectedFile.name.endsWith('.shp')) {
+            console.log("PARSING SHP");
+            const reader = new FileReader();
+
+            reader.onload = async (e) => {
+                const shpBuffer = e.target.result;
+                try {
+                    const geojson = await shapefile.read(shpBuffer);
+                    geojson.features.forEach((feature, index) => {
+                        if (!feature.properties.name) {
+                            let name = `Region ${index}`; 
+                            feature.properties.name = name;
+                        }
+                    });
+                    console.log('Converted GeoJSON:', geojson);
+                    await store.createNewMap(geojson, template);
+
+                    onClose();
+                } catch (error) {
+                    console.error('Error parsing SHP file:', error);
+                }
             };
 
             reader.readAsArrayBuffer(selectedFile);
@@ -95,7 +141,7 @@ export default function CreateMapModal({open,onClose}) {
                 };
                 reader.readAsText(selectedFile);
         }
-        else {
+        else if (selectedFile.name.endsWith('.json') || selectedFile.name.endsWith('.geojson')) {
             // Read the contents of the selected GeoJSON file
             const reader = new FileReader();
             reader.onload = async (event) => {
@@ -111,6 +157,9 @@ export default function CreateMapModal({open,onClose}) {
             };
 
             reader.readAsText(selectedFile);
+        }
+        else {
+            console.log("INVALID FORMAT");
         }
     };
 
@@ -244,7 +293,7 @@ export default function CreateMapModal({open,onClose}) {
                         Supported File Types:
                     </Typography>
                     <Typography variant="body2" color="textSecondary" mt={1}>
-                        geoJSON, Shapefile, KML
+                        geoJSON, Shapefile, zip(.shp and .dbf), KML, JSON
                     </Typography>
                 </Box>
                 

@@ -73,56 +73,56 @@ createMap = async (req, res) => {
                 defaultColor: "#79C200",
                 currentRegions: currentRegions
             });
-            map.jsonData.features.forEach((feature) => {
-                const regionName = feature.properties.name || `Region ${feature.index}`;
+            map.jsonData.features.forEach((feature, index) => {
+                const regionName = feature.properties.name || `Region ${index}`;
                 //console.log(regionName);
         
                 // Get the polygon geometry of the region
                 const regionPolygon = feature.geometry;
                 //console.log(regionPolygon);
-        
-                // Generate 10 random dots for each region using Turf.js
-                const dots = Array.from({ length: 10 }, () => {
-                    let randomPoint;
-        
-                    // Ensure that the generated point is within the region's polygon
-                    do {
-                        // Get the bounding box of the region geometry
-                        const bbox = turf.bbox(regionPolygon);
-        
-                        // Generate random coordinates within the bounding box
-                        const randomLng = bbox[0] + Math.random() * (bbox[2] - bbox[0]);
-                        const randomLat = bbox[1] + Math.random() * (bbox[3] - bbox[1]);
-        
-                        // Create a Turf.js point geometry
-                        randomPoint = turf.point([randomLng, randomLat]);
-                        if (turf.booleanPointInPolygon(randomPoint, regionPolygon)) break;
-        
-                        // Check if the point is inside the region's polygon
-                    } while (!turf.booleanPointInPolygon(randomPoint, regionPolygon));
-        
-                    return {
-                        coordinates: turf.getCoord(randomPoint),
-                    };
-                });
-        
-                // Add the region and its dots to the geographicRegion array
-                mapLayer.geographicRegion.push({
-                    name: regionName,
-                    dots: dots,
-                });
+                if (regionPolygon.type === "Polygon") {
+                    // Generate 10 random dots for each region using Turf.js
+                    const dots = Array.from({ length: 10 }, () => {
+                        let randomPoint;
+            
+                        // Ensure that the generated point is within the region's polygon
+                        do {
+                            // Get the bounding box of the region geometry
+                            const bbox = turf.bbox(regionPolygon);
+            
+                            // Generate random coordinates within the bounding box
+                            const randomLng = bbox[0] + Math.random() * (bbox[2] - bbox[0]);
+                            const randomLat = bbox[1] + Math.random() * (bbox[3] - bbox[1]);
+            
+                            // Create a Turf.js point geometry
+                            randomPoint = turf.point([randomLng, randomLat]);
+                            if (turf.booleanPointInPolygon(randomPoint, regionPolygon)) break;
+            
+                            // Check if the point is inside the region's polygon
+                        } while (!turf.booleanPointInPolygon(randomPoint, regionPolygon));
+            
+                        return {
+                            coordinates: turf.getCoord(randomPoint),
+                        };
+                    });
+            
+                    // Add the region and its dots to the geographicRegion array
+                    mapLayer.geographicRegion.push({
+                        name: regionName,
+                        dots: dots,
+                    });
+                }
             });
             //console.log(mapLayer.geographicRegion);
 
         } else if (body.mapType === "graduatedSymbolMap") {
-            let symbolColor = "";
-            let sizeScale = {};
+            let symbolColor = "#FF0000";
             mapLayer = new GraduatedSymbolLayer({
                 graphicTitle: graphicTitle, 
                 graphicDescription: graphicDescription, 
+                dataValues: [],
                 style: style, 
                 symbolColor: symbolColor, 
-                sizeScale: sizeScale,
                 currentRegions: currentRegions
             });
 
@@ -193,7 +193,24 @@ deleteMap = async (req, res) => {
 
             // Save the updated user object
             await user.save();
-            
+            console.log("Have to delete layer too");
+            console.log(`Looking for layer ${map.mapLayers} of type ${map.mapType}`);
+            if (map.mapType === "choroplethMap") {
+                await ChoroplethLayer.findOneAndDelete({ _id: map.mapLayers });
+            }
+            else if (map.mapType === "heatMap") {
+                await HeatmapLayer.findOneAndDelete({ _id: map.mapLayers });
+            }
+            else if (map.mapType === "dotDensityMap") {
+                await DotDensityLayer.findOneAndDelete({ _id: map.mapLayers });
+            }
+            else if (map.mapType === "graduatedSymbolMap") {
+                await GraduatedSymbolLayer.findOneAndDelete({ _id: map.mapLayers });
+            }
+            else if (map.mapType === "flowMap") {
+                await FlowmapLayer.findOneAndDelete({ _id: map.mapLayers });
+            }
+            console.log("Now just to delete map itself");
             await Map.findOneAndDelete({ _id: req.params.id });
             return res.status(200).json({ success: true });
         } else {
@@ -519,7 +536,7 @@ getMapLayerById = async (req, res) => {
 
 updateMapLayer = async (req, res) => {
     const body = req.body;
-    // console.log("updateMapLayer: " + JSON.stringify(body));
+    console.log("updateMapLayer: " + JSON.stringify(body));
 
     try {
         if (!body) {
@@ -561,10 +578,10 @@ updateMapLayer = async (req, res) => {
 
         } else if (mapType === "graduatedSymbolMap") {
             mapLayer = await GraduatedSymbolLayer.findOne({ _id: req.params.id });
+            console.log(mapLayer);
             if (mapLayer) {
                 mapLayer.dataValues = body.mapLayer.dataValues;
                 mapLayer.symbolColor = body.mapLayer.symbolColor;
-                mapLayer.sizeScale = body.mapLayer.sizeScale;
             }
 
         } else if (mapType === "flowMap") {
