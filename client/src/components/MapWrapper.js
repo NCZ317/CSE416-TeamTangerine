@@ -623,11 +623,13 @@ const MapWrapper = ({ style}) => {
                 .on('popupopen', function(){
                     window.deleteArrow = function(index){
                         //when clicked to remove
+                        let prev = _.cloneDeep(store.currentMapLayer);
                         let mapLayer = store.currentMapLayer
                         console.log(mapLayer);
                         console.log(index);
                         mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
                         store.updateCurrentMapLayer(mapLayer);
+                        store.addUpdateLayerTransaction(prev);
                     }
                 }) 
                 .addTo(arrowGroup);

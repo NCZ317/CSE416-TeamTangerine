@@ -8,7 +8,7 @@ import Button from '@mui/material/Button';
 import { Typography, IconButton, Checkbox, FormGroup, FormControlLabel, Collapse } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import DeleteIcon from '@mui/icons-material/Delete';
+
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
 import L from 'leaflet';
@@ -44,15 +44,7 @@ const FlowToolbox = () => {
         setDataSettingsOpen(!dataSettingsOpen);
     };
 
-    const deleteArrow = (index) => {
-        //when clicked to remove
-        let mapLayer = store.currentMapLayer
-        console.log(mapLayer);
-        console.log(index);
-        mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
-        store.updateCurrentMapLayer(mapLayer);
-        console.log(otherArrows)
-    }
+    
     const saveData = (index,defaultVal) => {
             let prev = _.cloneDeep(store.currentMapLayer);
             let mapLayer = store.currentMapLayer;
@@ -112,109 +104,17 @@ const FlowToolbox = () => {
             }
             console.log(mapLayer);
             store.updateCurrentMapLayer(mapLayer);
+            store.addUpdateLayerTransaction(prev);
             console.log(store.currentMapLayer);
             //updateMapLayer
     }
-    const handleValueField = (event) => {
-        if (event.key === "Enter") {
-            let mapLayer = store.currentMapLayer;
-            mapLayer.valueField = valueField;
-            store.updateCurrentMapLayer(mapLayer);
-        }
-    }
+    
 
-
-    const handleDefaultColor = (event) => {
-        let mapLayer = store.currentMapLayer;
-        mapLayer.defaultColor = event.target.value;
-        store.updateCurrentMapLayer(mapLayer);
-    }
     const setArrowColor = (color, defaultVal) => {
         console.log(color);
         setColor(color);
     }
-
-    var inputCoordinates = [];
-    var coordinateIndex = 0;
-    /* for(let coordinate of otherArrows){    
-        console.log(otherArrows);
-        coordinate.value=coordinateIndex;
-        console.log(coordinate);
-        inputCoordinates.push(
-        <div>
-            <div style={{display: 'flex'}}>
-                <div style={{width: '50%', paddingTop: '5%'}}>{'startLat\nstartLng'}</div>
-                <div>
-                    <TextField
-                        // label={property.value}
-                        defaultValue={coordinate.originLatitude}
-                        // onChange = {(e) => (property.value =  e.target.value)}
-                        onChange={(e) => setArrowDataslat(e.target.value)}
-                    />
-                    <TextField
-                        // label={property.value}
-                        defaultValue={coordinate.originLongitude}
-                        // onChange = {(e) => (property.value =  e.target.value)}
-                        onChange={(e) => setArrowDataslng(e.target.value)}
-                    />
-                </div>
-                <div style={{width: '50%', paddingTop: '5%'}}>{'endLat\nendLng'}</div>
-                <div>
-                    <TextField
-                        // label={property.value}
-                        defaultValue={coordinate.destinationLatitude}
-                        // onChange = {(e) => (property.value =  e.target.value)}
-                        onChange={(e) => setArrowDataelat(e.target.value)}
-                    />
-                    <TextField
-                        // label={property.value}
-                        defaultValue={coordinate.destinationLongitude}
-                        // onChange = {(e) => (property.value =  e.target.value)}
-                        onChange={(e) => setArrowDataelng(e.target.value)}
-                    />
-                </div>
-                <IconButton variant="outlined" onClick={() => deleteArrow(coordinate.value)}>
-                    <DeleteIcon/>
-                </IconButton>
-                <br></br>
-            </div>
-            <div style={{width: '50%', paddingTop: '5%'}}>{'Label'}</div>
-            <div>
-                <TextField
-                    // label={property.value}
-                    defaultValue={coordinate.label}
-                    // onChange = {(e) => (property.value =  e.target.value)}
-                    onChange={(e) => setLabel(e.target.value)}
-                />
-            </div>
-            <div>
-                <div style={{width: '50%', paddingTop: '5%'}}>{'Line Size'}</div>
-                <div>
-                    <TextField
-                        // label={property.value}
-                        defaultValue={coordinate.lineSizeScale}
-                        // onChange = {(e) => (property.value =  e.target.value)}
-                        onChange={(e) => setLineSize(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <TextField
-                        label="Color"
-                        type="color"
-                        value={color}
-                        fullWidth
-                        onChange={(e) => setArrowColor(e.target.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale, coordinate.label])}
-                    />
-                </div>
-            </div>    
-            
-            <Button variant="outlined" onClick={()=>saveData(coordinate.value, [coordinate.originLatitude,coordinate.originLongitude,coordinate.destinationLatitude,coordinate.destinationLongitude,coordinate.lineSizeScale,coordinate.colorScale, coordinate.label])}>
-                Save Data
-            </Button>
-        </div>)
-        console.log(inputCoordinates);
-        coordinateIndex++;
-    } */
+    
     return (
         <div className="flow-toolbox">
             <Tabs
@@ -309,7 +209,6 @@ const FlowToolbox = () => {
                                         Save Data
                                     </Button>
                                 </div>
-                                {inputCoordinates}
                             </div>
                         }
                     </Collapse>
