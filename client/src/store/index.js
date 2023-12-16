@@ -441,6 +441,36 @@ function GlobalStoreContextProvider(props) {
         asyncDuplicateMap(id)
     }
 
+    store.importMap = async function (jsonData, mapTemplate, layer) {
+        async function asyncImport(jsonData, mapTemplate, layer) {
+            console.log("IMPORTING MAP");
+            let newMapTitle = auth.user.username + " - Untitled (" + store.newMapCounter + ")";
+            let response = await api.createMap(newMapTitle, jsonData, mapTemplate, auth.user.email, auth.user.username );
+            console.log(response);
+            if (response.status == 201) {
+                console.log("MAP CREATED");
+                tps.clearAllTransactions();
+                let map = response.data.map
+                console.log(map);
+                let response2 = await api.updateMapLayerById(map.mapLayers, map.mapType, layer);
+                if (response2.data.success) {
+                    let response3 = await api.getMapLayerById(map.mapLayers, map.mapType);
+                    if (response3.data.success) {
+                        let mapLayer = response3.data.mapLayer;
+                        storeReducer({
+                            type: GlobalStoreActionType.CREATE_NEW_MAP,
+                            payload: {
+                                newMap: map,
+                                mapLayer: mapLayer
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        asyncImport(jsonData, mapTemplate, layer);
+    }
+
     //Loads all the Id, Name Pairs to list out the maps
     store.loadIdNamePairs = function() {
         async function asyncLoadIdNamePairs() {

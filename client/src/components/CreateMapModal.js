@@ -147,13 +147,27 @@ export default function CreateMapModal({open,onClose}) {
             reader.onload = async (event) => {
                 const jsonData = JSON.parse(event.target.result);
 
-                // Call the store.createNewMap function with the GeoJSON data
-                
-                console.log(jsonData);
-                await store.createNewMap(jsonData, template);
+                if (jsonData && jsonData.mapType && jsonData.jsonData && jsonData.mapLayer) {
+                    console.log("CUSTOM JSON FILE");
+                    console.log(jsonData);
+                    setTemplate(jsonData.mapType);
+                    let importedGeoJSON = jsonData.jsonData;
+                    console.log(importedGeoJSON);
+                    let importedMapLayer = jsonData.mapLayer;
+                    console.log(importedMapLayer);
+                    await store.importMap(importedGeoJSON, jsonData.mapType, importedMapLayer);
 
-                // Close the modal and set the screen to "MAP_EDITOR"
-                onClose();
+                    // Close the modal and set the screen to "MAP_EDITOR"
+                    onClose();
+                }
+                else {
+                    // Call the store.createNewMap function with the GeoJSON data
+                    console.log(jsonData);
+                    await store.createNewMap(jsonData, template);
+
+                    // Close the modal and set the screen to "MAP_EDITOR"
+                    onClose();
+                }
             };
 
             reader.readAsText(selectedFile);
