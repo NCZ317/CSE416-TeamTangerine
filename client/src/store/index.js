@@ -758,6 +758,7 @@ function GlobalStoreContextProvider(props) {
                     let map = response.data.map;
                     let user = auth.user.username;
                     map.comments.push({ user, message: comment });
+                    map.updateAt = new Date();
                     let response2 = await api.updateMapById(store.currentMap._id, map);
                     if (response2.data.success) {
                         store.setCurrentMap(map._id);

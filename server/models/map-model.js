@@ -20,6 +20,7 @@ const mapSchema = new Schema({
     imageURL: {type: String, default: ''},
     published: { type: Boolean, required: true },
     publishedDate: { type: Date, required: true },
+    updatedAt: {type: Date, required: true}
     // currentRegions: {type: [Object], default: []}
 });
 const Map = mongoose.model('Map', mapSchema);

@@ -346,7 +346,6 @@ getAllPublishedMapPairs = async (req, res) => {
     try {
         // Find all users with published maps
         const usersWithPublishedMaps = await User.find({});
-        console.log(usersWithPublishedMaps);
 
         if (!usersWithPublishedMaps) {
             console.log("No users with published maps found");
@@ -382,7 +381,8 @@ getAllPublishedMapPairs = async (req, res) => {
             views: map.views,
             comments: map.comments,
             imageURL: map.imageURL,
-            published: map.published
+            published: map.published,
+            publishedDate: map.publishedDate
         }));
 
         return res.status(200).json({ success: true, idNamePairs: pairs });
