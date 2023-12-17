@@ -382,7 +382,8 @@ getAllPublishedMapPairs = async (req, res) => {
             comments: map.comments,
             imageURL: map.imageURL,
             published: map.published,
-            publishedDate: map.publishedDate
+            publishedDate: map.publishedDate,
+            updatedAt: map.updatedAt
         }));
 
         return res.status(200).json({ success: true, idNamePairs: pairs });

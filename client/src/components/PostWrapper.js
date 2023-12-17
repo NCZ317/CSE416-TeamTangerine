@@ -167,6 +167,7 @@ const PostWrapper = () => {
         // Use html2canvas to capture the entire map container
         html2canvas(document.querySelector('.leaflet-container')).then((canvas) => {
             // Convert the canvas to a data URL
+            console.log(canvas)
             const imgURL = canvas.toDataURL('image/jpeg');
 
             // Create a link element and trigger a download
