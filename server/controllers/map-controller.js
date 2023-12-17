@@ -425,6 +425,7 @@ updateMap = async (req, res) => {
         map.comments = body.map.comments;
         map.published = body.map.published;
         map.publishedDate = body.map.publishedDate;
+        map.updatedAt = body.map.updatedAt;
         // map.currentRegions = body.map.currentRegions;
 
         await map.save();

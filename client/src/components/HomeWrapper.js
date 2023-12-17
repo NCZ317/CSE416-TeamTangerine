@@ -50,7 +50,19 @@ export default function HomeWrapper() {
                     ))}
             </Grid>
         }
-        //else if(option==='Recent Activity') //How to track recent activity? Change in model?
+        else if(option==='Recent Activity'){
+            let activitySort = store.idNamePairs.sort(function(a,b){if(b.updatedAt===undefined){b.updatedAt=b.publishedDate}
+                if(a.updatedAt===undefined){a.updatedAt=a.publishedDate}
+                return Date.parse(b.updatedAt) - Date.parse(a.updatedAt)});
+            mapCards =
+            <Grid container spacing={1}>
+                {activitySort.map((pair) => (
+                        <Grid item xs={12} sm={6}>
+                            <MapCard key={pair._id} idNamePair={pair}/>
+                        </Grid>
+                    ))}
+            </Grid>
+        }
         else {//if(option==='Newest'){ default Newest?
             //change mapCards, sort store.idNamePairs by published Date before map
             console.log(store.idNamePairs);
