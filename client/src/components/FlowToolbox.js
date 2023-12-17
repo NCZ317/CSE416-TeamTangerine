@@ -37,7 +37,12 @@ const FlowToolbox = () => {
             setFlow(store.currentFlow)
             setLabel(store.currentFlow.label);
         }
-    }, [store.currentFlow]);
+        if (store.currentMapLayer) {
+            setValueField(store.currentMapLayer.valueField);
+            setLegend(store.currentMapLayer.colorScale);
+        }
+
+    }, [store.currentMapLayer, store.currentFlow]);
 
 
     const handleTabChange = (event, newValue) => {
@@ -72,10 +77,12 @@ const FlowToolbox = () => {
     };
 
     const handleLineColor = (event) => {
-        let mapLayer = store.currentMapLayer;
-        mapLayer.dataValues[store.currentFlowIndex].color = event.target.value;
-        store.updateCurrentMapLayer(mapLayer);
-
+        let prev = _.cloneDeep(store.currentMapLayer);
+        // let mapLayer = store.currentMapLayer;
+        // mapLayer.dataValues[store.currentFlowIndex].color = event.target.value;
+        // store.updateCurrentMapLayer(mapLayer);
+        store.currentMapLayer.dataValues[store.currentFlowIndex].color = event.target.value;
+        store.addUpdateLayerTransaction(prev);
     }
 
     const handleLineSize = (event) => {
@@ -87,16 +94,22 @@ const FlowToolbox = () => {
     const handleLineLabel = (event) => {
         if (event.key === "Enter") {
 
-            let mapLayer = store.currentMapLayer;
-            mapLayer.dataValues[store.currentFlowIndex].label = label;
-            store.updateCurrentMapLayer(mapLayer);
+            let prev = _.cloneDeep(store.currentMapLayer);
+            // let mapLayer = store.currentMapLayer;
+            // mapLayer.dataValues[store.currentFlowIndex].label = label;
+            // store.updateCurrentMapLayer(mapLayer);
+            store.currentMapLayer.dataValues[store.currentFlowIndex].label = label;
+            store.addUpdateLayerTransaction(prev);
         }
     }
 
     const handleDeleteLine = (event) => {
-        let mapLayer = store.currentMapLayer;
-        mapLayer.dataValues.splice(store.currentFlowIndex, 1);
-        store.updateCurrentMapLayer(mapLayer);
+        let prev = _.cloneDeep(store.currentMapLayer);
+        // let mapLayer = store.currentMapLayer;
+        // mapLayer.dataValues.splice(store.currentFlowIndex, 1);
+        // store.updateCurrentMapLayer(mapLayer);
+        store.currentMapLayer.dataValues.splice(store.currentFlowIndex, 1);
+        store.addUpdateLayerTransaction(prev);
         store.setCurrentFlow(null, null);
     }
 
@@ -104,9 +117,12 @@ const FlowToolbox = () => {
 
     const handleValueField = (event) => {
         if (event.key === "Enter") {
-            let mapLayer = store.currentMapLayer;
-            mapLayer.valueField = valueField;
-            store.updateCurrentMapLayer(mapLayer);
+            let prev = _.cloneDeep(store.currentMapLayer);
+            // let mapLayer = store.currentMapLayer;
+            // mapLayer.valueField = valueField;
+            // store.updateCurrentMapLayer(mapLayer);
+            store.currentMapLayer.valueField = valueField;
+            store.addUpdateLayerTransaction(prev);
         }
     }
 
@@ -114,12 +130,14 @@ const FlowToolbox = () => {
         setLegend([...legend, { value: '', color: 'black' }]);
     };
     const deleteLegendRow = (index) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         const newLegend = [...legend];
         newLegend.splice(index, 1);
-;
-        let mapLayer = store.currentMapLayer;
-        mapLayer.colorScale = newLegend;
-        store.updateCurrentMapLayer(mapLayer);
+        // let mapLayer = store.currentMapLayer;
+        // mapLayer.colorScale = newLegend;
+        // store.updateCurrentMapLayer(mapLayer);
+        store.currentMapLayer.colorScale = newLegend;
+        store.addUpdateLayerTransaction(prev);
         setLegend(newLegend);
     };
 
@@ -130,33 +148,40 @@ const FlowToolbox = () => {
     };
     const updateLegendValue = (event, index) => {
         if (event.key === "Enter") {
-
+            let prev = _.cloneDeep(store.currentMapLayer);
             if (event.target.value === "") {
                 const newLegend = [...legend];
                 newLegend[index].value = "";
                 newLegend[index].color = 'black';     //CHANGE IT TO DEFAULT VALUE WHEN USER CLEARS LEGEND VALUE
                 
-                let mapLayer = store.currentMapLayer;
-                mapLayer.colorScale = newLegend;
-                store.updateCurrentMapLayer(mapLayer);
+                // let mapLayer = store.currentMapLayer;
+                // mapLayer.colorScale = newLegend;
+                // store.updateCurrentMapLayer(mapLayer);
+                store.currentMapLayer.colorScale = newLegend;
+                store.addUpdateLayerTransaction(prev);
                 setLegend(newLegend);
 
             } else {
-                let mapLayer = store.currentMapLayer;
-                mapLayer.colorScale = legend;
-                store.updateCurrentMapLayer(mapLayer);
+                // let mapLayer = store.currentMapLayer;
+                // mapLayer.colorScale = legend;
+                // store.updateCurrentMapLayer(mapLayer);
+                store.currentMapLayer.colorScale = legend;
+                store.addUpdateLayerTransaction(prev);
 
             }
 
         }
     }
     const handleLegendColor = (index, color) => {
+        let prev = _.cloneDeep(store.currentMapLayer);
         const newLegend = [...legend];
         newLegend[index].color = color;
 
-        let mapLayer = store.currentMapLayer;
-        mapLayer.colorScale = newLegend;
-        store.updateCurrentMapLayer(mapLayer);
+        // let mapLayer = store.currentMapLayer;
+        // mapLayer.colorScale = newLegend;
+        // store.updateCurrentMapLayer(mapLayer);
+        store.currentMapLayer.colorScale = newLegend;
+        store.addUpdateLayerTransaction(prev);
         setLegend(newLegend);
     };
 
@@ -277,7 +302,7 @@ const FlowToolbox = () => {
                                         label="Color"
                                         type="color"
                                         // defaultValue={store.currentFlow ? store.currentFlow.color : 'green'}
-                                        value={flow && flow.color ? flow.color : 'black'}
+                                        value={flow && flow.color ? flow.color : '#000000'}
                                         onChange={handleLineColor}
                                         fullWidth
                                     />
@@ -329,7 +354,8 @@ const FlowToolbox = () => {
                                 label="Data Description"
                                 onChange={(e) => setValueField(e.target.value)}
                                 onKeyDown={handleValueField}
-                                defaultValue={store.currentMapLayer.valueField}
+                                // defaultValue={store.currentMapLayer.valueField}
+                                value={valueField}
                                 fullWidth
                             />
                         </Box>

@@ -717,10 +717,13 @@ const MapWrapper = ({ style}) => {
                 console.log("EDITACTIVE: " + editActive + check);
                 check++;
                 if (editActive) {
-                    let mapLayer = store.currentMapLayer;
-                    mapLayer.dataValues.push(e.latlng);
-                    console.log(mapLayer);
-                    store.updateCurrentMapLayer(mapLayer);
+                    let prev = _.cloneDeep(store.currentMapLayer);
+                    // let mapLayer = store.currentMapLayer;
+                    // mapLayer.dataValues.push(e.latlng);
+                    // console.log(mapLayer);
+                    store.currentMapLayer.dataValues.push(e.latlng);
+                    store.addUpdateLayerTransaction(prev);
+                    // store.updateCurrentMapLayer(mapLayer);
                 }
             };
     
@@ -746,11 +749,12 @@ const MapWrapper = ({ style}) => {
             max: 1.0,
             blur: 15,
             gradient: {
-                0.0: colorGradience.low ? colorGradience.low : 'blue',
-                0.5: colorGradience.medium ? colorGradience.medium : 'yellow',
-                1.0: colorGradience.high ? colorGradience.high : 'red'
-            }
-            
+                0.0: colorGradience.low ? colorGradience.low : '#0000ff',
+                0.5: colorGradience.medium ? colorGradience.medium : '#ffff00',
+                1.0: colorGradience.high ? colorGradience.high : '#ff0000'
+            },
+            pane: 'overlayPane'
+
         }).addTo(map);
 
     
@@ -818,10 +822,13 @@ const MapWrapper = ({ style}) => {
                 map.removeLayer(tempFlowLineRef.current);
             }
       
-            let mapLayer = store.currentMapLayer;
-            mapLayer.dataValues.push({origin: origin, destination: destination});
-            store.updateCurrentMapLayer(mapLayer);
+            // let mapLayer = store.currentMapLayer;
+            // mapLayer.dataValues.push({origin: origin, destination: destination});
+            // store.updateCurrentMapLayer(mapLayer);
 
+            let prev = _.cloneDeep(store.currentMapLayer);
+            store.currentMapLayer.dataValues.push({origin: origin, destination: destination});
+            store.addUpdateLayerTransaction(prev);
         };
 
         const handlePolylineClick = (event) => {
@@ -847,7 +854,7 @@ const MapWrapper = ({ style}) => {
         store.currentMapLayer.dataValues.forEach((arrow, index) => {
 
             const polyline = L.polyline([arrow.origin, arrow.destination], {
-                color: arrow.color ? arrow.color : 'black',
+                color: arrow.color ? arrow.color : '#000000',
                 weight: arrow.lineSize ? arrow.lineSize : 3
             
             
