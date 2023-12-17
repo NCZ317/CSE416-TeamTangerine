@@ -55,9 +55,9 @@ createMap = async (req, res) => {
         } else if (body.mapType === "heatMap") {
             let radius = 0;
             let colorScale = {
-                low: 'blue',
-                medium: 'yellow',
-                high: 'red'
+                low: '#0000ff',
+                medium: '#ffff00',
+                high: '#ff0000'
             };
             mapLayer = new HeatmapLayer({
                 graphicTitle: graphicTitle, 

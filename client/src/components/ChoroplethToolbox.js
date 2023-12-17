@@ -1,6 +1,6 @@
 // ChoroplethToolbox.js
 
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Box } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -25,12 +25,22 @@ const ChoroplethToolbox = () => {
     const [legendSettingsOpen, setLegendSettingsOpen] = useState(false);
 
     const [regionData, setRegionData] = useState("");
-    const [valueField, setValueField] = useState("");
+    const [valueField, setValueField] = useState(store.currentMapLayer.valueField);
+    const [defaultColor, setDefaultColor] = useState(store.currentMapLayer.defaultColor);
 
     const [legend, setLegend] = useState(store.currentMapLayer.colorScale);
 
     const currentMap = store.currentMap.jsonData; 
     const properties = currentMap.features.map(x => x.properties);
+
+
+    useEffect(() => {
+        if (store.currentMapLayer) {
+            setValueField(store.currentMapLayer.valueField);
+            setDefaultColor(store.currentMapLayer.defaultColor);
+            setLegend(store.currentMapLayer.colorScale);
+        }
+    }, [store.currentMapLayer]);
 
     // console.log(legend);
     const handleTabChange = (event, newValue) => {
@@ -57,8 +67,9 @@ const ChoroplethToolbox = () => {
     const handleValueField = (event) => {
         if (event.key === "Enter") {
             let prev = _.cloneDeep(store.currentMapLayer);
-            let mapLayer = store.currentMapLayer;
-            mapLayer.valueField = valueField;
+            // let mapLayer = store.currentMapLayer;
+            // mapLayer.valueField = valueField;
+            store.currentMapLayer.valueField = valueField;
             store.addUpdateLayerTransaction(prev);
         }
     }
@@ -78,8 +89,9 @@ const ChoroplethToolbox = () => {
         const newLegend = [...legend];
         newLegend[index].color = color;
 
-        let mapLayer = store.currentMapLayer;
-        mapLayer.colorScale = newLegend;
+        // let mapLayer = store.currentMapLayer;
+        // mapLayer.colorScale = newLegend;
+        store.currentMapLayer.colorScale = newLegend;
         store.addUpdateLayerTransaction(prev);
         setLegend(newLegend);
     };
@@ -121,8 +133,9 @@ const ChoroplethToolbox = () => {
 
     const handleDefaultColor = (event) => {
         let prev = _.cloneDeep(store.currentMapLayer);
-        let mapLayer = store.currentMapLayer;
-        mapLayer.defaultColor = event.target.value;
+        // let mapLayer = store.currentMapLayer;
+        // mapLayer.defaultColor = event.target.value;
+        store.currentMapLayer.defaultColor = event.target.value;
         store.addUpdateLayerTransaction(prev);
     }
 
@@ -180,7 +193,8 @@ const ChoroplethToolbox = () => {
                                 label="Data Description (ex. population, gdp, etc.)"
                                 onChange={(e) => setValueField(e.target.value)}
                                 onKeyDown={handleValueField}
-                                defaultValue={store.currentMapLayer.valueField}
+                                // defaultValue={store.currentMapLayer.valueField}
+                                value={valueField}
                                 fullWidth
                             />
                             <TextField
@@ -188,8 +202,9 @@ const ChoroplethToolbox = () => {
                                 type='color'
                                 style={{marginTop: 20}}
                                 fullWidth
-                                defaultValue={store.currentMapLayer.defaultColor}
+                                // defaultValue={defaultColor}
                                 onChange={handleDefaultColor}
+                                value={defaultColor}
                             />
                         </Box>
                         
@@ -200,7 +215,7 @@ const ChoroplethToolbox = () => {
                         <Typography style={{fontSize: '16px'}}>For categorical data, add the category name and its corresponding color</Typography>
                         <br></br>
                         {legend.map((row, index) => (
-                            <div key={index} style={{display: 'flex'}}>
+                            <div key={index} style={{display: 'flex', marginBottom: 10}}>
                                 <TextField
                                     label="From"
                                     value={row.value}

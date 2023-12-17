@@ -1,7 +1,7 @@
 // ChoroplethToolbox.js
 
 import React, { useState, useContext, useEffect } from 'react';
-import { Box } from '@mui/material';
+import { Box, colors } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import TextField from '@mui/material/TextField';
@@ -13,6 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import Divider from '@mui/material/Divider';
 import MapSettings from './MapSettings';
+import _ from 'lodash'; 
 
 import { GlobalStoreContext } from '../store';
 
@@ -22,7 +23,16 @@ const HeatmapToolbox = () => {
 
     const [selectedTab, setSelectedTab] = useState(0);
 
-    const [legend, setLegend] = useState([{ value: '', color: '' }]);
+    const [colorscale, setColorscale] = useState([{ value: '', color: '' }]);
+
+    
+    useEffect(() => {
+        if (store.currentMapLayer) {
+            setColorscale(store.currentMapLayer.colorScale);
+
+        }
+    }, [store.currentMapLayer]);
+
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -30,8 +40,12 @@ const HeatmapToolbox = () => {
 
     const handleIntensityChange = (event, intensity) => {
         let mapLayer = store.currentMapLayer;
-        mapLayer.colorScale[intensity] = event.target.value;
-        store.updateCurrentMapLayer(mapLayer);
+        // mapLayer.colorScale[intensity] = event.target.value;
+        // store.updateCurrentMapLayer(mapLayer);
+        let prev = _.cloneDeep(store.currentMapLayer);
+        store.currentMapLayer.colorScale[intensity] = event.target.value;
+        store.addUpdateLayerTransaction(prev);
+        
     };
 
 
@@ -81,7 +95,8 @@ const HeatmapToolbox = () => {
                             label="Low Intensity"
                             type="color"
                             fullWidth
-                            defaultValue={store.currentMapLayer.colorScale.low}
+                            // value={store.currentMapLayer.colorScale.low}
+                            value={colorscale && colorscale.low ? colorscale.low : "#000000"}
                             onChange={(e) => handleIntensityChange(e, 'low')}
                         />
                     </div>
@@ -92,7 +107,8 @@ const HeatmapToolbox = () => {
                             label="Medium Intensity"
                             type="color"
                             fullWidth
-                            defaultValue={store.currentMapLayer.colorScale.medium}
+                            // defaultValue={store.currentMapLayer.colorScale.medium}
+                            value={colorscale && colorscale.medium ? colorscale.medium : "#000000"}
                             onChange={(e) => handleIntensityChange(e, 'medium')}
                         />
                     </div>
@@ -103,7 +119,8 @@ const HeatmapToolbox = () => {
                             label="High Intensity"
                             type="color"
                             fullWidth
-                            defaultValue={store.currentMapLayer.colorScale.high}
+                            // defaultValue={store.currentMapLayer.colorScale.high}
+                            value={colorscale && colorscale.high ? colorscale.high : "#000000"}
                             onChange={(e) => handleIntensityChange(e, 'high')}
                         />
                     </div>
