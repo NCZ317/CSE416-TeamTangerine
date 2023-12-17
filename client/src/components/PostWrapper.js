@@ -8,6 +8,7 @@ import { GlobalStoreContext } from '../store/index.js';
 import AuthContext from '../auth';
 import html2canvas from 'html2canvas';
 import 'leaflet/dist/leaflet.css';
+import domtoimage from 'dom-to-image';
 
 const PostWrapper = () => {
     const { auth } = useContext(AuthContext);
@@ -163,32 +164,36 @@ const PostWrapper = () => {
             document.body.removeChild(downloadLink);
         }
     }
+    
+    
     const captureMapJPG = () => {
-        // Use html2canvas to capture the entire map container
-        html2canvas(document.querySelector('.leaflet-container')).then((canvas) => {
-            // Convert the canvas to a data URL
-            console.log(canvas)
-            const imgURL = canvas.toDataURL('image/jpeg');
-
-            // Create a link element and trigger a download
-            const link = document.createElement('a');
-            link.href = imgURL;
-            link.download = 'map.png';
-            link.click();
-        }); 
+        const mapContainer = document.querySelector('.leaflet-container');
+        domtoimage.toJpeg(mapContainer, {backgroundColor: '#f28500' })
+            .then((dataUrl) => {
+                // Create a link element and trigger a download
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = 'map.jpg';
+                link.click();
+            })
+            .catch((error) => {
+                console.error('Error capturing map:', error);
+            });
     };
     const captureMapPNG = () => {
-        // Use html2canvas to capture the entire map container
-        html2canvas(document.querySelector('.leaflet-container')).then((canvas) => {
-            // Convert the canvas to a data URL
-            const imgURL = canvas.toDataURL('image/png');
-
-            // Create a link element and trigger a download
-            const link = document.createElement('a');
-            link.href = imgURL;
-            link.download = 'map.png';
-            link.click();
-        });
+        const mapContainer = document.querySelector('.leaflet-container');
+        //mapContainer.scale(4,4);
+        console.log(mapContainer);
+        domtoimage.toPng(mapContainer, {backgroundColor: '#f28500' })
+            .then((dataUrl) => {
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = 'map.png';
+                link.click();
+            })
+            .catch((error) => {
+                console.error('Error capturing map:', error);
+            });
     };
     return (
         <div className='post-height'>
