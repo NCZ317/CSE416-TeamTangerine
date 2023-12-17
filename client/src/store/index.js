@@ -913,12 +913,17 @@ function GlobalStoreContextProvider(props) {
 
     //Undo a transaction
     store.undo = function () {
-        if (store.currentModal === CurrentModal.NONE) tps.undoTransaction();
+        if (store.currentModal === CurrentModal.NONE) {
+            tps.undoTransaction();
+
+        };
     }
 
     // Do a transaction
     store.redo = function () {
-        if (store.currentModal === CurrentModal.NONE) tps.doTransaction();
+        if (store.currentModal === CurrentModal.NONE) {
+            tps.doTransaction();
+        };
     }
 
     store.canUndo = function() {
