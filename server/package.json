@@ -12,6 +12,7 @@
   "dependencies": {
     "@azure/storage-blob": "^12.17.0",
     "@turf/turf": "^6.5.0",
+    "azure": "^2.3.1-preview",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
