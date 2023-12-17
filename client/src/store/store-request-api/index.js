@@ -23,6 +23,7 @@ export const createMap =(title, jsonData, mapType, ownerEmail, username) => {
         comments: [],
         published: false,
         publishedDate: new Date(),
+        updatedAt: new Date()
     })
 }
 

@@ -54,8 +54,8 @@ export default function HomeWrapper() {
         else {//if(option==='Newest'){ default Newest?
             //change mapCards, sort store.idNamePairs by published Date before map
             console.log(store.idNamePairs);
-            console.log(store.idNamePairs[0].publishedDate);
-            let dateSort = store.idNamePairs.sort(function(a, b){return a.publishedDate - b.publishedDate})
+            console.log(Date.parse(store.idNamePairs[0].publishedDate));
+            let dateSort = store.idNamePairs.sort(function(a, b){return Date.parse(b.publishedDate) - Date.parse(a.publishedDate)})
             console.log(dateSort);
             console.log(store.idNamePairs);
             mapCards =
