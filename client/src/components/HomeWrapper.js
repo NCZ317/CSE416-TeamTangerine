@@ -35,6 +35,39 @@ export default function HomeWrapper() {
 
     const handleSortOptionClick = (option) => {
         //alert(`Sorting by: ${option}`);
+        if(option==='Most Popular'){
+            //change mapCards, sort store.idNamePairs by likes before map
+            console.log(store.idNamePairs);
+            let popSort = store.idNamePairs.sort(function(a, b){return b.likes - a.likes})
+            console.log(popSort);
+            console.log(store.idNamePairs);
+            mapCards =
+            <Grid container spacing={1}>
+                {popSort.map((pair) => (
+                        <Grid item xs={12} sm={6}>
+                            <MapCard key={pair._id} idNamePair={pair}/>
+                        </Grid>
+                    ))}
+            </Grid>
+        }
+        //else if(option==='Recent Activity') //How to track recent activity? Change in model?
+        else {//if(option==='Newest'){ default Newest?
+            //change mapCards, sort store.idNamePairs by published Date before map
+            console.log(store.idNamePairs);
+            console.log(store.idNamePairs[0].publishedDate);
+            let dateSort = store.idNamePairs.sort(function(a, b){return a.publishedDate - b.publishedDate})
+            console.log(dateSort);
+            console.log(store.idNamePairs);
+            mapCards =
+            <Grid container spacing={1}>
+                {dateSort.map((pair) => (
+                        <Grid item xs={12} sm={6}>
+                            <MapCard key={pair._id} idNamePair={pair}/>
+                        </Grid>
+                    ))}
+            </Grid>
+        }
+        
         setAnchorEl(null);
     };
 
