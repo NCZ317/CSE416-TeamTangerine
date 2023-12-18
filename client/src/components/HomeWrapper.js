@@ -7,11 +7,11 @@ import GlobalStoreContext from '../store';
 export default function HomeWrapper() {
     const [anchorEl, setAnchorEl] = useState(null);
     const { store } = useContext(GlobalStoreContext);
-
+    const [show, setShow] = useState('All');
     useEffect(() => {
         store.loadAllIdNamePairs();
     }, []);
-
+    var tagFilter=[];
     let mapCards = "";
     if (store) {
         console.log(store.idNamePairs);
@@ -24,7 +24,49 @@ export default function HomeWrapper() {
                     ))}
             </Grid>
     }
-
+    else if(show==='filter'){
+        console.log(tagFilter)
+        mapCards =
+            <Grid container spacing={1}>
+                {tagFilter.map((pair) => (
+                        <Grid item xs={12} sm={6}>
+                            <MapCard key={pair._id} idNamePair={pair}/>
+                        </Grid>
+                    ))}
+            </Grid>
+    }
+    const filters = [];
+    const mapTypes = [];
+    const regions = [];
+    for (let map of store.idNamePairs){
+        if(!mapTypes.includes(map.mapType)){
+            mapTypes.push(map.mapType);
+        }
+        for (let region of map.regions){
+            if(!regions.includes(region)){
+                regions.push(region);
+            }
+        }
+    }
+    const checked = [];
+    for(let i = 0; i<mapTypes.length+regions.length; i++){
+        checked.push(false);
+    }
+    console.log(checked);
+    for(let x = 0; x<mapTypes.length; x++){
+        filters.push(<FormControlLabel
+            control={<Checkbox />}
+            onChange={()=>setChecked(x)}
+            label= {mapTypes[x]}
+        />)
+    }
+    for(let y = 0; y<regions.length; y++){
+        filters.push(<FormControlLabel
+            control={<Checkbox />}
+            onChange={()=>setChecked(mapTypes.length+y)}
+            label= {regions[y]}
+        />)
+    }
     const handleSortClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -82,7 +124,48 @@ export default function HomeWrapper() {
         
         setAnchorEl(null);
     };
-
+    const setChecked=(index)=>{
+        checked[index]=!checked[index];
+    }
+    const handleFilter=()=>{
+        alert(checked);
+        const checkedRegions = [];
+        const checkedMapTypes = []; 
+        for(let x=0; x<mapTypes.length; x++){
+            if(checked[x]){
+                checkedMapTypes.push(mapTypes[x]);
+            }
+        }
+        for(let y=mapTypes.length;y<checked.length; y++){
+            if(checked[y]){
+                checkedRegions.push(regions[y-mapTypes.length])
+            }
+        }
+        var tagFilter = store.idNamePairs.filter(function(map){
+            let hasRegion = false;
+            for(let region of map.regions){
+                if(checkedRegions.includes(region)){
+                    hasRegion = true;
+                }
+            }
+            return hasRegion||checkedMapTypes.includes(map.mapType)
+        })
+        console.log(tagFilter);
+        store.idNamePairs=tagFilter;
+        console.log(store.idNamePairs);
+        mapCards =
+        <Grid container spacing={1}>
+            {tagFilter.map((pair) => (
+                    <Grid item xs={12} sm={6}>
+                        <MapCard key={pair._id} idNamePair={pair}/>
+                    </Grid>
+                ))}
+        </Grid>
+        setShow('filter');
+        setAnchorEl(null);
+    }
+    
+    
     return (
         <div>
             {/* <AppBanner /> */}
@@ -109,18 +192,8 @@ export default function HomeWrapper() {
                     <MenuItem onClick={() => handleSortOptionClick('Newest')}>Newest</MenuItem>
                     <MenuItem onClick={() => handleSortOptionClick('Recent Activity')}>Recent Activity</MenuItem>
                     <Typography variant="h6" className='home-typography'>Filter by</Typography>
-                    <FormControlLabel
-                        control={<Checkbox />}
-                        label="Filter 1"
-                    />
-                    <FormControlLabel
-                        control={<Checkbox />}
-                        label="Filter 2"
-                    />
-                    <FormControlLabel
-                        control={<Checkbox />}
-                        label="Filter 3"
-                    />
+                    {filters}
+                    <Button variant="outlined" className='home-button' onClick={() => handleFilter()}>Filter</Button>
                 </Menu>
             </div>
             
