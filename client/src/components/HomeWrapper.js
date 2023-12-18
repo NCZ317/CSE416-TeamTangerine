@@ -11,24 +11,12 @@ export default function HomeWrapper() {
     useEffect(() => {
         store.loadAllIdNamePairs();
     }, []);
-    var tagFilter=[];
     let mapCards = "";
     if (store) {
         console.log(store.idNamePairs);
         mapCards =
             <Grid container spacing={1}>
                 {store.idNamePairs.map((pair) => (
-                        <Grid item xs={12} sm={6}>
-                            <MapCard key={pair._id} idNamePair={pair}/>
-                        </Grid>
-                    ))}
-            </Grid>
-    }
-    else if(show==='filter'){
-        console.log(tagFilter)
-        mapCards =
-            <Grid container spacing={1}>
-                {tagFilter.map((pair) => (
                         <Grid item xs={12} sm={6}>
                             <MapCard key={pair._id} idNamePair={pair}/>
                         </Grid>
