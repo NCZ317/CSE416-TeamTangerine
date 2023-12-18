@@ -12,6 +12,14 @@ import { useNavigate } from 'react-router-dom';
 import { GlobalStoreContext } from '../store';
 import AuthContext from '../auth';
 
+const templateDict = {
+  "choroplethMap": "Choropleth",
+  "heatMap" : "Heatmap",
+  "dotDensityMap" : "Dot Density",
+  "graduatedSymbolMap" : "Graduated Symbol",
+  "flowMap" : "Flow"
+}
+
 function MapCard(props) {
   const { store } = useContext(GlobalStoreContext);
   const { auth } = useContext(AuthContext);
@@ -97,13 +105,12 @@ function MapCard(props) {
       title = pair.title;
       author = pair.username;
       description = pair.description;
-      tags = [pair.mapType, ...pair.regions];
+      tags = [templateDict[pair.mapType], ...pair.regions];
       likes = pair.likes;
       comments = pair.comments.length;
       views = pair.views;
       imageURL = pair.imageURL;
       if (imageURL === "" || !imageURL) imageURL = mapImage;
-      console.log(imageURL);
     }
   }
 

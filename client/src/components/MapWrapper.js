@@ -70,7 +70,7 @@ const MapWrapper = ({ style}) => {
 
             if (isValidBounds) {
                 // Fit bounds with padding
-                map.fitBounds(bounds, { padding: [10, 10] });
+                map.fitBounds(bounds, { padding: [5, 5] });
             } else {
                 // Handle invalid bounds (e.g., when GeoJSON has no features)
                 console.log("Invalid bounds or no features in GeoJSON");
