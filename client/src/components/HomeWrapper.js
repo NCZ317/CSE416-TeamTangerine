@@ -31,8 +31,8 @@ export default function HomeWrapper() {
         "Dot Density" : "dotDensityMap",
         "Graduated Symbol" : "graduatedSymbolMap",
         "Flow" : "flowMap"
-      }
-    
+    }
+    const [searchTerm, setSearchTerm] = useState('');
     useEffect(() => {
         store.loadAllIdNamePairs();
     }, []);
@@ -64,7 +64,7 @@ export default function HomeWrapper() {
             sortedCards = applySorting(sortedCards);
             setCards(sortedCards);
         }
-    }, [store.idNamePairs, mapTypeFilters, regionFilters, sortMethod]);
+    }, [store.idNamePairs, mapTypeFilters, regionFilters, searchTerm, sortMethod]);
 
     const applyFilters = (data) => {
         return data.filter((card) => {
@@ -76,7 +76,13 @@ export default function HomeWrapper() {
             const isRegionFiltered =
                 Object.keys(regionFilters).every((region) => !regionFilters[region] || card.regions.includes(region));
 
-            return isMapTypeFiltered && isRegionFiltered;
+                const isSearchFiltered =
+                searchTerm.trim() === '' ||
+                ['title', 'username', 'description'].some(
+                    (field) => card[field] && card[field].toLowerCase().includes(searchTerm.toLowerCase().trim())
+                );
+
+            return isMapTypeFiltered && isRegionFiltered && isSearchFiltered;
         });
     };
 
@@ -125,13 +131,22 @@ export default function HomeWrapper() {
             setRegionFilters((prevFilters) => ({ ...prevFilters, [filterName]: !prevFilters[filterName] }));
         }
     };
-    
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
     return (
         <div>
             {/* <AppBanner /> */}
             
             <div className='home-div'>
-                <input type="text" placeholder="Search" id = "home-search-bar" className="searchbar" />
+                <input
+                    type='text'
+                    placeholder='Search'
+                    id='home-search-bar'
+                    className='searchbar'
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                />
                 <Button
                     variant="text"
                     color="primary"
