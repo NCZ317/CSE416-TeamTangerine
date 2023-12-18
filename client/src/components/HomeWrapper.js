@@ -13,7 +13,6 @@ export default function HomeWrapper() {
     }, []);
     let mapCards = "";
     if (store) {
-        console.log(store.idNamePairs);
         mapCards =
             <Grid container spacing={1}>
                 {store.idNamePairs.map((pair) => (
@@ -40,7 +39,6 @@ export default function HomeWrapper() {
     for(let i = 0; i<mapTypes.length+regions.length; i++){
         checked.push(false);
     }
-    console.log(checked);
     for(let x = 0; x<mapTypes.length; x++){
         filters.push(<FormControlLabel
             control={<Checkbox />}
@@ -67,10 +65,7 @@ export default function HomeWrapper() {
         //alert(`Sorting by: ${option}`);
         if(option==='Most Popular'){
             //change mapCards, sort store.idNamePairs by likes before map
-            console.log(store.idNamePairs);
             let popSort = store.idNamePairs.sort(function(a, b){return b.likes - a.likes})
-            console.log(popSort);
-            console.log(store.idNamePairs);
             mapCards =
             <Grid container spacing={1}>
                 {popSort.map((pair) => (
@@ -95,11 +90,7 @@ export default function HomeWrapper() {
         }
         else {//if(option==='Newest'){ default Newest?
             //change mapCards, sort store.idNamePairs by published Date before map
-            console.log(store.idNamePairs);
-            console.log(Date.parse(store.idNamePairs[0].publishedDate));
             let dateSort = store.idNamePairs.sort(function(a, b){return Date.parse(b.publishedDate) - Date.parse(a.publishedDate)})
-            console.log(dateSort);
-            console.log(store.idNamePairs);
             mapCards =
             <Grid container spacing={1}>
                 {dateSort.map((pair) => (
@@ -116,7 +107,6 @@ export default function HomeWrapper() {
         checked[index]=!checked[index];
     }
     const handleFilter=()=>{
-        alert(checked);
         const checkedRegions = [];
         const checkedMapTypes = []; 
         for(let x=0; x<mapTypes.length; x++){
@@ -138,9 +128,7 @@ export default function HomeWrapper() {
             }
             return hasRegion||checkedMapTypes.includes(map.mapType)
         })
-        console.log(tagFilter);
         store.idNamePairs=tagFilter;
-        console.log(store.idNamePairs);
         mapCards =
         <Grid container spacing={1}>
             {tagFilter.map((pair) => (
