@@ -90,7 +90,7 @@ createMap = async (req, res) => {
                 // Get the polygon geometry of the region
                 const regionPolygon = feature.geometry;
                 //console.log(regionPolygon);
-                if (regionPolygon.type === "Polygon") {
+                if (regionPolygon.type === "Polygon" || regionPolygon.type === "MultiPolygon" ) {
                     // Generate 10 random dots for each region using Turf.js
                     const dots = Array.from({ length: 10 }, () => {
                         let randomPoint;

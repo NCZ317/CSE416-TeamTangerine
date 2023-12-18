@@ -33,6 +33,11 @@ const MapWrapper = ({ style}) => {
     //Reference to heat layer
     const heatLayerRef = useRef(null);
 
+    const calculateZoomLevel = (bbox, map) => {
+        const mapDimensions = map.getSize();
+        const bounds = L.latLngBounds([bbox[1], bbox[0]], [bbox[3], bbox[2]]);
+        return map.getBoundsZoom(bounds, false, mapDimensions);
+      };
 
     useEffect(() => {
         // console.log(store.currentMap);
@@ -41,7 +46,38 @@ const MapWrapper = ({ style}) => {
         } else {
             setMapData(null);
         }
+
+        
     }, [store.currentMap]); // Listen for changes in store.currentMap
+
+    useEffect(() => {
+        console.log("MAP LISTENER");
+        console.log(mapData);
+        console.log(map);
+
+        if (mapData) {
+            console.log("SETTING MAP BOUNDS");
+            // Calculate bounds from GeoJSON
+            const bounds = L.geoJSON(mapData).getBounds();
+
+            // Check if the bounds are valid (not equal to default bounds)
+            const isValidBounds =
+                bounds.isValid() &&
+                bounds.getSouthWest().lat !== 0 &&
+                bounds.getSouthWest().lng !== 0 &&
+                bounds.getNorthEast().lat !== 0 &&
+                bounds.getNorthEast().lng !== 0;
+
+            if (isValidBounds) {
+                // Fit bounds with padding
+                map.fitBounds(bounds, { padding: [10, 10] });
+            } else {
+                // Handle invalid bounds (e.g., when GeoJSON has no features)
+                console.log("Invalid bounds or no features in GeoJSON");
+                // Optionally, you can set a default view or handle it differently.
+            }
+        }
+    }, [mapData, store.currentMap])
     
 
     const FitBounds = () => {
@@ -877,7 +913,7 @@ const MapWrapper = ({ style}) => {
 
     return (
         <MapContainer
-            center={[0, 0]}
+            center={[0,0]}
             zoom={2}
             zoomControl={false}
             scrollWheelZoom={true}
