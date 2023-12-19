@@ -202,9 +202,9 @@ const ChoroplethToolbox = () => {
                                 type='color'
                                 style={{marginTop: 20}}
                                 fullWidth
-                                // defaultValue={defaultColor}
+                                defaultValue={defaultColor}
                                 onChange={handleDefaultColor}
-                                value={defaultColor}
+                                // value={defaultColor}
                             />
                         </Box>
                         
