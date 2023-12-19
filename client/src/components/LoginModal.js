@@ -91,6 +91,7 @@ export default function LoginModal({ open, onClose }) {
               color="primary"
               onClick={handleLogin}
               className='login-button'
+              id = 'login'
             >
               Login
             </Button>
