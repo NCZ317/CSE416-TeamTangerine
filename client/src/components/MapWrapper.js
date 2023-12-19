@@ -402,7 +402,8 @@ const MapWrapper = ({ style}) => {
         if (store.mapTemplate === 'choroplethMap') {
             return {
                 ...mapDataStyle,
-                fillColor: getChoroplethColor(feature.properties.value)
+                fillColor: getChoroplethColor(feature.properties.value),
+                fillOpacity: 0.7
             }
         } else {
             //UPDATE FILL COLOR AND FILL OPACITY FOR ALL OTHER TYPES OF MAPS IF USER HAS CHANGED IT
@@ -457,34 +458,7 @@ const MapWrapper = ({ style}) => {
         return store.currentMapLayer.defaultColor;
     }
 
-    //----------------------------------------DOT DENSITY MAPS--------------------------------------------------//
-    // const generateDots = (geographicRegion) => {
-    //     //console.log("GENERATING DOTS");
-    //     //console.log(store.mapTemplate);
-    //     const dots = [];
 
-    //     geographicRegion.forEach((region) => {
-    //         region.dots.forEach((dot) => {
-    //             dots.push({
-    //                 coordinates: dot.coordinates,
-    //                 name: region.name,
-    //             });
-    //         });
-    //     });
-
-    //     return dots;
-    // };
-
-    // const renderDots = () => {
-    //     //console.log("RENDERING DOTS");
-    
-    //     dotsData.forEach((dot, index) => {
-    //         //console.log("ADDING", L.latLng(dot.coordinates[0], dot.coordinates[1]));
-    //         L.circleMarker(L.latLng(dot.coordinates[1], dot.coordinates[0]), { radius: 1, weight: 1, color: 'black' }).addTo(
-    //         map
-    //       )
-    //     });
-    // };
 
     //POPUP THAT SHOWS THE REGION NAME AND VALUE WHEN HOVERED OVER
     const InfoPopup = ({ position, name, value }) => {
@@ -628,119 +602,6 @@ const MapWrapper = ({ style}) => {
 
     }
     
-    //------------------------------------------Graduated Symbol Map------------------------------------------------// 
-    // const ProportionalSymbol = ({data, scale, symbolColor}) =>{
-    //     const map = useMap();
-    //     markerGroup.clearLayers();
-    //     function scaleRadius(value) {
-    //         var radius = 1;
-    //         for (var i = 0; i< scale.length; i++){
-    //             if (value >= scale[i].value)
-    //                 radius = scale[i].radius
-    //         }
-    //         return radius;
-    //     };
-    //     if (data){ 
-    //         data.forEach(({latitude,longitude, value}, index) => {
-    //             L.circleMarker(L.latLng(latitude, longitude), { radius: scaleRadius(value), weight: 1, color: symbolColor }).addTo(markerGroup)
-    //         });
-    //     }
-    //     // function calcRadius(val, zoom) {
-    //     //     return 1.00083 * Math.pow(val/20,0.5716) * (zoom / 2);      
-    //     // }
-    //     // map.on('zoomend', function() {
-    //     //     markerGroup.eachLayer(function(layer){
-    //     //         if (layer instanceof L.CircleMarker){
-    //     //             layer.setRadius(calcRadius(layer._orgRadius,map.getZoom()))
-    //     //         }
-    //     //     });
-    //     // });
-    //     markerGroup.addTo(map);
-    // }
-    //--------------------------------------------------------------------------------------------------------------//
-    // Flow MAPS
-    const deleteArrow = (index) => {
-        //when clicked to remove
-        let mapLayer = store.currentMapLayer
-        console.log(mapLayer);
-        console.log(index);
-        mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
-        store.updateCurrentMapLayer(mapLayer);
-    }
-    const FlowArrows = ({data}) =>{
-        arrowGroup.clearLayers();
-        if (data){ 
-            for(let coordinate of data){
-                let originPosition = [coordinate.originLatitude,coordinate.originLongitude];
-                let destinationPosition = [coordinate.destinationLatitude,coordinate.destinationLongitude];
-                const arrow = (
-                    L.polyline([originPosition,destinationPosition],{color:coordinate.colorScale, weight: 3*coordinate.lineSizeScale}).arrowheads()
-                )
-                arrow.bindTooltip(coordinate.label, {permanent: true})
-                .bindPopup(`
-                        <button variant="outlined" onclick="deleteArrow(${coordinate.value})">
-                            Delete
-                        </button>
-                        <div>Starting Latitude: ${coordinate.originLatitude}</div>
-                        <div>Starting Longitude: ${coordinate.originLongitude}</div>
-                        <div>Destination Latitude: ${coordinate.destinationLatitude}</div>
-                        <div>Destination Longitude: ${coordinate.destinationLongitude}</div>
-                        <input type="text" id="newOriLat" placeholder="New Starting Latitude"/>
-                        <input type="text" id="newOriLng" placeholder="New Starting Longitude"/>
-                        <input type="text" id="newEndLat" placeholder="New Destination Latitude"/>
-                        <input type="text" id="newEndLng" placeholder="New Destination Longitude"/>
-                        <input type="color" id="newColor" placeholder="New Color"/>
-                        <input type="text" id="newLabel" placeholder="New Label"/>
-                        <input type="text" id="newSize" placeholder="New Line Width"/>
-                        <button onclick="updateCoordinates(${coordinate.originLatitude}, ${coordinate.originLongitude}, ${coordinate.destinationLatitude}, ${coordinate.destinationLongitude})">Update</button>`)
-                .on('popupopen', function() {
-                    window.updateCoordinates = function(currentOriLat, currentOriLng, currentEndLat, currentEndLng, currentColor, currentSize) {
-                        const newOriLat = document.getElementById('newOriLat').value;
-                        const newOriLng = document.getElementById('newOriLng').value;
-                        const newEndLat = document.getElementById('newEndLat').value;
-                        const newEndLng = document.getElementById('newEndLng').value;
-                        const newColor = document.getElementById('newColor').value;
-                        const newLabel = document.getElementById('newLabel').value;
-                        const newSize = document.getElementById('newSize').value;
-                        console.log(`Update coordinates from (${currentOriLat}, ${currentOriLng}) and (${currentEndLat}, ${currentEndLng}) to (${newOriLat}, ${newOriLng}) and (${newEndLat}, ${newEndLng})`);
-
-                        let originPosition = [newOriLat,newOriLng];
-                        let destinationPosition = [newEndLat,newEndLng];
-                        let prev = _.cloneDeep(store.currentMapLayer);
-                        arrow.setLatLngs([originPosition, destinationPosition]);
-                        console.log(arrow._latlngs);
-                        coordinate.originLatitude = newOriLat;
-                        coordinate.originLongitude = newOriLng;
-                        coordinate.destinationLatitude = newEndLat;
-                        coordinate.destinationLongitude = newEndLng;
-                        coordinate.colorScale = newColor;
-                        coordinate.label = newLabel;
-                        coordinate.lineSizeScale = newSize;
-                        arrowGroup.clearLayers();
-                        console.log(prev);
-                        store.addUpdateLayerTransaction(prev);
-                    };
-                })
-                .on('popupopen', function(){
-                    window.deleteArrow = function(index){
-                        //when clicked to remove
-                        let prev = _.cloneDeep(store.currentMapLayer);
-                        let mapLayer = store.currentMapLayer
-                        console.log(mapLayer);
-                        console.log(index);
-                        mapLayer.dataValues.splice(index,1); //removes arrow for dataValues array, it will no longer be spawned, and will disappear when saved and exited
-                        store.updateCurrentMapLayer(mapLayer);
-                        store.addUpdateLayerTransaction(prev);
-                    }
-                }) 
-                .addTo(arrowGroup);
-                console.log(arrow);
-            }
-        }
-        arrowGroup.addTo(map);
-    }
-    //const flowArrows = [<FlowArrow position={[[50.71277, -74.00597], [49.95258, -75.16522]]} lineSize={1} color={'orange'}/>,<FlowArrow position={[[40.71277, -74.00597], [39.95258, -75.16522]]} lineSize={1} color={'orange'}/>];
-    //-------------------------------------------------------------------------------------------------------------//
 
     //-------------------------------------------------------------------------------------------------------------//
     // HEAT MAP
@@ -788,17 +649,15 @@ const MapWrapper = ({ style}) => {
                 0.0: colorGradience.low ? colorGradience.low : '#0000ff',
                 0.5: colorGradience.medium ? colorGradience.medium : '#ffff00',
                 1.0: colorGradience.high ? colorGradience.high : '#ff0000'
-            },
-            pane: 'overlayPane'
+            }
 
         }).addTo(map);
 
-    
         return null;
 
     }
 
-    //---------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------
     //FLOW MAP
 
     const FlowMapLayer = ({editActive}) => {
