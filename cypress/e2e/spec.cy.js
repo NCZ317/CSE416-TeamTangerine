@@ -15,3 +15,59 @@ describe('Sort Button Test', () => {
     cy.get('#sort-filter-menu').should('be.visible');
   });
 });
+
+describe("Login Fail", () => {
+  it("Should not log in", () => {
+    cy.visit('https://terratrove-df08dd7fc1f7.herokuapp.com/')
+    cy.get('.login-button').click();
+    cy.get('#email').should('be.visible');
+    cy.get("#email").type("standard_user")
+    cy.get("#password").type("secret_sauce", {log:false})
+    cy.get("#login").click()
+    cy.get('#error-modal').should('be.visible');
+  })
+})
+
+describe("Login Success", () => {
+  it("Should log in without issues", () => {
+    cy.visit('https://terratrove-df08dd7fc1f7.herokuapp.com/')
+    cy.get('.login-button').click();
+    cy.get('#email').should('be.visible');
+    cy.get("#email").type("test@email.com")
+    cy.get("#password").type("password", {log:false})
+    cy.get("#login").click()
+  })
+})
+
+Cypress.Commands.add("login", (username, password) => {
+  cy.get('.login-button').click();
+  cy.get("#email").type(username)
+  cy.get("#password").type(password, { log: false })
+  cy.get("#login").click()
+})
+
+describe("Check Post", () => {
+  it("Should look at a post", () => {
+    cy.visit('https://terratrove-df08dd7fc1f7.herokuapp.com/')
+    cy.contains('By:').click()
+    cy.get('.post-comment-section').should('be.visible');
+  })
+})
+
+describe("Check User Options", () => {
+  it("Should be able to see logout option", () => {
+    cy.visit('https://terratrove-df08dd7fc1f7.herokuapp.com/')
+    cy.login('test@email.com', 'password');
+    cy.get('#account-button').click();
+    cy.get('#account-menu').should('be.visible');
+  })
+})
+
+describe("Create Map", () => {
+  it("Should be brought to the edit map graphics screen", () => {
+    cy.visit('https://terratrove-df08dd7fc1f7.herokuapp.com/')
+    cy.login('test@email.com', 'password');
+    cy.get('.create-map-button').click();
+    cy.get('#create-map-modal').should('be.visible');
+  })
+})
