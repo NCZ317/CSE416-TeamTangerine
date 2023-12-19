@@ -218,8 +218,8 @@ function MapCard(props) {
             ) : (
               <>
                 <MenuItem onClick={(event) => { event.stopPropagation(); handlePublish(); }}>Publish</MenuItem>
-                <MenuItem onClick={(event) => { event.stopPropagation(); handleEditDetails(); }}>Edit Details</MenuItem>
-                <MenuItem onClick={(event) => { event.stopPropagation(); handleEditGraphics(); }}>Edit Graphics</MenuItem>
+                <MenuItem id = 'check-edit-details' onClick={(event) => { event.stopPropagation(); handleEditDetails(); }}>Edit Details</MenuItem>
+                <MenuItem id = 'check-edit graphics' onClick={(event) => { event.stopPropagation(); handleEditGraphics(); }}>Edit Graphics</MenuItem>
                   <input
                     type="file"
                     accept="image/*"

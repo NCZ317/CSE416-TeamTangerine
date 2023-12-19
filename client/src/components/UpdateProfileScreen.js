@@ -183,13 +183,13 @@ const UpdateProfileScreen = ({ state, setState }) => {
                 }}
             >
                 <List>
-                    <ListItem onClick={() => handleMenuItemClick("Drafts")}>
+                    <ListItem id = 'check-drafts' onClick={() => handleMenuItemClick("Drafts")}>
                         <ListItemText primary="Drafts" />
                     </ListItem>
-                    <ListItem onClick={() => handleMenuItemClick("Published")}>
+                    <ListItem id = 'check-published' onClick={() => handleMenuItemClick("Published")}>
                         <ListItemText primary="Published" />
                     </ListItem>
-                    <ListItem onClick={() => handleMenuItemClick("Liked Maps")}>
+                    <ListItem id = 'check-liked-maps' onClick={() => handleMenuItemClick("Liked Maps")}>
                         <ListItemText primary="Liked Maps" />
                     </ListItem>
                 </List>

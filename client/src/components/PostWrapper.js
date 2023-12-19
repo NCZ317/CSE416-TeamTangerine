@@ -222,7 +222,7 @@ const PostWrapper = () => {
                                         {mapDetails.title}
                                     </Typography>
                                     <Typography variant="h6">
-                                        By: <span style={{cursor:'pointer'}} onClick={handleAuthorClick}>{mapDetails.author}</span>
+                                        By: <span id = 'check-author' style={{cursor:'pointer'}} onClick={handleAuthorClick}>{mapDetails.author}</span>
                                     </Typography>
                                     <Typography variant="body1">
                                         {mapDetails.description}

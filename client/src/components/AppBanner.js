@@ -92,8 +92,8 @@ const AppBanner = () => {
             open={Boolean(anchorEl)}
             onClose={handleAccountMenuClose}
           >
-            <MenuItem onClick={handleUserProfile}>User Profile</MenuItem>
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            <MenuItem id='check-user-profile' onClick={handleUserProfile}>User Profile</MenuItem>
+            <MenuItem id='check-logout' onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </>
       );
