@@ -320,6 +320,30 @@ function AuthContextProvider(props) {
         asyncViewUser(email);
     }
 
+    auth.viewUserById = function (userID)  {
+        async function asyncViewUser(userID) {
+            try{
+                console.log("FIND USER ", userID);
+                let response = await api.getUserById(userID);
+                console.log(response);
+                if (response.status == 200) {
+                    authReducer({
+                        type: AuthActionType.GET_USER_TO_VIEW,
+                        payload: response.data
+                    });
+                }
+            } catch (error){
+                authReducer({
+                    type: AuthActionType.ERROR2,
+                    payload: {
+                        errorMessage: error.response.data.errorMessage
+                    }
+                });
+            }
+        }
+        asyncViewUser(userID);
+    }
+
     auth.getUserInitials = function() {
         let initials = "";
         if (auth.user) {

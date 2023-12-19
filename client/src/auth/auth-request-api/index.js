@@ -75,6 +75,9 @@ export const getAuthorByUsername = (username) => {
 export const getUserByEmail = (email) => {
     return api.post(`/findUserByEmail`, {email: email})
 }
+export const getUserById = (id) => {
+    return api.post(`/findUserById`, {id: id})
+}
 
 const apis = {
     getLoggedIn,
@@ -85,7 +88,8 @@ const apis = {
     changeUserPassword,
     sendEmail,
     resetPassword,
-    getUserByEmail
+    getUserByEmail,
+    getUserById
 }
 
 export default apis

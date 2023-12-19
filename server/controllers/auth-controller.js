@@ -616,6 +616,55 @@ findUserByEmail = async (req, res) => {
     }
 }
 
+findUserById = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        console.log("FINDING USER ", id);
+
+        if (!id) {
+            return res
+                .status(400)
+                .json({ errorMessage: "Please provide an email address." });
+        }
+
+        const foundUser = await User.findOne({  _id: id });
+
+        if (!foundUser) {
+            return res
+                .status(404)
+                .json({
+                    success: false,
+                    errorMessage: "User not found for the provided email address."
+                });
+        }
+
+        return res.status(200).json({
+            success: true,
+            user: {
+                firstName: foundUser.firstName,
+                lastName: foundUser.lastName,
+                email: foundUser.email,
+                username: foundUser.username,
+                maps: foundUser.maps,
+                likedMaps: foundUser.likedMaps,
+                bio: foundUser.bio,
+                numPosts: foundUser.numPosts,
+                dateJoined: new Date(foundUser.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                id: foundUser._id,
+                numLikes: foundUser.numLikes,
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send();
+    }
+}
+
 
 module.exports = {
     getLoggedIn,
@@ -626,5 +675,6 @@ module.exports = {
     changeUserPassword,
     sendEmail,
     resetPassword,
-    findUserByEmail
+    findUserByEmail,
+    findUserById
 }

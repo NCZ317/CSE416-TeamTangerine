@@ -84,7 +84,7 @@ function MapCard(props) {
   const handleCardClick = async () => {
     if (props.idNamePair.published) {
       console.log(idNamePair);
-      await store.setCurrentMap(idNamePair._id);
+      //await store.setCurrentMap(idNamePair._id);
       await store.view(idNamePair._id);
       await auth.viewUser(idNamePair.email);
       navigate("/post/" + idNamePair._id);

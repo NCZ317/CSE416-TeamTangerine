@@ -9,6 +9,7 @@ import AuthContext from '../auth';
 import html2canvas from 'html2canvas';
 import 'leaflet/dist/leaflet.css';
 import domtoimage from 'dom-to-image';
+import { useLocation } from 'react-router-dom';
 
 const PostWrapper = () => {
     const { auth } = useContext(AuthContext);
@@ -17,7 +18,14 @@ const PostWrapper = () => {
     // const [jsonURL, setJSONurl] = useState("");
     // const [jsonFilename, setJSONfilename] = useState("");
     
+    const location = useLocation();
 
+    useEffect(() => {
+        // Log the current pathname
+        const postId = location.pathname.substring(location.pathname.lastIndexOf('/') + 1);
+        console.log('Post ID:', postId);
+        store.setCurrentMap(postId);
+    }, []);
 
     const CssTextField = styled(TextField)({
         '& label.Mui-focused': {
@@ -47,11 +55,13 @@ const PostWrapper = () => {
         views: 0,
         likes: 0,
     });
+
+
     
     useEffect(() => {
-        console.log(store.currentMap);
         if (store.currentMap) {
-            console.log(auth.userToView);
+            console.log(store.currentMap);
+            auth.viewUser(store.currentMap.ownerEmail);
             setMapDetails({
                 title: store.currentMap.title,
                 author: store.currentMap.username,
