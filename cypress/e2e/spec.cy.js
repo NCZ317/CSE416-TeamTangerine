@@ -23,7 +23,7 @@ describe("Login Fail", () => {
     cy.get('#email').should('be.visible');
     cy.get("#email").type("standard_user")
     cy.get("#password").type("secret_sauce", {log:false})
-    cy.get("#login").click()
+    cy.get("#login").click();
     cy.get('#error-modal').should('be.visible');
   })
 })
@@ -35,7 +35,16 @@ describe("Login Success", () => {
     cy.get('#email').should('be.visible');
     cy.get("#email").type("test@email.com")
     cy.get("#password").type("password", {log:false})
-    cy.get("#login").click()
+    cy.get("#login").click();
+  })
+})
+
+describe("Recover Password", () => {
+  it("Should be able to recover password", () => {
+    cy.visit('https://terratrove-df08dd7fc1f7.herokuapp.com/')
+    cy.get('.login-button').click();
+    cy.get('.forgot-password-link').click();
+    cy.get('#forgot-password-box').should('be.visible');
   })
 })
 
@@ -54,12 +63,13 @@ describe("Check Post", () => {
   })
 })
 
-describe("Check User Options", () => {
-  it("Should be able to see logout option", () => {
+describe("Logout", () => {
+  it("Should be able to logout", () => {
     cy.visit('https://terratrove-df08dd7fc1f7.herokuapp.com/')
     cy.login('test@email.com', 'password');
     cy.get('#account-button').click();
-    cy.get('#account-menu').should('be.visible');
+    cy.get('#check-logout').click();
+    cy.get('#app-banner-login-button').should('be.visible');
   })
 })
 
@@ -69,5 +79,15 @@ describe("Create Map", () => {
     cy.login('test@email.com', 'password');
     cy.get('.create-map-button').click();
     cy.get('#create-map-modal').should('be.visible');
+  })
+})
+
+describe("Check User Information", () => {
+  it("Should be see user profile", () => {
+    cy.visit('https://terratrove-df08dd7fc1f7.herokuapp.com/')
+    cy.contains('By:').click();
+    cy.get('.post-comment-section').should('be.visible');
+    cy.get("#check-author").click();
+    cy.get("#profile-color").should('be.visible');
   })
 })
